@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field
 
 app = FastAPI()
 
-
+# !!!global variables for development (Remove after testing)
 panpower = {}
 
 
@@ -39,8 +39,8 @@ async def panpower_format(datain: PanpowerDictCover):
     return datain
 
 
-# panpower display function
-@app.get("/panpower")
+# !!!panpower display function
+@app.get("/panpower/measurements")
 async def get_panpower():
     return {"panpower": panpower}
 
