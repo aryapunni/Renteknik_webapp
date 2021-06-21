@@ -6,15 +6,17 @@ from typing import Optional, List, Union, Optional
 # from pydantic import BaseModel, Field, ValidationError, validator
 from sql_app import models, schemas, crud
 from sql_app.database import SessionLocal, engine
+import json
+import arc.arc
+from arc.arc_get import get_meter_list
+from arc.arc_post import send_arc_consumption
 
 app = FastAPI()
 
 models.Base.metadata.create_all(bind=engine)
 
-# !!!global variables for development (Remove after testing)
-var_panpower1012 = {}
-var_panpower42 = {}
-var_panpowerpulse = {}
+
+#------------------PANORAMIC POWER GET AND POST FUNCTIONS-------------------#
 
 
 # Now use the SessionLocal class we created in the sql_app/databases.py file to create a dependency
@@ -26,7 +28,6 @@ def get_db():
         yield db
     finally:
         db.close()
-
 
 
 # panpower pulse post function
@@ -67,7 +68,6 @@ async def get_panpower1012(client: str, db: Session = Depends(get_db)):
     return  crud.get_panpower1012_client_data(db=db, client_name=client)
 
 
-
 # panpower42 data get function
 @app.get("/panpower/panpower42/{client}")
 async def get_panpower42(client: str, db: Session = Depends(get_db)):
@@ -89,6 +89,38 @@ async def get_panpowerpulse(client: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Client not found")
     return  crud.get_panpowerpulse_client_data(db=db, client_name=client)
 
+
+#------------------PANORAMIC POWER GET AND POST FUNCTIONS-------------------#
+
+
+
+#------------------ARC INTEGRATION GET AND POST FUNCTIONS-------------------#
+
+
+# Arc Test Functions Get
+# arc generate salt string
+@app.get("/arc/saltstring")
+async def get_saltstring():
+    saltstring = arc.arc.get_access_token()
+    data = arc.arc_get.get_meter_consumption_detail()
+    return data
+
+
+# Arc data posting link
+@app.post("/arc/consumption/{client}/{leed_id}/{meter_id}")
+async def post_consumption(meter_id: str, leed_id: str, client: str, datain: schemas.ArcEnergyDictCover):
+    # print(meter_id, leed_id)
+    # print(datain.dict())
+    for data in datain.measurements:
+        data.meter_id = meter_id
+        data.leed_id = leed_id
+        data.client = client
+    send_arc_consumption(datain.dict())
+    data = arc.arc_get.get_meter_consumption_detail()
+    return "hello world"
+
+
+#------------------ARC INTEGRATION GET AND POST FUNCTIONS-------------------#
 
 # FastAPI initial test function
 @app.get("/")

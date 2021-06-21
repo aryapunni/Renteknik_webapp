@@ -87,6 +87,33 @@ class Pan42DictCover(BaseModel):
     measurements: List[PanPower42]
 
 
+# schema for arc data Energy consumption
+class ArcEnergyConsumption(BaseModel):
+    client: Optional[str]
+    device_id: Optional[str]
+    leed_id: Optional[str]
+    meter_id: Optional[str]
+    measurement_time: str = Field(..., alias='measurement_time(UTC)')
+    energy: float = Field(..., alias='energy(Wh)')
+
+
+# schema for arc data CO2
+class ArcCo2Consumption(BaseModel):
+    client: str
+    meter_id: str
+    leed_id: str
+    meter_id: int = Field(..., alias='METER_ID')
+    measurement_time: str = Field(..., alias='measurement_time(UTC)')
+    energy: float = Field(..., alias='energy(Wh)')
+
+
+
+# schema for ArcEnergyConsumption
+class ArcEnergyDictCover(BaseModel):
+    measurements: List[ArcEnergyConsumption]
+
+
+
 # class TestOne(BaseModel):
 #     device_id: int
 #     measurement: float
