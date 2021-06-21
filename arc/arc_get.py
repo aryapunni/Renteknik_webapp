@@ -229,7 +229,7 @@ def get_meter_consumption_detail():
 
 
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
 
     # generate_auth2_code()
     # auth2()
@@ -246,7 +246,7 @@ if __name__ == "__main__":
     # get_asset_object_detail()
     # get_fuel_category()
     # get_meter_consumption_list()
-    get_meter_consumption_detail()
+    # get_meter_consumption_detail()
     # get_current_time()
     # create_meter_consumption()
     # get_access_token()

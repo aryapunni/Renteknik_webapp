@@ -29,12 +29,12 @@ def start_end_time(datetime_string, duration_format, duration):
         end_date = datetime.strptime(datetime_string, "%Y-%m-%dT%H:%M:%SZ").date()
         start_date = datetime.strptime(datetime_string, "%Y-%m-%dT%H:%M:%SZ").date()
         end_date = end_date + timedelta(days=duration)
-        print(start_date, end_date)
+        # print(start_date, end_date)
 
-    print("---------------------------------")
-    print(f"start date before 5 minutes {start_date}")
-    print(f"end date after adding 5 minutes {end_date}")
-    print("---------------------------------")
+    # print("---------------------------------")
+    # print(f"start date before 5 minutes {start_date}")
+    # print(f"end date after adding 5 minutes {end_date}")
+    # print("---------------------------------")
     dates.append(start_date)
     dates.append(end_date)
     return dates
@@ -52,7 +52,7 @@ def process_arc_data(measurements: dict):
     arc_dict["start_date"] = str(date_change[0])
     arc_dict["end_date"] = str(date_change[1])
     arc_dict["energy"] = total_energy
-    print(arc_dict)
+    # print(arc_dict)
     return arc_dict
 
 
@@ -87,16 +87,16 @@ def create_meter_consumption(leed_id: str = "8000037879", meter_id: str = "11586
     json_body = json.dumps(body)
     url = f"https://api.usgbc.org/arc/data/dev/assets/LEED:{leed_id}/meters/ID:{meter_id}/consumption/"
 
-    try:
-        r = requests.post(url, headers=headers, data=json_body)
-        data = r.json()
-        print(data)
-        return data
-    except Exception as e:
-        print("[Errno {0}] {1}".format(e.errno, e.strerror))
+    # try:
+    #     r = requests.post(url, headers=headers, data=json_body)
+    #     data = r.json()
+    #     # print(data)
+    #     # return data
+    # except Exception as e:
+    #     print("[Errno {0}] {1}".format(e.errno, e.strerror))
 
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
 
     # generate_auth2_code()
     # auth2()
@@ -106,5 +106,5 @@ if __name__ == "__main__":
     # generate_auth2_refresh_token()
     # get_meter_list()
     # get_current_time()
-    create_meter_consumption()
+    # create_meter_consumption()
     # get_access_token()

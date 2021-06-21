@@ -119,6 +119,12 @@ async def post_consumption(meter_id: str, leed_id: str, client: str, datain: sch
     data = arc.arc_get.get_meter_consumption_detail()
     return "hello world"
 
+# Arc data posting link
+@app.get("/arc/consumption/{client}/{leed_id}/{meter_id}")
+async def get_consumption():
+    return "hello world"
+
+
 
 #------------------ARC INTEGRATION GET AND POST FUNCTIONS-------------------#
 

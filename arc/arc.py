@@ -99,6 +99,6 @@ def generate_auth2_token():
 
 
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
 
-    get_current_time()
+    # get_current_time()
