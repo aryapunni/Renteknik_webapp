@@ -162,7 +162,7 @@ def create_meter_consumption(leed_id: str = "8000037879", meter_id: str = "11586
 
 #
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
 
     # generate_auth2_code()
     # auth2()
@@ -172,5 +172,5 @@ if __name__ == "__main__":
     # generate_auth2_refresh_token()
     # get_meter_list()
     # get_current_time()
-    create_meter_consumption()
+    # create_meter_consumption()
     # get_access_token()

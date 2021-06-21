@@ -101,9 +101,9 @@ async def get_panpowerpulse(client: str, db: Session = Depends(get_db)):
 # arc generate salt string
 @app.get("/arc/saltstring")
 async def get_saltstring():
-    saltstring = arc.arc.get_access_token()
-    data = arc.arc_get.get_meter_consumption_detail()
-    return data
+    saltstring = arc.arc.generate_auth2_token()
+    # data = arc.arc_get.get_meter_consumption_detail()
+    return saltstring
 
 
 # Arc data posting link
@@ -116,13 +116,13 @@ async def post_consumption(meter_id: str, leed_id: str, client: str, datain: sch
         data.leed_id = leed_id
         data.client = client
     send_arc_consumption(datain.dict())
-    data = arc.arc_get.get_meter_consumption_detail()
-    return "hello world"
+    # data = arc.arc_get.get_meter_consumption_detail()
+    return 200
 
 # Arc data posting link
 @app.get("/arc/consumption/{client}/{leed_id}/{meter_id}")
 async def get_consumption():
-    return "hello world"
+    return 200
 
 
 

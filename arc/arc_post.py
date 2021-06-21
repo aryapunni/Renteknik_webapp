@@ -87,13 +87,13 @@ def create_meter_consumption(leed_id: str = "8000037879", meter_id: str = "11586
     json_body = json.dumps(body)
     url = f"https://api.usgbc.org/arc/data/dev/assets/LEED:{leed_id}/meters/ID:{meter_id}/consumption/"
 
-    # try:
-    #     r = requests.post(url, headers=headers, data=json_body)
-    #     data = r.json()
-    #     # print(data)
-    #     # return data
-    # except Exception as e:
-    #     print("[Errno {0}] {1}".format(e.errno, e.strerror))
+    try:
+        r = requests.post(url, headers=headers, data=json_body)
+        data = r.json()
+        # print(data)
+        # return data
+    except Exception as e:
+        print("[Errno {0}] {1}".format(e.errno, e.strerror))
 
 
 # if __name__ == "__main__":
