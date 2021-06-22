@@ -17,20 +17,27 @@ ARC_CLIENT_ID = "ivh2tLYURNgTwCdcqX2nbl1U5rs2KnHTIAkyXVFB"
 ARC_SECRET = "ujeUGNMu4vPOfjXnWdVDs08Sx9WRQQirr9DXUUOJKq3H5O9eWpJPLPUxzFIxqppWJ9L2MziF2zs02vxMcTLwTsdtvsnXX7LkkAeDpkA5B90FrcFE13Tv3w7jtCUtqhpk"
 
 
+
+# Function to change the date value to Arc format string
+def date_to_string(date: datetime, ):
+    date = str(date.date()) + "T" + str(date.time())
+    return date
+
+
+   
 # To convert measured time to proper datetime format
 def start_end_time(datetime_string, duration_format, duration):
     dates = []
     start_date = datetime.strptime(datetime_string, "%Y-%m-%dT%H:%M:%SZ")
     if duration_format == "minutes":
-        end_date = start_date + timedelta(minutes=duration)
+        end_date = date_to_string(start_date + timedelta(minutes=duration))
+        start_date = date_to_string(start_date)
     elif duration_format == "hours":
         end_date = start_date + timedelta(hours=duration)
+        start_date = date_to_string(start_date)
     elif duration_format == "days":
-        end_date = datetime.strptime(datetime_string, "%Y-%m-%dT%H:%M:%SZ").date()
-        start_date = datetime.strptime(datetime_string, "%Y-%m-%dT%H:%M:%SZ").date()
-        end_date = end_date + timedelta(days=duration)
-        # print(start_date, end_date)
-
+        end_date = str(start_date.date() + timedelta(days=duration))
+        start_date = str(start_date.date())
     # print("---------------------------------")
     # print(f"start date before 5 minutes {start_date}")
     # print(f"end date after adding 5 minutes {end_date}")
@@ -47,10 +54,10 @@ def process_arc_data(measurements: dict):
     for measurement in measurements:
         energy = measurement["energy"]
         total_energy = total_energy + energy
-    date_change = start_end_time(arc_dict["measurement_time"], "days", 1)
+    date_change = start_end_time(arc_dict["measurement_time"], "minutes", 1)
     del arc_dict["measurement_time"]
-    arc_dict["start_date"] = str(date_change[0])
-    arc_dict["end_date"] = str(date_change[1])
+    arc_dict["start_date"] = date_change[0]
+    arc_dict["end_date"] = date_change[1]
     arc_dict["energy"] = total_energy
     # print(arc_dict)
     return arc_dict
@@ -61,6 +68,7 @@ def send_arc_consumption(datain: dict):
     measurements = datain["measurements"]
     consumption = process_arc_data(measurements)
     create_meter_consumption(consumption["leed_id"], consumption["meter_id"], consumption["start_date"], consumption["end_date"], consumption["energy"])
+
 
 # creating a meter object in Arc
 def create_meter_object(leed_id:str = "8000037879", meter_type:int = 46, unit:str = "kWh", meter_id:str = "126030"):
