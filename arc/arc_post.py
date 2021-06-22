@@ -33,8 +33,8 @@ def start_end_time(datetime_string, duration_format, duration):
         end_date = date_to_string(start_date + timedelta(minutes=duration))
         start_date = date_to_string(start_date)
     elif duration_format == "hours":
-        end_date = start_date + timedelta(hours=duration)
-        start_date = date_to_string(start_date)
+        end_date = str(start_date + timedelta(hours=duration))
+        start_date = str(date_to_string(start_date))
     elif duration_format == "days":
         end_date = str(start_date.date() + timedelta(days=duration))
         start_date = str(start_date.date())
