@@ -54,7 +54,7 @@ def process_arc_data(measurements: dict):
     for measurement in measurements:
         energy = measurement["energy"]
         total_energy = total_energy + energy
-    date_change = start_end_time(arc_dict["measurement_time"], "minutes", 1)
+    date_change = start_end_time(arc_dict["measurement_time"], "days", 1)
     del arc_dict["measurement_time"]
     arc_dict["start_date"] = date_change[0]
     arc_dict["end_date"] = date_change[1]
