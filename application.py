@@ -15,7 +15,9 @@ app = FastAPI()
 
 models.Base.metadata.create_all(bind=engine)
 
-
+# http://127.0.0.1:8000/arc/consumption/burberry/8000037879/11586622
+# https://abacuslive.ca/arc/consumption/burberry/8000037879/11586622
+# http://127.0.0.1:8000/panpower/panpower1012/{client}
 #------------------PANORAMIC POWER GET AND POST FUNCTIONS-------------------#
 
 

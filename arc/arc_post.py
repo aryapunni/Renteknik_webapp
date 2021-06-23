@@ -33,8 +33,8 @@ def start_end_time(datetime_string, duration_format, duration):
         end_date = date_to_string(start_date + timedelta(minutes=duration))
         start_date = date_to_string(start_date)
     elif duration_format == "hours":
-        end_date = str(start_date + timedelta(hours=duration))
-        start_date = str(date_to_string(start_date))
+        end_date = date_to_string(start_date + timedelta(hours=duration))
+        start_date = date_to_string(start_date)
     elif duration_format == "days":
         end_date = str(start_date.date() + timedelta(days=duration))
         start_date = str(start_date.date())
@@ -59,7 +59,7 @@ def process_arc_data(measurements: dict):
     arc_dict["start_date"] = date_change[0]
     arc_dict["end_date"] = date_change[1]
     arc_dict["energy"] = total_energy
-    # print(arc_dict)
+    print(arc_dict)
     return arc_dict
 
 
@@ -98,7 +98,7 @@ def create_meter_consumption(leed_id: str = "8000037879", meter_id: str = "11586
     try:
         r = requests.post(url, headers=headers, data=json_body)
         data = r.json()
-        # print(data)
+        print(data)
         # return data
     except Exception as e:
         print("[Errno {0}] {1}".format(e.errno, e.strerror))
