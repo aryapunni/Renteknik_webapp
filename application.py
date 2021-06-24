@@ -63,7 +63,7 @@ async def panpower1012_post(datain: schemas.PanPowerDictCover, client: str, db: 
 @app.get("/panpower/panpower1012/{client}")
 async def get_panpower1012(client: str, db: Session = Depends(get_db)):
     db_client = crud.get_panpower1012_client(db=db, client_name=client)
-    print(db_client)
+    # print(db_client)
     if db_client is None:
         print("there is no such client")
         raise HTTPException(status_code=404, detail="Client not found")
@@ -74,7 +74,7 @@ async def get_panpower1012(client: str, db: Session = Depends(get_db)):
 @app.get("/panpower/panpower42/{client}")
 async def get_panpower42(client: str, db: Session = Depends(get_db)):
     db_client = crud.get_pan42_client(db=db, client_name=client)
-    print(db_client)
+    # print(db_client)
     if db_client is None:
         print("there is no such client")
         raise HTTPException(status_code=404, detail="Client not found")
@@ -85,7 +85,7 @@ async def get_panpower42(client: str, db: Session = Depends(get_db)):
 @app.get("/panpower/panpowerpulse/{client}")
 async def get_panpowerpulse(client: str, db: Session = Depends(get_db)):
     db_client = crud.get_panpowerpulse_client(db=db, client_name=client)
-    print(db_client)
+    # print(db_client)
     if db_client is None:
         print("there is no such client")
         raise HTTPException(status_code=404, detail="Client not found")
@@ -112,7 +112,7 @@ async def get_saltstring():
 @app.post("/arc/consumption/{client}/{leed_id}/{meter_id}")
 async def post_consumption(meter_id: str, leed_id: str, client: str, datain: schemas.ArcEnergyDictCover):
     # print(meter_id, leed_id)
-    # print(datain.dict())
+    print(datain.dict())
     for data in datain.measurements:
         data.meter_id = meter_id
         data.leed_id = leed_id

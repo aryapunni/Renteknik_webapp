@@ -52,13 +52,14 @@ def process_arc_data(measurements: dict):
     total_energy = 0
     arc_dict = measurements[0]
     for measurement in measurements:
-        energy = measurement["energy"]
-        total_energy = total_energy + energy
-    date_change = start_end_time(arc_dict["measurement_time"], "days", 1)
+        if(measurement["device_name"] == "Main Site"):
+            energy = measurement["energy"]
+            total_energy = total_energy + energy
+    date_change = start_end_time(arc_dict["measurement_time"], "hours", 1)
     del arc_dict["measurement_time"]
     arc_dict["start_date"] = date_change[0]
     arc_dict["end_date"] = date_change[1]
-    arc_dict["energy"] = total_energy
+    arc_dict["energy"] = total_energy/1000
     print(arc_dict)
     return arc_dict
 

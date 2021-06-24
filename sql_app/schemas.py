@@ -92,6 +92,7 @@ class ArcEnergyConsumption(BaseModel):
     client: Optional[str]
     device_id: Optional[str]
     leed_id: Optional[str]
+    device_name: Optional[str]
     meter_id: Optional[str]
     measurement_time: str = Field(..., alias='measurement_time(UTC)')
     energy: float = Field(..., alias='energy(Wh)')
