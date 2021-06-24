@@ -60,7 +60,7 @@ def process_arc_data(measurements: dict):
     arc_dict["start_date"] = date_change[0]
     arc_dict["end_date"] = date_change[1]
     arc_dict["energy"] = total_energy/1000
-    print(arc_dict)
+    # print(arc_dict)
     return arc_dict
 
 
