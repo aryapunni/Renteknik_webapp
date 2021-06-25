@@ -112,7 +112,7 @@ async def get_saltstring():
 @app.post("/arc/consumption/{client}/{leed_id}/{meter_id}")
 async def post_consumption(meter_id: str, leed_id: str, client: str, datain: schemas.ArcEnergyDictCover):
     # print(meter_id, leed_id)
-    print(datain.dict())
+    # print(datain.dict())
     for data in datain.measurements:
         data.meter_id = meter_id
         data.leed_id = leed_id

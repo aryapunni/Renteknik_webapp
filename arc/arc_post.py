@@ -89,13 +89,13 @@ def create_meter_object(leed_id:str = "8000037879", meter_type:int = 46, unit:st
 
 
 # Create consumption for meter
-def create_meter_consumption(leed_id: str = "8000037879", meter_id: str = "11586622", start_date: str = "2017-10-07", end_date: str = "2017-10-08", reading: float = 200):
+def create_meter_consumption(leed_id: str, meter_id: str, start_date: str, end_date: str, reading: float):
     access_token = get_access_token()
     headers = {'Authorization': f'Bearer {access_token}', 'Content-Type': 'application/json', 'Ocp-Apim-Subscription-Key': ARC_PRIMARY_KEY}
     body = {"start_date": start_date, "end_date": end_date, "reading": reading}
     json_body = json.dumps(body)
     url = f"https://api.usgbc.org/arc/data/dev/assets/LEED:{leed_id}/meters/ID:{meter_id}/consumption/"
-
+    print(json_body)
     try:
         r = requests.post(url, headers=headers, data=json_body)
         data = r.json()
