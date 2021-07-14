@@ -115,7 +115,7 @@ def generate_auth2_token():
 
 
 # creating a meter object in Arc
-def create_meter_object(leed_id:str = "8000037879", meter_type:int = 46, unit:str = "kWh", meter_id:str = "126030"):
+def create_meter_object(leed_id:str = "8000037879", meter_type:int = 46, unit:str = "kWh", meter_id:str = "126031"):
     name = "electricity"
     access_token = get_access_token()
     headers = {'Authorization': f'Bearer {access_token}', 'Content-Type': 'application/json', 'Ocp-Apim-Subscription-Key': ARC_PRIMARY_KEY}
@@ -139,9 +139,33 @@ def get_meter_list(leed_id: str = "8000037879"):
     try:
         r = requests.get(url, headers=headers)
         data = r.json()
-        print(data)
+        print(json.dumps(data, indent=4, sort_keys=True))
     except Exception as e:
         print("[Errno {0}] {1}".format(e.errno, e.strerror))
+
+
+# meter's data consumption object detail
+def get_meter_consumption_detail():
+    access_token = get_access_token()
+    headers = {'Authorization': f'Bearer {access_token}', 'Ocp-Apim-Subscription-Key': ARC_PRIMARY_KEY}
+
+    params = urllib.parse.urlencode({})
+    url = "https://api.usgbc.org/arc/data/dev/assets/LEED:8000037879/meters/ID:11586622/consumption/ID:157798271/"
+    try:
+        r = requests.get(url, headers=headers)
+        data = r.json()
+        # print(data)
+        print(json.dumps(data, indent=4, sort_keys=True))
+        # conn = http.client.HTTPSConnection('api.usgbc.org')
+        # conn.request("GET", "/arc/data/dev/assets/LEED:8000037879/meters/ID:11586622/consumption/ID:157798271/?%s" % params, "{body}", headers)
+        # response = conn.getresponse()
+        # data = response.read()
+        # print(data)
+        # conn.close()
+        return data
+    except Exception as e:
+        print("[Errno {0}] {1}".format(e.errno, e.strerror))
+
 
 
 # Create consumption for meter
@@ -155,14 +179,36 @@ def create_meter_consumption(leed_id: str = "8000037879", meter_id: str = "11586
     try:
         r = requests.post(url, headers=headers, data=json_body)
         data = r.json()
-        print(data)
+        print(json.dumps(data, indent=4, sort_keys=True))
+
     except Exception as e:
         print("[Errno {0}] {1}".format(e.errno, e.strerror))
 
 
-#
+# Arc update function
+def update_meter_consumption(start_date: str = "2021-06-21", end_date: str = "2017-06-22", reading: float = 1.38404):
+    access_token = get_access_token()
+    headers = {'Authorization': f'Bearer {access_token}', 'Content-Type': 'application/json', 'Ocp-Apim-Subscription-Key': ARC_PRIMARY_KEY}
+    body = {"start_date": start_date, "end_date": end_date, "reading": reading}
+    json_body = json.dumps(body)
+    params = urllib.parse.urlencode({})
+    url = f"https://api.usgbc.org/arc/data/dev/assets/LEED:8000037879/meters/ID:11586622/consumption/ID:561914/"
 
-# if __name__ == "__main__":
+    try:
+        r = requests.put(url, headers=headers, data=json_body)
+        data = r.json()
+        print(json.dumps(data, indent=4, sort_keys=True))
+        conn = http.client.HTTPSConnection('api.usgbc.org')
+        conn.request("PUT", "/arc/data/dev/assets/LEED:8000037879/meters/ID:11586622/consumption/ID:561914/?%s" % params, f"{json_body}", headers)
+        response = conn.getresponse()
+        data = response.read()
+        print(data)
+        conn.close()
+    except Exception as e:
+        print("[Errno {0}] {1}".format(e.errno, e.strerror))
+
+
+if __name__ == "__main__":
 
     # generate_auth2_code()
     # auth2()
@@ -171,6 +217,8 @@ def create_meter_consumption(leed_id: str = "8000037879", meter_id: str = "11586
     # create_meter_object()
     # generate_auth2_refresh_token()
     # get_meter_list()
+    get_meter_consumption_detail()
+    update_meter_consumption()
     # get_current_time()
     # create_meter_consumption()
     # get_access_token()
