@@ -115,7 +115,7 @@ def generate_auth2_token():
 
 
 # creating a meter object in Arc
-def create_meter_object(leed_id:str = "8000037879", meter_type:int = 46, unit:str = "kWh", meter_id:str = "126031"):
+def create_meter_object(leed_id:str = "8000037879", meter_type:int = 46, unit:str = "kWh", meter_id:str = "33"):
     name = "electricity"
     access_token = get_access_token()
     headers = {'Authorization': f'Bearer {access_token}', 'Content-Type': 'application/json', 'Ocp-Apim-Subscription-Key': ARC_PRIMARY_KEY}
@@ -216,9 +216,9 @@ if __name__ == "__main__":
     # generate_auth2_token()
     # create_meter_object()
     # generate_auth2_refresh_token()
-    # get_meter_list()
-    get_meter_consumption_detail()
-    update_meter_consumption()
+    get_meter_list()
+    # get_meter_consumption_detail()
+    # update_meter_consumption()
     # get_current_time()
     # create_meter_consumption()
     # get_access_token()
