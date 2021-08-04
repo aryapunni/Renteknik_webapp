@@ -4,6 +4,11 @@ import requests
 import json
 from hashlib import sha256
 from time import time, ctime
+import pytz
+from pytz import timezone, UTC
+from datetime import datetime, tzinfo
+import time
+from time import gmtime, strftime
 # from config import settings
 
 ARC_PRIMARY_KEY = "5f3f67ada316489e819dca0456904ce8"
@@ -11,6 +16,53 @@ ARC_SECONDARY_KEY = "119d57b07f75450683186e57a9ffe4f1"
 
 ARC_CLIENT_ID = "ivh2tLYURNgTwCdcqX2nbl1U5rs2KnHTIAkyXVFB"
 ARC_SECRET = "ujeUGNMu4vPOfjXnWdVDs08Sx9WRQQirr9DXUUOJKq3H5O9eWpJPLPUxzFIxqppWJ9L2MziF2zs02vxMcTLwTsdtvsnXX7LkkAeDpkA5B90FrcFE13Tv3w7jtCUtqhpk"
+
+
+# Time zone conversion
+# date: datetime, conversion: str
+def find_time_zone():
+    datetime_string = "2021-01-01T00:00:00Z"
+    start_date = datetime.strptime(datetime_string, "%Y-%m-%dT%H:%M:%SZ")
+    est_date = start_date.replace(tzinfo=UTC)
+    timezonelist = ['Australia/Adelaide', 'US/Pacific', 'Europe/Berlin', 'Europe/Amsterdam']
+    for zone in timezonelist:
+
+        now_time = start_date.now(timezone(zone))
+        # print(f"now time = {now_time}")
+        est_date = start_date.replace(tzinfo=UTC)
+        localtimezone = timezone(zone)
+        localDatetime = start_date.astimezone(timezone(zone))
+        # print(f"{zone}, \t {start_date}, \t {localDatetime}")
+        now = datetime.now()
+        # ------- trial two --------- #
+        localmoment = localtimezone.localize(start_date, is_dst=None)
+
+        # print(f"{zone}, \t {start_date}, \t {localmoment}")
+        utcmoment = localmoment.astimezone(UTC)
+        zone = timezone(zone)
+
+        # ------- trial three --------- #
+
+        #---------------------Right method-----------------------------#
+        print(f"{start_date}, ---- {pytz.utc.localize(start_date, is_dst=True).astimezone(zone).dst()}")
+        print(f"{start_date}, ---- {pytz.utc.localize(start_date, is_dst=None).astimezone(zone)}")
+        #---------------------Right method-----------------------------#
+
+
+def change_timezone(date: datetime, zonename: str):
+
+    print("<------------------------------------------ ********* ------------------------------------------>")
+    fmt = "%Y-%m-%dT%H:%M:%SZ"
+    input_zone = timezone('UTC')
+    zone = timezone(zonename)
+    input_datetime = input_zone.localize(date, is_dst=True)
+    changed_datetime = zone.localize(date, is_dst=True)
+    changed_datetime = input_datetime.astimezone(zone)
+    dst = changed_datetime.tzinfo.dst(changed_datetime)
+    print(f"zone ---> {zonename}")
+    print(f"input ---> {input_datetime}\noutput ---> {changed_datetime}\ndstt ---> {dst}\nreturn value ---> {changed_datetime.strftime(fmt)}")
+    print("<------------------------------------------ ********* ------------------------------------------>")
+
 
 
 # url for application registration
@@ -115,7 +167,7 @@ def generate_auth2_token():
 
 
 # creating a meter object in Arc
-def create_meter_object(leed_id:str = "8000037879", meter_type:int = 46, unit:str = "kWh", meter_id:str = "33"):
+def create_meter_object(leed_id:str = "8000037879", meter_type:int = 46, unit:str = "kWh", meter_id:str = "44"):
     name = "electricity"
     access_token = get_access_token()
     headers = {'Authorization': f'Bearer {access_token}', 'Content-Type': 'application/json', 'Ocp-Apim-Subscription-Key': ARC_PRIMARY_KEY}
@@ -216,7 +268,17 @@ if __name__ == "__main__":
     # generate_auth2_token()
     # create_meter_object()
     # generate_auth2_refresh_token()
-    get_meter_list()
+    datetime_string = "2022-01-01T00:00:00Z"
+    start_date = datetime.strptime(datetime_string, "%Y-%m-%dT%H:%M:%SZ")
+    # get_meter_list()
+    # 'Australia/Adelaide', 'US/Pacific', 'Europe/Berlin' Asia/Jerusalem
+    # find_time_zone()
+    time_zones = []
+    time_zones = pytz.all_timezones
+    print(time_zones)
+    for zone in time_zones:
+        print(zone)
+        change_timezone(start_date, zone)
     # get_meter_consumption_detail()
     # update_meter_consumption()
     # get_current_time()

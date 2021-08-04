@@ -6,8 +6,9 @@ from hashlib import sha256
 from time import time, ctime
 # from arc_api_test import get_access_token
 # from config import settings
+from pytz import timezone, UTC
 from arc.arc import get_access_token
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, tzinfo
 
 
 ARC_PRIMARY_KEY = "5f3f67ada316489e819dca0456904ce8"
@@ -20,28 +21,75 @@ ARC_SECRET = "ujeUGNMu4vPOfjXnWdVDs08Sx9WRQQirr9DXUUOJKq3H5O9eWpJPLPUxzFIxqppWJ9
 
 # Function to change the date value to Arc format string
 def date_to_string(date: datetime, ):
-    date = str(date.date()) + "T" + str(date.time())
+    date = str(date.date()) + str(date.time())
     return date
 
+# Function to change one time zone to another
+# inputs: date to be changed: in date time format
+# zone name: The zone to which the given date should be converted
+def change_timezone(date: datetime, zonename: str):
+    # out put format of changed timezone
+    fmt = "%Y-%m-%d %H:%M:%SZ"
 
-   
-# To convert measured time to proper datetime format
-def start_end_time(datetime_string, duration_format, duration):
+    # assigning input date as UTC time format
+    input_zone = timezone('UTC')
+
+    # change input date to changed time zone
+    zone = timezone(zonename)
+    input_datetime = input_zone.localize(date, is_dst=True)
+    changed_datetime = zone.localize(date, is_dst=True)
+    changed_datetime = input_datetime.astimezone(zone)
+
+    # change returning timezone changed date to required format
+    changed_datetime = changed_datetime.strftime(fmt)
+    return_date = datetime.strptime(changed_datetime, fmt)
+    return return_date
+
+
+
+# To convert measured time to proper datetime and zone
+def start_end_time(datetime_string: str, duration_format: str, duration: int, zone: str):
+    # array initialization
     dates = []
-    start_date = datetime.strptime(datetime_string, "%Y-%m-%dT%H:%M:%SZ")
+
+    # date time format for sending to Arc
+    fmt = "%Y-%m-%dT%H:%M:%SZ"
+
+    # change input string to datetime format
+    start_date = datetime.strptime(datetime_string, fmt)
+
+    # change input datetime to required timezone format
+    start_date = change_timezone(start_date, zone)
+
+    # Three categories of end times:
+    # 1. when duration is in minutes --> First condition
+    # 2. when duration is in hours   --> Second condition
+    # 3. when duration is in days    --> Third condition
+
     if duration_format == "minutes":
-        end_date = date_to_string(start_date + timedelta(minutes=duration))
-        start_date = date_to_string(start_date)
+        # add duration to starting datetime
+        end_date = start_date + timedelta(minutes=duration)
+
+        # convert both start and end date time to Arc required string format
+        end_date = end_date.strftime(fmt)
+        start_date = start_date.strftime(fmt)
+
     elif duration_format == "hours":
-        end_date = date_to_string(start_date + timedelta(hours=duration))
-        start_date = date_to_string(start_date)
+        # add duration to starting datetime
+        end_date = start_date + timedelta(hours=duration)
+
+        # convert both start and end date time to Arc required string format
+        end_date = end_date.strftime(fmt)
+        start_date = start_date.strftime(fmt)
+
     elif duration_format == "days":
-        end_date = str(start_date.date() + timedelta(days=duration))
-        start_date = str(start_date.date())
-    # print("---------------------------------")
-    # print(f"start date before 5 minutes {start_date}")
-    # print(f"end date after adding 5 minutes {end_date}")
-    # print("---------------------------------")
+        # add duration to starting datetime
+        end_date = start_date.date() + timedelta(days=duration)
+
+        # convert both start and end date time to Arc required string format
+        end_date = end_date.strftime(fmt)
+        start_date = start_date.strftime(fmt)
+
     dates.append(start_date)
     dates.append(end_date)
     return dates
@@ -55,7 +103,7 @@ def process_arc_data(measurements: dict):
         if((measurement["device_name"] == "RP Sub Main") | (measurement["device_name"] == "LP Sub Main")):
             energy = measurement["energy"]
             total_energy = total_energy + energy
-    date_change = start_end_time(arc_dict["measurement_time"], "hours", 1)
+    date_change = start_end_time(arc_dict["measurement_time"], "hours", 1, 'Canada/Pacific')
     del arc_dict["measurement_time"]
     arc_dict["start_date"] = date_change[0]
     arc_dict["end_date"] = date_change[1]
