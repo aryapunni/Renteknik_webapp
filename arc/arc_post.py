@@ -53,7 +53,7 @@ def start_end_time(datetime_string: str, duration_format: str, duration: int, zo
     dates = []
 
     # date time format for sending to Arc
-    fmt = "%Y-%m-%dT%H:%M:%SZ"
+    fmt = "%Y-%m-%dT%H:%M:%S"
 
     # change input string to datetime format
     start_date = datetime.strptime(datetime_string, fmt)
