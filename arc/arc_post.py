@@ -29,7 +29,7 @@ def date_to_string(date: datetime, ):
 # zone name: The zone to which the given date should be converted
 def change_timezone(date: datetime, zonename: str):
     # out put format of changed timezone
-    fmt = "%Y-%m-%d %H:%M:%SZ"
+    fmt = "%Y-%m-%dT%H:%M:%S"
 
     # assigning input date as UTC time format
     input_zone = timezone('UTC')
