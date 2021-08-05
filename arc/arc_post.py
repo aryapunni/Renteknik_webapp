@@ -19,11 +19,6 @@ ARC_SECRET = "ujeUGNMu4vPOfjXnWdVDs08Sx9WRQQirr9DXUUOJKq3H5O9eWpJPLPUxzFIxqppWJ9
 
 
 
-# Function to change the date value to Arc format string
-def date_to_string(date: datetime, ):
-    date = str(date.date()) + str(date.time())
-    return date
-
 # Function to change one time zone to another
 # inputs: date to be changed: in date time format
 # zone name: The zone to which the given date should be converted
@@ -54,6 +49,11 @@ def start_end_time(datetime_string: str, duration_format: str, duration: int, zo
 
     # date time format for sending to Arc
     fmt = "%Y-%m-%dT%H:%M:%S"
+
+    # Removing the extra z from the panpower data
+    # Inorder to make the date format compatible with Arc
+    if datetime_string.endswith('Z'):
+        datetime_string = datetime_string[:-1]
 
     # change input string to datetime format
     start_date = datetime.strptime(datetime_string, fmt)
