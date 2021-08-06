@@ -5,17 +5,17 @@ import json
 from hashlib import sha256
 from time import time, ctime
 # from arc_api_test import get_access_token
-# from config import settings
+from config import settings
 from pytz import timezone, UTC
 from arc.arc import get_access_token
 from datetime import datetime, timedelta, tzinfo
 
 
-ARC_PRIMARY_KEY = "5f3f67ada316489e819dca0456904ce8"
-ARC_SECONDARY_KEY = "119d57b07f75450683186e57a9ffe4f1"
+# ARC_PRIMARY_KEY = "5f3f67ada316489e819dca0456904ce8"
+# ARC_SECONDARY_KEY = "119d57b07f75450683186e57a9ffe4f1"
 
-ARC_CLIENT_ID = "ivh2tLYURNgTwCdcqX2nbl1U5rs2KnHTIAkyXVFB"
-ARC_SECRET = "ujeUGNMu4vPOfjXnWdVDs08Sx9WRQQirr9DXUUOJKq3H5O9eWpJPLPUxzFIxqppWJ9L2MziF2zs02vxMcTLwTsdtvsnXX7LkkAeDpkA5B90FrcFE13Tv3w7jtCUtqhpk"
+# ARC_CLIENT_ID = "ivh2tLYURNgTwCdcqX2nbl1U5rs2KnHTIAkyXVFB"
+# ARC_SECRET = "ujeUGNMu4vPOfjXnWdVDs08Sx9WRQQirr9DXUUOJKq3H5O9eWpJPLPUxzFIxqppWJ9L2MziF2zs02vxMcTLwTsdtvsnXX7LkkAeDpkA5B90FrcFE13Tv3w7jtCUtqhpk"
 
 
 
@@ -123,7 +123,7 @@ def send_arc_consumption(datain: dict):
 def create_meter_object(leed_id:str = "8000037879", meter_type:int = 46, unit:str = "kWh", meter_id:str = "126030"):
     name = "electricity"
     access_token = get_access_token()
-    headers = {'Authorization': f'Bearer {access_token}', 'Content-Type': 'application/json', 'Ocp-Apim-Subscription-Key': ARC_PRIMARY_KEY}
+    headers = {'Authorization': f'Bearer {access_token}', 'Content-Type': 'application/json', 'Ocp-Apim-Subscription-Key': settings.arc_primary_key}
     body = {"name": name, "type": meter_type, "native_unit": unit, "partner_details": "3", "partner_meter_id": meter_id}
     json_body = json.dumps(body)
     url = f"https://api.usgbc.org/arc/data/dev/assets/LEED:{leed_id}/meters/"
@@ -139,7 +139,7 @@ def create_meter_object(leed_id:str = "8000037879", meter_type:int = 46, unit:st
 # Create consumption for meter
 def create_meter_consumption(leed_id: str, meter_id: str, start_date: str, end_date: str, reading: float):
     access_token = get_access_token()
-    headers = {'Authorization': f'Bearer {access_token}', 'Content-Type': 'application/json', 'Ocp-Apim-Subscription-Key': ARC_PRIMARY_KEY}
+    headers = {'Authorization': f'Bearer {access_token}', 'Content-Type': 'application/json', 'Ocp-Apim-Subscription-Key': settings.arc_primary_key}
     body = {"start_date": start_date, "end_date": end_date, "reading": reading}
     json_body = json.dumps(body)
     url = f"https://api.usgbc.org/arc/data/dev/assets/LEED:{leed_id}/meters/ID:{meter_id}/consumption/"

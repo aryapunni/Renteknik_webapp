@@ -22,10 +22,9 @@ def get_meter_list(leed_id: str = "8000037879"):
     try:
         r = requests.get(url, headers=headers)
         data = r.json()
-        # print(data)
+        return data
     except Exception as e:
         print("[Errno {0}] {1}".format(e.errno, e.strerror))
-    return data
 
 
 # get aggregated data
@@ -39,13 +38,6 @@ def get_asset_aggregated_data(data_endpoint: str = "electricity", leed_id: str =
     try:
         r = requests.get(url, headers=headers, params=params)
         data = r.json()
-        # print(data)
-        # conn = http.client.HTTPSConnection('api.usgbc.org')
-        # conn.request("GET", "/arc/data/dev/assets/{data_endpoint}/analytics/?%s" % params, "{body}", headers)
-        # response = conn.getresponse()
-        # data = response.read()
-        # # print(data)
-        # conn.close()
         return data
     except Exception as e:
         print("[Errno {0}] {1}".format(e.errno, e.strerror))
@@ -60,13 +52,6 @@ def get_asset_comprehensive_score():
     try:
         r = requests.get(url, headers=headers, params=params)
         data = r.json()
-        # print(data)
-        # conn = http.client.HTTPSConnection('api.usgbc.org')
-        # conn.request("GET", "/arc/data/dev/assets/LEED:8000037879/scores/re-entry/?%s" % params, "{body}", headers)
-        # response = conn.getresponse()
-        # data = response.read()
-        # print(data)
-        # conn.close()
         return data
     except Exception as e:
         print("[Errno {0}] {1}".format(e.errno, e.strerror))
@@ -88,6 +73,7 @@ def get_asset_score():
         data = response.read()
         print(data)
         conn.close()
+        return data
     except Exception as e:
         print("[Errno {0}] {1}".format(e.errno, e.strerror))
 
@@ -103,12 +89,7 @@ def asset_search():
         r = requests.get(url, headers=headers, params=params)
         data = r.json()
         print(data)
-        # conn = http.client.HTTPSConnection('api.usgbc.org')
-        # conn.request("GET", "/arc/data/dev/assets/search/?%s" % params, "{body}", headers)
-        # response = conn.getresponse()
-        # data = response.read()
-        # print(data)
-        # conn.close()
+        return data
     except Exception as e:
         print("[Errno {0}] {1}".format(e.errno, e.strerror))
 
@@ -118,20 +99,12 @@ def asset_search():
 def get_asset_list():
     access_token = get_access_token()
     headers = {'Authorization': f'Bearer {access_token}', 'Ocp-Apim-Subscription-Key': ARC_PRIMARY_KEY}
-
-    params = urllib.parse.urlencode({})
     url = "https://api.usgbc.org/arc/data/dev/assets/"
 
     try:
         r = requests.get(url, headers=headers)
         data = r.json()
         print(data)
-        # conn = http.client.HTTPSConnection('api.usgbc.org')
-        # conn.request("GET", "/arc/data/dev/assets/?%s" % params, "{body}", headers)
-        # response = conn.getresponse()
-        # data = response.read()
-        # print(data)
-        # conn.close()
         return data
     except Exception as e:
         print("[Errno {0}] {1}".format(e.errno, e.strerror))
@@ -143,18 +116,11 @@ def get_asset_object_detail():
     access_token = get_access_token()
     headers = {'Authorization': f'Bearer {access_token}', 'Ocp-Apim-Subscription-Key': ARC_PRIMARY_KEY}
     url = "https://api.usgbc.org/arc/data/dev/assets/LEED:8000037879/"
-    params = urllib.parse.urlencode({})
 
     try:
         r = requests.get(url, headers=headers)
         data = r.json()
         print(data)
-        # conn = http.client.HTTPSConnection('api.usgbc.org')
-        # conn.request("GET", "/arc/data/dev/assets/LEED:8000037879/?%s" % params, "{body}", headers)
-        # response = conn.getresponse()
-        # data = response.read()
-        # print(data)
-        # conn.close()
         return data
     except Exception as e:
         print("[Errno {0}] {1}".format(e.errno, e.strerror))
@@ -165,19 +131,11 @@ def get_asset_object_detail():
 def get_fuel_category():
     access_token = get_access_token()
     headers = {'Authorization': f'Bearer {access_token}', 'Ocp-Apim-Subscription-Key': ARC_PRIMARY_KEY}
-
-    params = urllib.parse.urlencode({})
     url = "https://api.usgbc.org/arc/data/dev/fuel/category/"
     try:
         r = requests.get(url, headers=headers)
         data = r.json()
         print(data)
-        # conn = http.client.HTTPSConnection('api.usgbc.org')
-        # conn.request("GET", "/arc/data/dev/fuel/category/?%s" % params, "{body}", headers)
-        # response = conn.getresponse()
-        # data = response.read()
-        # print(data)
-        # conn.close()
         return data
     except Exception as e:
         print("[Errno {0}] {1}".format(e.errno, e.strerror))
@@ -187,18 +145,11 @@ def get_fuel_category():
 def get_meter_consumption_list():
     access_token = get_access_token()
     headers = {'Authorization': f'Bearer {access_token}', 'Ocp-Apim-Subscription-Key': ARC_PRIMARY_KEY}
-    params = urllib.parse.urlencode({})
     url = "https://api.usgbc.org/arc/data/dev/assets/LEED:8000037879/meters/ID:11586622/consumption/"
     try:
         r = requests.get(url, headers=headers)
         data = r.json()
         print(data)
-        # conn = http.client.HTTPSConnection('api.usgbc.org')
-        # conn.request("GET", "/arc/data/dev/assets/LEED:8000037879/meters/ID:11586622/consumption/?%s" % params, "{body}", headers)
-        # response = conn.getresponse()
-        # data = response.read()
-        # print(data)
-        # conn.close()
         return data
     except Exception as e:
         print("[Errno {0}] {1}".format(e.errno, e.strerror))
@@ -209,19 +160,11 @@ def get_meter_consumption_list():
 def get_meter_consumption_detail():
     access_token = get_access_token()
     headers = {'Authorization': f'Bearer {access_token}', 'Ocp-Apim-Subscription-Key': ARC_PRIMARY_KEY}
-
-    params = urllib.parse.urlencode({})
     url = "https://api.usgbc.org/arc/data/dev/assets/LEED:8000037879/meters/ID:11586622/consumption/ID:157798271/"
     try:
         r = requests.get(url, headers=headers)
         data = r.json()
         print(data)
-        # conn = http.client.HTTPSConnection('api.usgbc.org')
-        # conn.request("GET", "/arc/data/dev/assets/LEED:8000037879/meters/ID:11586622/consumption/ID:157798271/?%s" % params, "{body}", headers)
-        # response = conn.getresponse()
-        # data = response.read()
-        # print(data)
-        # conn.close()
         return data
     except Exception as e:
         print("[Errno {0}] {1}".format(e.errno, e.strerror))

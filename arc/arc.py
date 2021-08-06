@@ -6,11 +6,12 @@ import json
 from time import time, ctime
 from hashlib import sha256
 
-ARC_PRIMARY_KEY = "5f3f67ada316489e819dca0456904ce8"
-ARC_SECONDARY_KEY = "119d57b07f75450683186e57a9ffe4f1"
+# ARC_PRIMARY_KEY = "5f3f67ada316489e819dca0456904ce8"
+# ARC_SECONDARY_KEY = "119d57b07f75450683186e57a9ffe4f1"
 
-ARC_CLIENT_ID = "ivh2tLYURNgTwCdcqX2nbl1U5rs2KnHTIAkyXVFB"
-ARC_SECRET = "ujeUGNMu4vPOfjXnWdVDs08Sx9WRQQirr9DXUUOJKq3H5O9eWpJPLPUxzFIxqppWJ9L2MziF2zs02vxMcTLwTsdtvsnXX7LkkAeDpkA5B90FrcFE13Tv3w7jtCUtqhpk"
+# ARC_CLIENT_ID = "ivh2tLYURNgTwCdcqX2nbl1U5rs2KnHTIAkyXVFB"
+# ARC_SECRET = "ujeUGNMu4vPOfjXnWdVDs08Sx9WRQQirr9DXUUOJKq3H5O9eWpJPLPUxzFIxqppWJ9L2MziF2zs02vxMcTLwTsdtvsnXX7LkkAeDpkA5B90FrcFE13Tv3w7jtCUtqhpk"
+
 
 # Function for finding current time
 # Linux time
@@ -99,6 +100,6 @@ def generate_auth2_token():
 
 
 
-# if __name__ == "__main__":
+if __name__ == "__main__":
 
-    # get_current_time()
+    get_access_token()
