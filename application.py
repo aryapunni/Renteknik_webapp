@@ -8,7 +8,8 @@ from sql_app import models, schemas, crud
 from sql_app.database import SessionLocal, engine
 import json
 import arc.arc
-from arc.arc_get import get_meter_list
+from arc.arc_get import get_meter_list, asset_search, get_asset_list, get_asset_object_detail, get_fuel_category, get_meter_consumption_list, get_meter_consumption_detail
+# get_asset_aggregated_data, get_asset_score
 from arc.arc_post import send_arc_consumption
 
 app = FastAPI()
@@ -116,9 +117,9 @@ async def post_consumption(meter_id: str, leed_id: str, client: str, datain: sch
     return 200
 
 # Arc data posting link
-@app.get("/arc/consumption/{client}/{leed_id}/{meter_id}")
+@app.get("/arc/consumption")
 async def get_consumption():
-    return 200
+    return get_meter_consumption_detail()
 
 
 
