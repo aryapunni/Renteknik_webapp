@@ -90,43 +90,96 @@ def start_end_time(datetime_string: str, duration_format: str, duration: int, zo
         end_date = end_date.strftime(fmt)
         start_date = start_date.strftime(fmt)
 
+    # append the modified start and end date
+    # to a list so as to return
     dates.append(start_date)
     dates.append(end_date)
+
     return dates
 
 
 # Function for processing arc data
-def process_arc_data(measurements: dict):
+# Recieve data from send arc consumption frunction
+# Based on electrical hierarchy sorts data and adds electrical enery
+# Process dates to be send to Arc:
+# Changes unit of the energy
+# Arguments:
+# datain: collection of dictionaries coming from panoramic power
+# electrical_hierarchy: list of elaments that we have to count when we add energy
+def process_arc_data(measurements: dict, electrical_hierarchy: list, time_data: dict):
+
+    # initialisation of values
     total_energy = 0
+
+    # dictionary to send values to Arc
     arc_dict = measurements[0]
+
+    # loop through different dictionaries in the input
     for measurement in measurements:
-        if((measurement["device_name"] == "RP Sub Main") | (measurement["device_name"] == "LP Sub Main")):
-            energy = measurement["energy"]
-            total_energy = total_energy + energy
-    date_change = start_end_time(arc_dict["measurement_time"], "hours", 1, 'Canada/Pacific')
+
+        # loop through the electrical hierarchy for calculating energy
+        # --> if device name is equal to the electrical hierarchy added
+        # Then add the energy to total energy
+        for val in electrical_hierarchy:
+            if(measurement["device_name"] == val):
+                energy = measurement["energy"]
+                total_energy = total_energy + energy
+
+    # Send measured time to processing time
+    # changing time zone
+    # changing format
+    date_change = start_end_time(arc_dict["measurement_time"], time_data["duartion_format"], time_data["duration"], time_data["time_zone"])
+
+    # Since the measured time has been modified to
+    # start date and end date we don't
+    # need measurement time field anymore
     del arc_dict["measurement_time"]
+
+    # Data to be send to Arc is added to arc_dict
+    # ie. start_date, end_date, total energy
     arc_dict["start_date"] = date_change[0]
     arc_dict["end_date"] = date_change[1]
     arc_dict["energy"] = total_energy/1000
-    # print(arc_dict)
+
     return arc_dict
 
 
-# Process data from application
-def send_arc_consumption(datain: dict):
+# Recieve data for Arc from front end
+# Send it for processing
+# Send processed data to Arc API function
+# Arguments:
+# datain: collection of dictionaries coming from panoramic power
+# electrical_hierarchy: list of elaments that we have to count when we add energy
+def send_arc_consumption(datain: dict, electrical_hierarchy: list, time_data: dict, primary_key: str = settings.arc_primary_key):
+
+    # data in has an inside dictionary with name measurements
     measurements = datain["measurements"]
-    consumption = process_arc_data(measurements)
-    create_meter_consumption(consumption["leed_id"], consumption["meter_id"], consumption["start_date"], consumption["end_date"], consumption["energy"])
+
+    # Sending data for processing
+    consumption = process_arc_data(measurements, electrical_hierarchy, time_data)
+
+    # Sending data to arc
+    create_meter_consumption(consumption["leed_id"], consumption["meter_id"], consumption["start_date"], consumption["end_date"], consumption["energy"], primary_key)
 
 
 # creating a meter object in Arc
-def create_meter_object(leed_id:str = "8000037879", meter_type:int = 46, unit:str = "kWh", meter_id:str = "126030"):
-    name = "electricity"
-    access_token = get_access_token()
+# Arguments: leed_id - leed id of the given project
+# meter_type : meter type 46 for electrical meters
+# unit: specifying which unit the data of this meter will have
+# meter_id: check meter list API for get meter_id
+# name: end point for creating meter ie electricty/water/co2 etc
+def create_meter_object(primary_key: str = settings.arc_primary_key, leed_id: str = "8000037879", meter_type: int = 46, unit: str = "kWh", meter_id: str = "126030", name: str = "electricity", partner_details: str = "3"):
+
+    # To use this API we need access token
+    access_token = get_access_token(primary_key)
+
+    # headers, params, body and url for the API
     headers = {'Authorization': f'Bearer {access_token}', 'Content-Type': 'application/json', 'Ocp-Apim-Subscription-Key': settings.arc_primary_key}
-    body = {"name": name, "type": meter_type, "native_unit": unit, "partner_details": "3", "partner_meter_id": meter_id}
-    json_body = json.dumps(body)
+    body = {"name": name, "type": meter_type, "native_unit": unit, "partner_details": partner_details, "partner_meter_id": meter_id}
     url = f"https://api.usgbc.org/arc/data/dev/assets/LEED:{leed_id}/meters/"
+
+    # convertin body to Json
+    json_body = json.dumps(body)
     try:
         r = requests.post(url, headers=headers, data=json_body)
         data = r.json()
@@ -137,20 +190,32 @@ def create_meter_object(leed_id:str = "8000037879", meter_type:int = 46, unit:st
 
 
 # Create consumption for meter
-def create_meter_consumption(leed_id: str, meter_id: str, start_date: str, end_date: str, reading: float):
-    access_token = get_access_token()
+# Arguments:
+# leed_id: leed_id of the purticular project
+# meter_id: id of the purticular meter to which we are entering data
+# start_date, end_date: start and ending time and date of the data we are entering
+# reading: meter reading for the purticular meter at this given time
+def create_meter_consumption(leed_id: str, meter_id: str, start_date: str, end_date: str, reading: float, primary_key: str = settings.arc_primary_key):
+
+    # To use this API we need access token
+    access_token = get_access_token(primary_key)
+
+    # headers, params, body and url for the API
     headers = {'Authorization': f'Bearer {access_token}', 'Content-Type': 'application/json', 'Ocp-Apim-Subscription-Key': settings.arc_primary_key}
     body = {"start_date": start_date, "end_date": end_date, "reading": reading}
-    json_body = json.dumps(body)
     url = f"https://api.usgbc.org/arc/data/dev/assets/LEED:{leed_id}/meters/ID:{meter_id}/consumption/"
-    print(json_body)
+
+    # converting body of the API to Json
+    json_body = json.dumps(body)
+   
+    # API request
     try:
         r = requests.post(url, headers=headers, data=json_body)
         data = r.json()
         print(data)
         # return data
     except Exception as e:
-        print("[Errno {0}] {1}".format(e.errno, e.strerror))
+        print("meter consumption API error")
 
 
 # if __name__ == "__main__":

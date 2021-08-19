@@ -7,18 +7,25 @@ from time import time, ctime
 from arc.arc import get_access_token
 from config import settings
 
-ARC_PRIMARY_KEY = "5f3f67ada316489e819dca0456904ce8"
-ARC_SECONDARY_KEY = "119d57b07f75450683186e57a9ffe4f1"
+# ARC_PRIMARY_KEY = "5f3f67ada316489e819dca0456904ce8"
+# ARC_SECONDARY_KEY = "119d57b07f75450683186e57a9ffe4f1"
 
-ARC_CLIENT_ID = "ivh2tLYURNgTwCdcqX2nbl1U5rs2KnHTIAkyXVFB"
-ARC_SECRET = "ujeUGNMu4vPOfjXnWdVDs08Sx9WRQQirr9DXUUOJKq3H5O9eWpJPLPUxzFIxqppWJ9L2MziF2zs02vxMcTLwTsdtvsnXX7LkkAeDpkA5B90FrcFE13Tv3w7jtCUtqhpk"
+# ARC_CLIENT_ID = "ivh2tLYURNgTwCdcqX2nbl1U5rs2KnHTIAkyXVFB"
+# ARC_SECRET = "ujeUGNMu4vPOfjXnWdVDs08Sx9WRQQirr9DXUUOJKq3H5O9eWpJPLPUxzFIxqppWJ9L2MziF2zs02vxMcTLwTsdtvsnXX7LkkAeDpkA5B90FrcFE13Tv3w7jtCUtqhpk"
 
-# Get meter's list
 # To get Meter's List and details
-def get_meter_list(leed_id: str = "8000037879"):
+# arguments:
+# leed_id: leed id of the purticular project
+# primary_key: primary key purticular client
+def get_meter_list(leed_id: str = "8000037879", primary_key: str = settings.arc_primary_key):
+    # header needs access token, so we generate access token
     access_token = get_access_token()
-    headers = {'Authorization': f'Bearer {access_token}', 'Ocp-Apim-Subscription-Key': settings.arc_primary_key}
+
+    # header and url for accessing the API
+    headers = {'Authorization': f'Bearer {access_token}', 'Ocp-Apim-Subscription-Key': primary_key}
     url = f"https://api.usgbc.org/arc/data/dev/assets/LEED:{leed_id}/meters/"
+
+    # API reuest
     try:
         r = requests.get(url, headers=headers)
         data = r.json()
@@ -28,13 +35,21 @@ def get_meter_list(leed_id: str = "8000037879"):
 
 
 # get aggregated data
-# input date and leed id
-def get_asset_aggregated_data(data_endpoint: str = "electricity", leed_id: str = "8000037879", start_date: str = "2017-10-07", end_date: str = "2017-10-08", unit: str = "kWh"):
-    headers = {'Ocp-Apim-Subscription-Key': ARC_PRIMARY_KEY}
+# Function Arguments:
+# data_endpoint - end point for fetching data
+# leed_id - leed id of the given project
+# start_gate - from which date the data should be fetched
+# end_gate - upto which date the data should be fetched
+# unit - unit of the data
+# primary_key - primary key of the client
+def get_asset_aggregated_data(data_endpoint: str = "electricity", leed_id: str = "8000037879", start_date: str = "2017-10-07", end_date: str = "2017-10-08", unit: str = "kWh", primary_key: str = settings.arc_primary_key):
 
+    # header, url, input params
+    headers = {'Ocp-Apim-Subscription-Key': primary_key}
     params = urllib.parse.urlencode({'start_date': start_date, 'end_date': end_date, 'unit': unit, 'leed_ids': leed_id})
-    url = f"https://api.usgbc.org/arc/data/dev/assets/{data_endpoint}/analytics/?unit=kwh&leed_ids=8000037879"
+    url = f"https://api.usgbc.org/arc/data/dev/assets/{data_endpoint}/analytics/?unit={unit}&leed_ids={leed_id}"
 
+    # API request
     try:
         r = requests.get(url, headers=headers, params=params)
         data = r.json()
@@ -43,14 +58,20 @@ def get_asset_aggregated_data(data_endpoint: str = "electricity", leed_id: str =
         print("[Errno {0}] {1}".format(e.errno, e.strerror))
 
 
-# asset comprehensive score
-def get_asset_comprehensive_score():
-    access_token = get_access_token()
-    headers = {'Ocp-Apim-Subscription-Key': ARC_PRIMARY_KEY}
-    params = urllib.parse.urlencode({})
-    url = f"https://api.usgbc.org/arc/data/dev/assets/LEED:8000037879/scores/re-entry/"
+# To get the comprehensive score that Arc assigned to the project
+# arguments:
+# primary_key - primary key of the client
+# leed_id - leed id of the given project
+# date - Date to which we are requesting the comprehensive score
+def get_asset_comprehensive_score(primary_key: str = settings.arc_primary_key, leed_id: str = "8000037879", date: str = "2021-08-11"):
+
+    #url and headers for the API
+    headers = {'Ocp-Apim-Subscription-Key': primary_key}
+    url = f"https://api.usgbc.org/arc/data/dev/assets/LEED:{leed_id}/scores/re-entry/?at={date}"
+
+    #API request
     try:
-        r = requests.get(url, headers=headers, params=params)
+        r = requests.get(url, headers=headers)
         data = r.json()
         return data
     except Exception as e:
@@ -59,20 +80,22 @@ def get_asset_comprehensive_score():
 
 
 # get asset performance/score for a period of time
-def get_asset_score():
-    headers = {'Ocp-Apim-Subscription-Key': settings.arc_primary_key}
-    params = urllib.parse.urlencode({})
-    url = "https://api.usgbc.org/arc/data/dev/assets/LEED:8000037879/scores/"
+# arguments:
+# primary_key - primary key of the client
+# leed_id - leed id of the given project
+# date - Date to which we are requesting the score
+def get_asset_score(primary_key: str = settings.arc_primary_key, leed_id: str = "8000037879", date: str = "2021-08-11"):
+
+    # headers, params and url for the API
+    headers = {'Ocp-Apim-Subscription-Key': primary_key}
+    params = urllib.parse.urlencode({'at': date})
+    url = f"https://api.usgbc.org/arc/data/dev/assets/LEED:{leed_id}/scores/"
+
+    # API request
     try:
         r = requests.get(url, headers=headers, params=params)
         data = r.json()
         print(data)
-        conn = http.client.HTTPSConnection('api.usgbc.org')
-        conn.request("GET", "/arc/data/dev/assets/LEED:8000037879/scores/?%s" % params, "{body}", headers)
-        response = conn.getresponse()
-        data = response.read()
-        print(data)
-        conn.close()
         return data
     except Exception as e:
         print("[Errno {0}] {1}".format(e.errno, e.strerror))
@@ -80,11 +103,20 @@ def get_asset_score():
 
 
 # function to search for a purticular asset
-def asset_search():
+# arguments:
+# primary_key - primary key of the client
+# leed_id - leed id of the given project
+def asset_search(primary_key: str = settings.arc_primary_key, leed_id: str = "8000037879"):
+
+    # To use this API we need access token
     access_token = get_access_token()
-    headers = {'Authorization': f'Bearer {access_token}', 'Ocp-Apim-Subscription-Key': settings.arc_primary_key}
-    params = urllib.parse.urlencode({'q': '8000037879'})
+
+    # headers, params and url for the API
+    headers = {'Authorization': f'Bearer {access_token}', 'Ocp-Apim-Subscription-Key': primary_key}
+    params = urllib.parse.urlencode({'q': leed_id})
     url = "https://api.usgbc.org/arc/data/dev/assets/search/"
+
+    # API request
     try:
         r = requests.get(url, headers=headers, params=params)
         data = r.json()
@@ -96,11 +128,18 @@ def asset_search():
 
 
 # Function to get asset list
-def get_asset_list():
+# arguments:
+# primary_key - primary key of the client
+def get_asset_list(primary_key: str = settings.arc_primary_key):
+
+    # To use this API we need access token
     access_token = get_access_token()
-    headers = {'Authorization': f'Bearer {access_token}', 'Ocp-Apim-Subscription-Key': settings.arc_primary_key}
+   
+    # headers, params and url for the API
+    headers = {'Authorization': f'Bearer {access_token}', 'Ocp-Apim-Subscription-Key': primary_key}
     url = "https://api.usgbc.org/arc/data/dev/assets/"
 
+    # API request
     try:
         r = requests.get(url, headers=headers)
         data = r.json()
@@ -112,11 +151,19 @@ def get_asset_list():
 
 
 # function to get asset object detail
-def get_asset_object_detail():
-    access_token = get_access_token()
-    headers = {'Authorization': f'Bearer {access_token}', 'Ocp-Apim-Subscription-Key': settings.arc_primary_key}
-    url = "https://api.usgbc.org/arc/data/dev/assets/LEED:8000037879/"
+# arguments:
+# primary_key - primary key of the client
+# leed_id - leed id of the given project
+def get_asset_object_detail(primary_key: str = settings.arc_primary_key, leed_id: str = "8000037879"):
 
+    # To use this API we need access token
+    access_token = get_access_token()
+   
+    # headers, params and url for the API
+    headers = {'Authorization': f'Bearer {access_token}', 'Ocp-Apim-Subscription-Key': primary_key}
+    url = f"https://api.usgbc.org/arc/data/dev/assets/LEED:{leed_id}/"
+
+    # API request
     try:
         r = requests.get(url, headers=headers)
         data = r.json()
@@ -128,10 +175,18 @@ def get_asset_object_detail():
 
 
 # function to get fuel category
-def get_fuel_category():
+# arguments:
+# primary_key - primary key of the client
+def get_fuel_category(primary_key: str = settings.arc_primary_key):
+
+    # To use this API we need access token
     access_token = get_access_token()
-    headers = {'Authorization': f'Bearer {access_token}', 'Ocp-Apim-Subscription-Key': settings.arc_primary_key}
+
+    # headers, params and url for the API
+    headers = {'Authorization': f'Bearer {access_token}', 'Ocp-Apim-Subscription-Key': primary_key}
     url = "https://api.usgbc.org/arc/data/dev/fuel/category/"
+   
+    # API request
     try:
         r = requests.get(url, headers=headers)
         data = r.json()
@@ -142,10 +197,17 @@ def get_fuel_category():
 
 
 # get meter's consumption list
-def get_meter_consumption_list():
+def get_meter_consumption_list(primary_key: str = settings.arc_primary_key, leed_id: str = "8000037879", meter_id: str = "11879657"):
+
+    # To use this API we need access token
     access_token = get_access_token()
-    headers = {'Authorization': f'Bearer {access_token}', 'Ocp-Apim-Subscription-Key': settings.arc_primary_key}
-    url = "https://api.usgbc.org/arc/data/dev/assets/LEED:8000037879/meters/ID:11879657/consumption/"
+
+    # headers, params and url for the API
+    headers = {'Authorization': f'Bearer {access_token}', 'Ocp-Apim-Subscription-Key': primary_key}
+    url = f"https://api.usgbc.org/arc/data/dev/assets/LEED:{leed_id}/meters/ID:{meter_id}/consumption/"
+
+
+    # API request
     try:
         r = requests.get(url, headers=headers)
         data = r.json()
@@ -157,10 +219,14 @@ def get_meter_consumption_list():
 
 
 # meter's data consumption object detail
-def get_meter_consumption_detail():
+# arguments:
+# primary_key - primary key of the client
+# leed_id - leed id of the given project
+# meter_id - you get meter_id either from Arc
+def get_meter_consumption_detail(primary_key: str = settings.arc_primary_key, leed_id: str = "8000037879", meter_id: str = "11586622", meter_number: str = "157798271"):
     access_token = get_access_token()
-    headers = {'Authorization': f'Bearer {access_token}', 'Ocp-Apim-Subscription-Key': settings.arc_primary_key}
-    url = "https://api.usgbc.org/arc/data/dev/assets/LEED:8000037879/meters/ID:11586622/consumption/ID:157798271/"
+    headers = {'Authorization': f'Bearer {access_token}', 'Ocp-Apim-Subscription-Key': primary_key}
+    url = f"https://api.usgbc.org/arc/data/dev/assets/LEED:{leed_id}/meters/ID:{meter_id}/consumption/ID:{meter_number}/"
     try:
         r = requests.get(url, headers=headers)
         data = r.json()

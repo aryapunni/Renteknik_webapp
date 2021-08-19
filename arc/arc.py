@@ -33,14 +33,34 @@ def check_access_expiry(old_time: float):
 # function to decide whether accecc token expired
 # function returns 0 - Token haven't expired
 # Function returns 1 - If token have alreadyexpired
-def get_access_token():
-    with open("first.json", "r") as readfile:
-        token = json.load(readfile)
+# Arguments
+# primary_key - leed primary key of this purticular project
+def get_access_token(primary_key: str = settings.arc_primary_key):
+
+    # opening json file to access refresh token
+    try:
+        with open("first.json", "r") as readfile:
+            token = json.load(readfile)
+    except FileNotFoundError as e:
+        print(f"Error: {FileNotFoundError} Unable to open first.json, in get access token")
+        return 101
+
+    # taking the old time added in the Json file when we generated-
+    # - the access token last time
     old_time = float(token["current_time"])
+
+    # Check whether the access token has expired
+    # access token expires in 10 hours
     access_expired = check_access_expiry(old_time)
+
+    # If "access_expired" is 1: access token expired
+    # generate access_token
     if access_expired == 1:
-        access_token = generate_auth2_token()
+        access_token = generate_auth2_token(primary_key)
         return access_token
+
+    # If "access_expired" is 1: access token expired
+    # generate access_token
     else:
         access_token = token["access_token"]
         return access_token
@@ -48,16 +68,22 @@ def get_access_token():
 
 # Function to generate a random string
 # generated random string can be used as STATE
-def generate_salt():
-    headers = {'Ocp-Apim-Subscription-Key': settings.arc_primary_key}
+# Arguments
+# primary_key - leed primary key of this purticular project
+def generate_salt(primary_key: str = settings.arc_primary_key):
+
+    # Headers and url for the API request
+    headers = {'Ocp-Apim-Subscription-Key': primary_key}
+    url = "https://api.usgbc.org/arc/data/dev/auth/oauth2/salt/"
+
+    # API request
     try:
-        url = "https://api.usgbc.org/arc/data/dev/auth/oauth2/salt/"
-        headers = {'Ocp-Apim-Subscription-Key': settings.arc_primary_key}
         r = requests.get(url, headers=headers)
         data = r.json()
-    except Exception as e:
-        print("[Errno {0}] {1}".format(e.errno, e.strerror))
-    return data
+        return data
+    except Exception as error:
+        print(f"Error in salt generation: {error}")
+        return 101
 
 
 # generate hash256
@@ -71,12 +97,24 @@ def generate_hash(state: str):
 
 
 # generate auth2 token for API subscriptions
-def generate_auth2_token():
-    with open("first.json", 'r') as infile:
-        token = json.load(infile)
-    code = token["refresh_token"]
-    salt = generate_salt()
+def generate_auth2_token(primary_key: str = settings.arc_primary_key):
+
+    # opening json file to access refresh token
+    try:
+        with open("first.json", 'r') as infile:
+            token = json.load(infile)
+        code = token["refresh_token"]
+    except FileNotFoundError as e:
+        print("Error: {e} opening first.json in generate_auth2_token")
+        return 102
+
+    # generating salt
+    salt = generate_salt(primary_key)
+    if(salt == 1):
+        print("no salt")
+        return 103
     state = salt["state"]
+
     client_secret = generate_hash(state)
     headers = {'Content-Type': 'application/json', 'Ocp-Apim-Subscription-Key': settings.arc_primary_key}
     body = {"grant_type": "refresh_token", "code": code, "client_id": settings.arc_client_id, "client_secret": client_secret, "state": state}
@@ -100,6 +138,6 @@ def generate_auth2_token():
 
 
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
 
-    get_access_token()
+#     get_access_token()

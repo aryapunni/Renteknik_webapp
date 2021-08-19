@@ -8,7 +8,8 @@ from sql_app import models, schemas, crud
 from sql_app.database import SessionLocal, engine
 import json
 import arc.arc
-from arc.arc_get import get_meter_list, asset_search, get_asset_list, get_asset_object_detail, get_fuel_category, get_meter_consumption_list, get_meter_consumption_detail
+from config import settings
+from arc.arc_get import get_asset_comprehensive_score, get_meter_list, asset_search, get_asset_list, get_asset_object_detail, get_fuel_category, get_meter_consumption_list, get_meter_consumption_detail, get_asset_aggregated_data, get_asset_score
 # get_asset_aggregated_data, get_asset_score
 from arc.arc_post import send_arc_consumption
 
@@ -101,7 +102,7 @@ async def get_panpowerpulse(client: str, db: Session = Depends(get_db)):
 # arc generate salt string
 @app.get("/arc/saltstring")
 async def get_saltstring():
-    saltstring = arc.arc.generate_auth2_token()
+    saltstring = arc.arc.generate_salt()
     return saltstring
 
 
@@ -112,16 +113,24 @@ async def post_consumption(meter_id: str, leed_id: str, client: str, datain: sch
         data.meter_id = meter_id
         data.leed_id = leed_id
         data.client = client
-    send_arc_consumption(datain.dict())
-    # data = arc.arc_get.get_meter_consumption_detail()
+    electrical_hierarchy = ["RP Sub Main", "LP Sub Main"]
+    time_data = {"duartion_format": "hours", "duration": 1, "time_zone": "Canada/Pacific"}
+    send_arc_consumption(datain.dict(), electrical_hierarchy, time_data, settings.arc_primary_key)
     return 200
 
 # Arc data posting link
 @app.get("/arc/consumption")
 async def get_consumption():
-    return get_meter_consumption_detail()
-
-
+    return get_meter_list()
+    # return get_meter_consumption_detail()
+    # return get_asset_aggregated_data()
+    # return get_asset_comprehensive_score()
+    # return get_asset_score()
+    # return asset_search()
+    # return get_asset_list()
+    # return get_asset_object_detail()
+    # return get_fuel_category()
+    # return get_meter_consumption_list()
 
 #------------------ARC INTEGRATION GET AND POST FUNCTIONS-------------------#
 
