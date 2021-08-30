@@ -117,7 +117,7 @@ async def post_consumption(meter_id: str, leed_id: str, client: str, datain: sch
 @app.post("/arc/metadata")
 async def post_arc_metadata(datain: schemas.ArcMetaData, db: Session = Depends(get_db)):
     for data in datain:
-        print("hello world")
+        print(data)
     crud.create_arc_metadata(db, datain)
     return 200
 
