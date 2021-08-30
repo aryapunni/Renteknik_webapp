@@ -18,8 +18,9 @@ from config import settings
 # leed_id: leed id of the purticular project
 # primary_key: primary key purticular client
 def get_meter_list(leed_id: str = "8000037879", primary_key: str = settings.arc_primary_key):
+
     # header needs access token, so we generate access token
-    access_token = get_access_token()
+    access_token = get_access_token(primary_key)
 
     # header and url for accessing the API
     headers = {'Authorization': f'Bearer {access_token}', 'Ocp-Apim-Subscription-Key': primary_key}
@@ -31,7 +32,8 @@ def get_meter_list(leed_id: str = "8000037879", primary_key: str = settings.arc_
         data = r.json()
         return data
     except Exception as e:
-        print("[Errno {0}] {1}".format(e.errno, e.strerror))
+        print(f"Error: {e} \n Unable to access get meter list API")
+        return 105
 
 
 # get aggregated data
@@ -55,7 +57,8 @@ def get_asset_aggregated_data(data_endpoint: str = "electricity", leed_id: str =
         data = r.json()
         return data
     except Exception as e:
-        print("[Errno {0}] {1}".format(e.errno, e.strerror))
+        print(f"Error: {e} \n Unable to Access get asset aggregated data API")
+        return 105
 
 
 # To get the comprehensive score that Arc assigned to the project
@@ -75,8 +78,8 @@ def get_asset_comprehensive_score(primary_key: str = settings.arc_primary_key, l
         data = r.json()
         return data
     except Exception as e:
-        print("[Errno {0}] {1}".format(e.errno, e.strerror))
-
+        print(f"Error: {e} \n Unable to access get asset comprehensive score API")
+        return 105
 
 
 # get asset performance/score for a period of time
@@ -98,7 +101,8 @@ def get_asset_score(primary_key: str = settings.arc_primary_key, leed_id: str = 
         print(data)
         return data
     except Exception as e:
-        print("[Errno {0}] {1}".format(e.errno, e.strerror))
+        print(f"Error: {e} \n Unable to access get asset score API")
+        return 105
 
 
 
@@ -109,7 +113,7 @@ def get_asset_score(primary_key: str = settings.arc_primary_key, leed_id: str = 
 def asset_search(primary_key: str = settings.arc_primary_key, leed_id: str = "8000037879"):
 
     # To use this API we need access token
-    access_token = get_access_token()
+    access_token = get_access_token(primary_key)
 
     # headers, params and url for the API
     headers = {'Authorization': f'Bearer {access_token}', 'Ocp-Apim-Subscription-Key': primary_key}
@@ -123,7 +127,8 @@ def asset_search(primary_key: str = settings.arc_primary_key, leed_id: str = "80
         print(data)
         return data
     except Exception as e:
-        print("[Errno {0}] {1}".format(e.errno, e.strerror))
+        print(f"Error: {e} \n Unable to access asset search API")
+        return 105
 
 
 
@@ -133,7 +138,7 @@ def asset_search(primary_key: str = settings.arc_primary_key, leed_id: str = "80
 def get_asset_list(primary_key: str = settings.arc_primary_key):
 
     # To use this API we need access token
-    access_token = get_access_token()
+    access_token = get_access_token(primary_key)
    
     # headers, params and url for the API
     headers = {'Authorization': f'Bearer {access_token}', 'Ocp-Apim-Subscription-Key': primary_key}
@@ -146,7 +151,8 @@ def get_asset_list(primary_key: str = settings.arc_primary_key):
         print(data)
         return data
     except Exception as e:
-        print("[Errno {0}] {1}".format(e.errno, e.strerror))
+        print(f"Error: {e} \n Unable to access get asset list API")
+        return 105
 
 
 
@@ -157,7 +163,7 @@ def get_asset_list(primary_key: str = settings.arc_primary_key):
 def get_asset_object_detail(primary_key: str = settings.arc_primary_key, leed_id: str = "8000037879"):
 
     # To use this API we need access token
-    access_token = get_access_token()
+    access_token = get_access_token(primary_key)
    
     # headers, params and url for the API
     headers = {'Authorization': f'Bearer {access_token}', 'Ocp-Apim-Subscription-Key': primary_key}
@@ -170,7 +176,8 @@ def get_asset_object_detail(primary_key: str = settings.arc_primary_key, leed_id
         print(data)
         return data
     except Exception as e:
-        print("[Errno {0}] {1}".format(e.errno, e.strerror))
+        print(f"Error: {e} \n Unable to access get asset object detail API")
+        return 105
 
 
 
@@ -180,7 +187,7 @@ def get_asset_object_detail(primary_key: str = settings.arc_primary_key, leed_id
 def get_fuel_category(primary_key: str = settings.arc_primary_key):
 
     # To use this API we need access token
-    access_token = get_access_token()
+    access_token = get_access_token(primary_key)
 
     # headers, params and url for the API
     headers = {'Authorization': f'Bearer {access_token}', 'Ocp-Apim-Subscription-Key': primary_key}
@@ -193,14 +200,14 @@ def get_fuel_category(primary_key: str = settings.arc_primary_key):
         print(data)
         return data
     except Exception as e:
-        print("[Errno {0}] {1}".format(e.errno, e.strerror))
-
+        print(f"Error: {e} \n Unable to access get fuel category API")
+        return 105
 
 # get meter's consumption list
 def get_meter_consumption_list(primary_key: str = settings.arc_primary_key, leed_id: str = "8000037879", meter_id: str = "11879657"):
 
     # To use this API we need access token
-    access_token = get_access_token()
+    access_token = get_access_token(primary_key)
 
     # headers, params and url for the API
     headers = {'Authorization': f'Bearer {access_token}', 'Ocp-Apim-Subscription-Key': primary_key}
@@ -214,8 +221,8 @@ def get_meter_consumption_list(primary_key: str = settings.arc_primary_key, leed
         print(data)
         return data
     except Exception as e:
-        print("[Errno {0}] {1}".format(e.errno, e.strerror))
-
+        print(f"Error: {e} \n Unable to access get meter consumption list API")
+        return 105
 
 
 # meter's data consumption object detail
@@ -224,17 +231,23 @@ def get_meter_consumption_list(primary_key: str = settings.arc_primary_key, leed
 # leed_id - leed id of the given project
 # meter_id - you get meter_id either from Arc
 def get_meter_consumption_detail(primary_key: str = settings.arc_primary_key, leed_id: str = "8000037879", meter_id: str = "11586622", meter_number: str = "157798271"):
-    access_token = get_access_token()
+
+    # This API requires access token for retrieving data
+    access_token = get_access_token(primary_key)
+
+    # Headers and url for the API request
     headers = {'Authorization': f'Bearer {access_token}', 'Ocp-Apim-Subscription-Key': primary_key}
     url = f"https://api.usgbc.org/arc/data/dev/assets/LEED:{leed_id}/meters/ID:{meter_id}/consumption/ID:{meter_number}/"
+
+    # API request
     try:
         r = requests.get(url, headers=headers)
         data = r.json()
         print(data)
         return data
     except Exception as e:
-        print("[Errno {0}] {1}".format(e.errno, e.strerror))
-
+        print(f"Error: {e} \n Unable to access get meter consumption API")
+        return 105
 
 
 

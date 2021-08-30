@@ -15,6 +15,8 @@ from arc.arc_post import send_arc_consumption
 
 app = FastAPI()
 
+# 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
+
 models.Base.metadata.create_all(bind=engine)
 
 # http://127.0.0.1:8000/arc/consumption/burberry/8000037879/11586622
@@ -97,27 +99,30 @@ async def get_panpowerpulse(client: str, db: Session = Depends(get_db)):
 
 #------------------ARC INTEGRATION GET AND POST FUNCTIONS-------------------#
 
-
-# Arc Test Functions Get
-# arc generate salt string
-@app.get("/arc/saltstring")
-async def get_saltstring():
-    saltstring = arc.arc.generate_salt()
-    return saltstring
-
-
 # Arc data posting link
 @app.post("/arc/consumption/{client}/{leed_id}/{meter_id}")
-async def post_consumption(meter_id: str, leed_id: str, client: str, datain: schemas.ArcEnergyDictCover):
+async def post_consumption(meter_id: str, leed_id: str, client: str, datain: schemas.ArcEnergyDictCover, db: Session = Depends(get_db)):
+    meter_data = crud.get_arc_meterdata(db, meter_id)
     for data in datain.measurements:
         data.meter_id = meter_id
         data.leed_id = leed_id
         data.client = client
-    electrical_hierarchy = ["RP Sub Main", "LP Sub Main"]
+    electrical_hierarchy = meter_data.electrical_hierarchy
     time_data = {"duartion_format": "hours", "duration": 1, "time_zone": "Canada/Pacific"}
     send_arc_consumption(datain.dict(), electrical_hierarchy, time_data, settings.arc_primary_key)
     return 200
 
+
+# Arc Meta data post link
+@app.post("/arc/metadata")
+async def post_arc_metadata(datain: schemas.ArcMetaData, db: Session = Depends(get_db)):
+    for data in datain:
+        print("hello world")
+    crud.create_arc_metadata(db, datain)
+    return 200
+
+
+#------------------------------------------------------------------------------#
 # Arc data posting link
 @app.get("/arc/consumption")
 async def get_consumption():
@@ -131,6 +136,25 @@ async def get_consumption():
     # return get_asset_object_detail()
     # return get_fuel_category()
     # return get_meter_consumption_list()
+
+
+# Arc Test Functions Get
+# arc generate salt string
+@app.get("/arc/saltstring")
+async def get_saltstring():
+    saltstring = arc.arc.generate_salt()
+    return saltstring
+
+
+# Arc test function to get
+# database values
+@app.get("/arc/table/{meter_id}")
+async def get_arc_table(meter_id: str, db: Session = Depends(get_db)):
+    val = crud.get_arc_meterdata(db=db, meter_id=meter_id)
+    # print(val.leed_id)
+    return val
+
+
 
 #------------------ARC INTEGRATION GET AND POST FUNCTIONS-------------------#
 

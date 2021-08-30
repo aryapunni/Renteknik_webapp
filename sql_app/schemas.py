@@ -114,6 +114,24 @@ class ArcEnergyDictCover(BaseModel):
     measurements: List[ArcEnergyConsumption]
 
 
+# schema for Arc metadata
+# Leed ID of the project From Arc
+# Client name identifier from Panpower - can be taken from panpower client name
+# Client name is just an identifier for the project that we are looking at
+# One project can have one leed id and multiple meters and multiple meter types
+# electrical_hierarchy - strings seperated by space
+# meter_id - meter_id from Arc
+# meter_type - electrical co2 water etc
+class ArcMetaData(BaseModel):
+    leed_id: str
+    client_id: str
+    electrical_hierarchy: str
+    meter_id: str
+    meter_type: str
+
+    class Config:
+        orm_mode = True
+   
 
 # class TestOne(BaseModel):
 #     device_id: int

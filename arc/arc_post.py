@@ -150,10 +150,13 @@ def process_arc_data(measurements: dict, electrical_hierarchy: list, time_data: 
 # Arguments:
 # datain: collection of dictionaries coming from panoramic power
 # electrical_hierarchy: list of elaments that we have to count when we add energy
-def send_arc_consumption(datain: dict, electrical_hierarchy: list, time_data: dict, primary_key: str = settings.arc_primary_key):
+def send_arc_consumption(datain: dict, electrical_hierarchy: str, time_data: dict, primary_key: str = settings.arc_primary_key):
 
     # data in has an inside dictionary with name measurements
     measurements = datain["measurements"]
+
+    # Electrical hierarchy seperate the strings
+    electrical_hierarchy = electrical_hierarchy.split(", ")
 
     # Sending data for processing
     consumption = process_arc_data(measurements, electrical_hierarchy, time_data)

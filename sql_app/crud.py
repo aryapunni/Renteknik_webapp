@@ -39,9 +39,19 @@ def create_panpower(db: Session, measurements: schemas.PanPowerDictCover):
     for measurement in measurements:
         measure = measurements[measurement]
         for val in measure:
-            # print(f"val = {val}")
+            print(f"val = {val},\n")
             db_measurement = models.Panpower1012Measurement(**val)
             db.add(db_measurement)
+    db.commit()
+    db.refresh(db_measurement)
+
+
+# Add the provided values to the arc meta data table
+def create_arc_metadata(db: Session, arc_meta_data: schemas.ArcMetaData):
+    arc_meta_data = arc_meta_data.dict()
+    print(arc_meta_data)
+    db_measurement = models.ArcMetaData(**arc_meta_data)
+    db.add(db_measurement)
     db.commit()
     db.refresh(db_measurement)
 
@@ -74,3 +84,13 @@ def get_panpowerpulse_client(db: Session, client_name: str):
 # Get data from panpower pulse based on client name
 def get_panpowerpulse_client_data(db: Session, client_name: str):
     return db.query(models.PanpowerPulseMeasurement).filter(models.PanpowerPulseMeasurement.client == client_name).all()
+
+
+# Get the given client name from panpower1012
+def get_arc_meterdata(db: Session, meter_id: str):
+    return db.query(models.ArcMetaData).filter(models.ArcMetaData.meter_id == meter_id).first()
+
+
+# Get the given client name from panpower1012
+def get_arc_metadata(db: Session, client_name: str):
+    return db.query(models.ArcMetaData).filter(models.ArcMetaData.client_id == client_name).all()

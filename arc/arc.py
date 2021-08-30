@@ -17,14 +17,25 @@ from hashlib import sha256
 # Linux time
 def get_current_time():
     Current_DateTime = time()
-    # print(Current_DateTime)
     return Current_DateTime
 
 
 # Function to check expiry of access token
+# Arguments:
+# old_time - the previouse when the access token was generated
+# returns 1 - if old_time - current_time >= 10 hours
+# ie if token expired returns 1
+# else returns 0
 def check_access_expiry(old_time: float):
+
+    # getting current system time
     current_time = get_current_time()
+
+    # Calculating the time difference
     time_difference = current_time - old_time
+
+    # If token expired returns 1
+    # else returns 0
     if time_difference >= 36000:
         return 1
     else:
@@ -115,26 +126,39 @@ def generate_auth2_token(primary_key: str = settings.arc_primary_key):
         return 103
     state = salt["state"]
 
+    # generating hash
     client_secret = generate_hash(state)
+
+    # headers, body, and url for API request
     headers = {'Content-Type': 'application/json', 'Ocp-Apim-Subscription-Key': settings.arc_primary_key}
     body = {"grant_type": "refresh_token", "code": code, "client_id": settings.arc_client_id, "client_secret": client_secret, "state": state}
-    json_body = json.dumps(body)
     url = "https://api.usgbc.org/arc/data/dev/auth/oauth2/token/"
+    json_body = json.dumps(body)
+
+    # API request
     try:
         r = requests.post(url, headers=headers, data=json_body)
         data = r.json()
-        print(f"requests data = {data}")
+
+        # adding access token refresh token and current time to the
+        # json file
+        token["refresh_token"] = data["refresh_token"]
+        token["access_token"] = data["access_token"]
+
+        # getting current system time and adding to the json file
+        current_time = get_current_time()
+        token["current_time"] = current_time
+        # print(f"access_token - {token['access_token']} \t refresh_token - {token['refresh_token']} \t current_time - {token['current_time']}")
+
+        # Opening json file and adding data
+        with open("first.json", 'w') as outfile:
+            json.dump(token, outfile)
+        return token["access_token"]
 
     except Exception as e:
-        print("[Errno {0}] {1}".format(e.errno, e.strerror))
-    token["refresh_token"] = data["refresh_token"]
-    token["access_token"] = data["access_token"]
-    current_time = get_current_time()
-    token["current_time"] = current_time
-    with open("first.json", 'w') as outfile:
-        json.dump(token, outfile)
-    print(f"token after: {token}\n")
-    return token["access_token"]
+        print(f"Error: {e} \n Error in generate_auth2_token funtion")
+        return 104
+
 
 
 

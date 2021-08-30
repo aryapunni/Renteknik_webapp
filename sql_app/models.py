@@ -68,3 +68,15 @@ class Panpower42Measurement(Base):
     reactive_power = Column(Float)
     consumed_active_energy = Column(Float)
     frequency = Column(Float)
+
+
+# Data base table structure for Arc metadata
+class ArcMetaData(Base):
+    __tablename__ = "ArcMetaData"
+
+    id = Column(Integer, primary_key=True, index=True)
+    leed_id = Column(String)
+    client_id = Column(String)
+    electrical_hierarchy = Column(String)
+    meter_id = Column(String)
+    meter_type = Column(String)
