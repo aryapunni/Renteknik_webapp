@@ -117,31 +117,84 @@ class ArcEnergyDictCover(BaseModel):
 # schema for Arc metadata
 # Leed ID of the project From Arc
 # Client name identifier from Panpower - can be taken from panpower client name
-# Client name is just an identifier for the project that we are looking at
+# customer_uid: the id coming up on the url when we open a panpower project
 # One project can have one leed id and multiple meters and multiple meter types
 # electrical_hierarchy - strings seperated by space
-# meter_id - meter_id from Arc
-# meter_type - electrical co2 water etc
+# time_zone: time zone of the project locattion
+# duration_format: days, hours, or minutes
+# duration: duration as an integer, such as one day or hour etc
 class ArcMetaData(BaseModel):
     leed_id: str
-    client_id: str
+    client_name: str
+    customer_uid: str
     electrical_hierarchy: str
-    meter_id: str
-    meter_type: str
+    timezone: str
+    duration_format: str
+    duration: str
 
     class Config:
         orm_mode = True
-   
-
-# class TestOne(BaseModel):
-#     device_id: int
-#     measurement: float
 
 
-# class TestMulti(BaseModel):
-#     measurements: List[TestOne]
+# Table for storing Arc access tokens and refresh tokens
+# client_name - client name of this purticular client - such as magna or torro or burberry
+# Note that for each different projects we need different access and refresh tokens
+# access_token and refresh_token for this purticular project
+# time: last time when we generated a new access and refresh token
+# Note that the access token expires after 10 hours
+# so we have to generate one every 10 hours
+class ArcKeyTable(BaseModel):
+    client_name: str
+    access_token: str
+    refresh_token: str
+    current_time: str
 
-# if __name__ == "__main__":
-#     test1 = TestOne(device_id=5, measurement=3.15)
-#     test_multi = TestMulti(measurements=[test1])
-#     print(test_multi.dict())
+    class Config:
+        orm_mode = True
+
+
+# Table for storing Arc access tokens and refresh tokens
+# leed_id - leed id of this purticular project
+# client_name - client name of this purticular project
+# Note that for each different projects we need different access and refresh tokens
+# access_token and refresh_token for this purticular project
+# time: last time when we generated a new access and refresh token
+# Note that the access token expires after 10 hours
+# so we have to generate one every 10 hours
+class ArcMeterTable(BaseModel):
+    meter_id: str
+    leed_id: str
+    customer_id: str
+    meter_name: str
+    meter_type: str
+    meter_unit: str
+    renteknik_meter: str
+
+
+    class Config:
+        orm_mode = True
+
+
+
+
+# Table for storing Arc access tokens and refresh tokens
+# leed_id - leed id of this purticular project -- FOR ARC
+# client_name - client name of this purticular project -- FOR ABACUS
+# meter_type - The types of meter provided in arc
+# example: for electricity meter: 46 -- FOR ARC
+# meter_unit - unit of the meter data(kwh)
+# meter_id - an id for the meter
+# meter_name - a name for identification
+# renteknik_meter - an id for our identification
+class ArcCreateMeter(BaseModel):
+    leed_id: str
+    client_name: str
+    meter_type: int
+    meter_unit: str
+    meter_id: str
+    meter_name: str
+    renteknik_meter: str
+
+
+    class Config:
+        orm_mode = True

@@ -91,26 +91,41 @@ async def get_panpowerpulse(client: str, db: Session = Depends(get_db)):
         print("there is no such client")
         raise HTTPException(status_code=404, detail="Client not found")
     return  crud.get_panpowerpulse_client_data(db=db, client_name=client)
-
-
 #------------------PANORAMIC POWER GET AND POST FUNCTIONS-------------------#
 
 
 
 #------------------ARC INTEGRATION GET AND POST FUNCTIONS-------------------#
-
 # Arc data posting link
 @app.post("/arc/consumption/{client}/{leed_id}/{meter_id}")
 async def post_consumption(meter_id: str, leed_id: str, client: str, datain: schemas.ArcEnergyDictCover, db: Session = Depends(get_db)):
-    meter_data = crud.get_arc_meterdata(db, meter_id)
+    meta_data = crud.get_arc_metadata_leedid(db, leed_id)
     for data in datain.measurements:
         data.meter_id = meter_id
         data.leed_id = leed_id
         data.client = client
-    electrical_hierarchy = meter_data.electrical_hierarchy
-    time_data = {"duartion_format": "hours", "duration": 1, "time_zone": "Canada/Pacific"}
-    send_arc_consumption(datain.dict(), electrical_hierarchy, time_data, settings.arc_primary_key)
+    electrical_hierarchy = meta_data.electrical_hierarchy
+    time_data = {"duartion_format": meta_data.duration_format, "duration": meta_data.duration, "time_zone": meta_data.timezone}
+    send_arc_consumption(db, datain.dict(), electrical_hierarchy, time_data)
     return 200
+
+
+# Arc create meter in ARC
+@app.post("/arc/create_meter")
+async def create_arc_meter(datain: schemas.ArcCreateMeter, db: Session = Depends(get_db)):
+    print(datain)
+
+    arc.arc_post.create_meter_object(db=db, leed_id=datain.leed_id, client_name=datain.client_name, meter_type=datain.meter_type, unit=datain.meter_unit, meter_id=datain.meter_id, name=datain.meter_name, partner_details=datain.renteknik_meter)
+    # meter_data = crud.get_arc_meterdata(db, meter_id)
+    # for data in datain.measurements:
+    #     data.meter_id = meter_id
+    #     data.leed_id = leed_id
+    #     data.client = client
+    # electrical_hierarchy = meter_data.electrical_hierarchy
+    # time_data = {"duartion_format": "hours", "duration": 1, "time_zone": "Canada/Pacific"}
+    # send_arc_consumption(db, datain.dict(), electrical_hierarchy, time_data)
+    return 200
+
 
 
 # Arc Meta data post link
@@ -122,27 +137,52 @@ async def post_arc_metadata(datain: schemas.ArcMetaData, db: Session = Depends(g
     return 200
 
 
+# Arc Keys post link
+@app.post("/arc/keys")
+async def post_arc_key(datain: schemas.ArcKeyTable, db: Session = Depends(get_db)):
+    for data in datain:
+        print(data)
+    crud.create_arc_keytable(db, datain)
+    return 200
+
+
+# Arc Meter data post link
+@app.post("/arc/meter")
+async def post_arc_meter(datain: schemas.ArcMeterTable, db: Session = Depends(get_db)):
+    for data in datain:
+        print(data)
+    crud.create_arc_metertable(db, datain)
+    return 200
+
 #------------------------------------------------------------------------------#
 # Arc data posting link
 @app.get("/arc/consumption")
-async def get_consumption():
-    return get_meter_list()
-    # return get_meter_consumption_detail()
-    # return get_asset_aggregated_data()
-    # return get_asset_comprehensive_score()
-    # return get_asset_score()
-    # return asset_search()
-    # return get_asset_list()
-    # return get_asset_object_detail()
-    # return get_fuel_category()
-    # return get_meter_consumption_list()
+async def get_consumption(db: Session = Depends(get_db)):
+    return get_meter_list(db=db, leed_id="8000037879", client_name="burberry")
+    # return get_meter_consumption_detail(db=db, leed_id="8000037879", meter_id="11843135", meter_number="157798271", client_name="burberry")
+    # return get_asset_aggregated_data(data_endpoint="electricity", leed_id="8000037879", start_date="2020-08-29", end_date="2017-08-30", unit="kWh")
+    # return get_asset_comprehensive_score(leed_id="8000037879", date="2021-08-11")
+    # return get_asset_score(leed_id="8000037879", date="2021-08-11")
+    # return asset_search(db=db, leed_id="8000037879", client_name="burberry")
+    # return get_asset_list(db=db, leed_id="8000037879", client_name="burberry")
+    # return get_asset_object_detail(db=db, leed_id="8000037879", client_name="burberry")
+    # return get_fuel_category(db=db, leed_id="8000037879", client_name="burberry")
+    # return get_meter_consumption_list(db=db, leed_id="8000037879", client_name="burberry", meter_id="11879657")
 
 
 # Arc Test Functions Get
 # arc generate salt string
 @app.get("/arc/saltstring")
-async def get_saltstring():
-    saltstring = arc.arc.generate_salt()
+async def get_saltstring(db: Session = Depends(get_db)):
+    saltstring = arc.arc.generate_salt(db=db)
+    return saltstring
+
+
+# Arc Test Functions Get
+# arc generate salt string
+@app.get("/arc/token")
+async def get_token(db: Session = Depends(get_db)):
+    saltstring = arc.arc.generate_auth2_token(db=db, leed_id="8000037879", client_name="burberry") #"8000038023"
     return saltstring
 
 

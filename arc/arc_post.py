@@ -10,6 +10,10 @@ from pytz import timezone, UTC
 from arc.arc import get_access_token
 from datetime import datetime, timedelta, tzinfo
 
+from sql_app import models, schemas, crud
+from sqlalchemy.orm import Session
+from sql_app.database import SessionLocal, engine
+
 
 # ARC_PRIMARY_KEY = "5f3f67ada316489e819dca0456904ce8"
 # ARC_SECONDARY_KEY = "119d57b07f75450683186e57a9ffe4f1"
@@ -17,7 +21,9 @@ from datetime import datetime, timedelta, tzinfo
 # ARC_CLIENT_ID = "ivh2tLYURNgTwCdcqX2nbl1U5rs2KnHTIAkyXVFB"
 # ARC_SECRET = "ujeUGNMu4vPOfjXnWdVDs08Sx9WRQQirr9DXUUOJKq3H5O9eWpJPLPUxzFIxqppWJ9L2MziF2zs02vxMcTLwTsdtvsnXX7LkkAeDpkA5B90FrcFE13Tv3w7jtCUtqhpk"
 
+# https://api.usgbc.org/arc/data/dev/auth/oauth2/authorize/?subscription-key=5f3f67ada316489e819dca0456904ce8&client_id=ivh2tLYURNgTwCdcqX2nbl1U5rs2KnHTIAkyXVFB&redirect_uri=https://abacuslive.ca&state=a8d5051d-25e9-4c1e-a4e7-d999f9cf0591
 
+# https://abacuslive.ca/?code=Sog6a5XE5DAfn7COn7qc7YuetEktIB&state=a8d5051d-25e9-4c1e-a4e7-d999f9cf0591
 
 # Function to change one time zone to another
 # inputs: date to be changed: in date time format
@@ -110,9 +116,11 @@ def process_arc_data(measurements: dict, electrical_hierarchy: list, time_data: 
 
     # initialisation of values
     total_energy = 0
+    time_data["duration"] = int(time_data["duration"])
 
     # dictionary to send values to Arc
     arc_dict = measurements[0]
+
 
     # loop through different dictionaries in the input
     for measurement in measurements:
@@ -150,7 +158,9 @@ def process_arc_data(measurements: dict, electrical_hierarchy: list, time_data: 
 # Arguments:
 # datain: collection of dictionaries coming from panoramic power
 # electrical_hierarchy: list of elaments that we have to count when we add energy
-def send_arc_consumption(datain: dict, electrical_hierarchy: str, time_data: dict, primary_key: str = settings.arc_primary_key):
+def send_arc_consumption(db: Session, datain: dict, electrical_hierarchy: str, time_data: dict):
+
+    primary_key = settings.arc_primary_key
 
     # data in has an inside dictionary with name measurements
     measurements = datain["measurements"]
@@ -160,9 +170,10 @@ def send_arc_consumption(datain: dict, electrical_hierarchy: str, time_data: dic
 
     # Sending data for processing
     consumption = process_arc_data(measurements, electrical_hierarchy, time_data)
+    print(consumption)
 
     # Sending data to arc
-    create_meter_consumption(consumption["leed_id"], consumption["meter_id"], consumption["start_date"], consumption["end_date"], consumption["energy"], primary_key)
+    create_meter_consumption(db, consumption["leed_id"], consumption["client"], consumption["meter_id"], consumption["start_date"], consumption["end_date"], consumption["energy"])
 
 
 # creating a meter object in Arc
@@ -171,13 +182,15 @@ def send_arc_consumption(datain: dict, electrical_hierarchy: str, time_data: dic
 # unit: specifying which unit the data of this meter will have
 # meter_id: check meter list API for get meter_id
 # name: end point for creating meter ie electricty/water/co2 etc
-def create_meter_object(primary_key: str = settings.arc_primary_key, leed_id: str = "8000037879", meter_type: int = 46, unit: str = "kWh", meter_id: str = "126030", name: str = "electricity", partner_details: str = "3"):
+def create_meter_object(db: Session, leed_id: str = "8000037879", client_name: str = "burberry", meter_type: int = 46, unit: str = "kWh", meter_id: str = "126030", name: str = "electricity", partner_details: str = "3"):
+
+    primary_key = settings.arc_primary_key
 
     # To use this API we need access token
-    access_token = get_access_token(primary_key)
+    access_token = get_access_token(db=db, leed_id=leed_id, client_name=client_name)
 
     # headers, params, body and url for the API
-    headers = {'Authorization': f'Bearer {access_token}', 'Content-Type': 'application/json', 'Ocp-Apim-Subscription-Key': settings.arc_primary_key}
+    headers = {'Authorization': f'Bearer {access_token}', 'Content-Type': 'application/json', 'Ocp-Apim-Subscription-Key': primary_key}
     body = {"name": name, "type": meter_type, "native_unit": unit, "partner_details": partner_details, "partner_meter_id": meter_id}
     url = f"https://api.usgbc.org/arc/data/dev/assets/LEED:{leed_id}/meters/"
 
@@ -198,13 +211,15 @@ def create_meter_object(primary_key: str = settings.arc_primary_key, leed_id: st
 # meter_id: id of the purticular meter to which we are entering data
 # start_date, end_date: start and ending time and date of the data we are entering
 # reading: meter reading for the purticular meter at this given time
-def create_meter_consumption(leed_id: str, meter_id: str, start_date: str, end_date: str, reading: float, primary_key: str = settings.arc_primary_key):
+def create_meter_consumption(db: Session, leed_id: str, client_name: str, meter_id: str, start_date: str, end_date: str, reading: float):
 
+    primary_key: str = settings.arc_primary_key
+   
     # To use this API we need access token
-    access_token = get_access_token(primary_key)
+    access_token = get_access_token(db=db, leed_id=leed_id, client_name=client_name)
 
     # headers, params, body and url for the API
-    headers = {'Authorization': f'Bearer {access_token}', 'Content-Type': 'application/json', 'Ocp-Apim-Subscription-Key': settings.arc_primary_key}
+    headers = {'Authorization': f'Bearer {access_token}', 'Content-Type': 'application/json', 'Ocp-Apim-Subscription-Key': primary_key}
     body = {"start_date": start_date, "end_date": end_date, "reading": reading}
     url = f"https://api.usgbc.org/arc/data/dev/assets/LEED:{leed_id}/meters/ID:{meter_id}/consumption/"
 

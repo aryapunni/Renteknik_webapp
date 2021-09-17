@@ -76,7 +76,34 @@ class ArcMetaData(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     leed_id = Column(String)
-    client_id = Column(String)
+    client_name = Column(String)
+    customer_uid = Column(String)
     electrical_hierarchy = Column(String)
+    timezone = Column(String)
+    duration_format = Column(String)
+    duration = Column(String)
+
+
+# Database table for Arc Keys
+class ArcKeyTable(Base):
+    __tablename__ = "ArcKeyTable"
+
+    id = Column(Integer, primary_key=True, index=True)
+    client_name = Column(String)
+    access_token = Column(String)
+    refresh_token = Column(String)
+    current_time = Column(String)
+
+
+# Database table for Arc meter details
+class ArcMeterTable(Base):
+    __tablename__ = "ArcMeterTable"
+
+    id = Column(Integer, primary_key=True, index=True)
     meter_id = Column(String)
+    leed_id = Column(String)
+    customer_id = Column(String)
+    meter_name = Column(String)
     meter_type = Column(String)
+    meter_unit = Column(String)
+    renteknik_meter = Column(String)

@@ -284,3 +284,85 @@ if __name__ == "__main__":
     # get_current_time()
     # create_meter_consumption()
     # get_access_token()
+
+
+
+# generate auth2 token for API subscriptions
+# def generate_auth2_token(db: Session, leed_id: str, client_name: str):
+
+#     # Getting primary key for using throughout this function
+#     primary_key = settings.arc_primary_key
+
+#     #Retrieving access and refresh tokens from the database table
+#     try:
+#         database_values = crud.get_arc_keys_clientname(db, client_name)
+
+#         if(database_values is None):
+#             print("No client of that name. Please create one.")
+#             return 102
+#         code_new = database_values.refresh_token
+#         accesstoken_new = database_values.access_token
+#         currenttime_new = database_values.current_time
+
+#         print(f"token from database \nrefresh_token: {code_new} \naccess_token: {accesstoken_new} \ntime: {currenttime_new}")
+#     except AttributeError as e:
+#         print(f"Error: {e} accessing database arc key table in generate_auth2_token")
+#         return 102
+
+#     # opening json file to access refresh token
+#     try:
+#         with open("first.json", 'r') as infile:
+#             token = json.load(infile)
+#         code = token["refresh_token"]
+#         accesstoken = token["access_token"]
+#         c_time = token["current_time"]
+
+#         print(f"\ntoken from json file \ncode: {code} \naccess_token: {accesstoken} \ntime: {c_time}")
+
+#     except FileNotFoundError as e:
+#         print("Error: {e} opening first.json in generate_auth2_token")
+#         return 102
+
+#     # generating salt
+#     salt = generate_salt(primary_key)
+#     if(salt == 1):
+#         print("no salt")
+#         return 103
+#     state = salt["state"]
+
+#     # generating hash
+#     client_secret = generate_hash(state)
+
+#     # headers, body, and url for API request
+#     headers = {'Content-Type': 'application/json', 'Ocp-Apim-Subscription-Key': settings.arc_primary_key}
+#     body = {"grant_type": "refresh_token", "code": code, "client_id": settings.arc_client_id, "client_secret": client_secret, "state": state}
+#     url = "https://api.usgbc.org/arc/data/dev/auth/oauth2/token/"
+#     json_body = json.dumps(body)
+
+#     # API request
+#     try:
+#         r = requests.post(url, headers=headers, data=json_body)
+#         data = r.json()
+
+#         # adding access token refresh token and current time to the
+#         # json file
+#         token["refresh_token"] = data["refresh_token"]
+#         token["access_token"] = data["access_token"]
+
+#         # getting current system time and adding to the json file
+#         current_time = get_current_time()
+#         token["current_time"] = current_time
+#         # print(f"access_token - {token['access_token']} \t refresh_token - {token['refresh_token']} \t current_time - {token['current_time']}")
+
+#         # Opening json file and adding data
+#         with open("first.json", 'w') as outfile:
+#             json.dump(token, outfile)
+
+
+#         crud.update_arckeytable_client(db=db, client_name=client_name, access_token=data["access_token"], refresh_token=data["refresh_token"], current_time=current_time)
+#         return data
+
+
+#     except Exception as e:
+#         print(f"Error: {e} \n Error in generate_auth2_token funtion")
+#         return 104
