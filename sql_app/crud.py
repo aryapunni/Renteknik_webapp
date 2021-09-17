@@ -39,7 +39,7 @@ def create_panpower(db: Session, measurements: schemas.PanPowerDictCover):
     for measurement in measurements:
         measure = measurements[measurement]
         for val in measure:
-            print(f"val = {val},\n")
+            # print(f"val = {val},\n")
             db_measurement = models.Panpower1012Measurement(**val)
             db.add(db_measurement)
     db.commit()

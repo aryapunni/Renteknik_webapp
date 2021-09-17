@@ -58,6 +58,8 @@ async def panpower42_post(datain: schemas.Pan42DictCover, client: str, db: Sessi
 @app.post("/panpower/panpower1012/{client}")
 async def panpower1012_post(datain: schemas.PanPowerDictCover, client: str, db: Session = Depends(get_db)):
     for data in datain.measurements:
+        data_1 = data.dict()
+        print(json.dumps(data_1, indent=4, sort_keys=True))
         data.client = client
     crud.create_panpower(db=db, measurements=datain)
     return 200
