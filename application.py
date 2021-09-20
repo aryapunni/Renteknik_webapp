@@ -205,6 +205,12 @@ async def get_arc_table(meter_id: str, db: Session = Depends(get_db)):
     return val
 
 
+# Arc new client appplication registration adding
+@app.get("/arc/new_client")
+async def create_new_client(code: str, db: Session = Depends(get_db)):
+    print(code)
+    return 200
+
 
 #------------------ARC INTEGRATION GET AND POST FUNCTIONS-------------------#
 
