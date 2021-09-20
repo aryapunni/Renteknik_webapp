@@ -156,11 +156,19 @@ async def post_arc_meter(datain: schemas.ArcMeterTable, db: Session = Depends(ge
     crud.create_arc_metertable(db, datain)
     return 200
 
+
+# Arc Meta data update link
+@app.post("/arc/metadata/update")
+async def update_arc_metadata(datain: schemas.ArcMetaData, db: Session = Depends(get_db)):
+    crud.update_arcmetadata_leedid(db=db, leed_id=datain.leed_id, electrical_hierarchy=datain.electrical_hierarchy, timezone=datain.timezone, duration_format=datain.duration_format, duration=datain.duration)
+    return 200
+
+
 #------------------------------------------------------------------------------#
 # Arc data posting link
 @app.get("/arc/consumption")
 async def get_consumption(db: Session = Depends(get_db)):
-    return get_meter_list(db=db, leed_id="8000037879", client_name="burberry")
+    return get_meter_list(db=db, leed_id="8000038023", client_name="burberry")
     # return get_meter_consumption_detail(db=db, leed_id="8000037879", meter_id="11843135", meter_number="157798271", client_name="burberry")
     # return get_asset_aggregated_data(data_endpoint="electricity", leed_id="8000037879", start_date="2020-08-29", end_date="2017-08-30", unit="kWh")
     # return get_asset_comprehensive_score(leed_id="8000037879", date="2021-08-11")

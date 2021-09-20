@@ -132,7 +132,12 @@ def get_arc_metadata_leedid(db: Session, leed_id: str):
 # Get the arc keys from arc key table based on the given leed id
 def update_arckeytable_client(db: Session, client_name: str, access_token: str, refresh_token: str, current_time: str):
     db.query(models.ArcKeyTable).filter(models.ArcKeyTable.client_name == client_name).update({models.ArcKeyTable.access_token: access_token, models.ArcKeyTable.refresh_token: refresh_token, models.ArcKeyTable.current_time: current_time}, synchronize_session = False)
-    # db.query(models.ArcKeyTable).filter(models.ArcKeyTable.client_name == client_name).update({models.ArcKeyTable.refresh_token: refresh_token}, synchronize_session = False)
-    # db.query(models.ArcKeyTable).filter(models.ArcKeyTable.client_name == client_name).update({models.ArcKeyTable.current_time: current_time}, synchronize_session = False)
+    db.commit()
+    db.flush()
+
+
+# Get the arc keys from arc key table based on the given leed id
+def update_arcmetadata_leedid(db: Session, leed_id: str, electrical_hierarchy: str, timezone: str, duration_format: str, duration: str):
+    db.query(models.ArcMetaData).filter(models.ArcMetaData.leed_id == leed_id).update({models.ArcMetaData.electrical_hierarchy: electrical_hierarchy, models.ArcMetaData.timezone: timezone, models.ArcMetaData.duration_format: duration_format, models.ArcMetaData.duration: duration}, synchronize_session = False)
     db.commit()
     db.flush()
