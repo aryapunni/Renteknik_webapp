@@ -114,6 +114,7 @@ def start_end_time(datetime_string: str, duration_format: str, duration: int, zo
 # electrical_hierarchy: list of elaments that we have to count when we add energy
 def process_arc_data(measurements: dict, electrical_hierarchy: list, time_data: dict):
 
+    print(electrical_hierarchy)
     # initialisation of values
     total_energy = 0
     time_data["duration"] = int(time_data["duration"])
