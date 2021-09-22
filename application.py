@@ -144,6 +144,7 @@ async def post_arc_metadata(datain: schemas.ArcMetaData, db: Session = Depends(g
 async def post_arc_key(datain: schemas.ArcKeyTable, db: Session = Depends(get_db)):
     for data in datain:
         print(data)
+    datain.dict()
     crud.create_arc_keytable(db, datain)
     return 200
 
@@ -192,7 +193,7 @@ async def get_saltstring(db: Session = Depends(get_db)):
 # arc generate salt string
 @app.get("/arc/token")
 async def get_token(db: Session = Depends(get_db)):
-    saltstring = arc.arc.generate_auth2_token(db=db, leed_id="8000037879", client_name="burberry") #"8000038023"
+    saltstring = arc.arc.generate_auth2_token(db=db, leed_id="8000037879", client_name="abacus") #"8000038023"
     return saltstring
 
 
@@ -206,9 +207,10 @@ async def get_arc_table(meter_id: str, db: Session = Depends(get_db)):
 
 
 # Arc new client appplication registration adding
-@app.get("/arc/new_client")
-async def create_new_client(code: str, db: Session = Depends(get_db)):
-    print(code)
+@app.get("/arc/new_client/{client}")
+async def create_new_client(code: str, client: str, db: Session = Depends(get_db)):
+    print(code, client)
+    arc.arc.generate_newclient_auth2(db=db, client_name=client, code=code)
     return 200
 
 

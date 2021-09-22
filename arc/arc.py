@@ -191,6 +191,58 @@ def generate_auth2_token(db: Session, leed_id: str, client_name: str):
         return 104
 
 
+# generate auth2 token for API subscriptions
+def generate_newclient_auth2(db: Session, client_name: str, code: str):
+
+    #Arc key dictionary
+    ArckeyDict = {}
+
+    # Getting primary key for using throughout this function
+    primary_key = settings.arc_primary_key
+
+    # generating salt
+    salt = generate_salt(primary_key)
+    if(salt == 1):
+        print("no salt")
+        return 103
+    state = salt["state"]
+
+    # generating hash
+    client_secret = generate_hash(state)
+
+    # headers, body, and url for API request
+    headers = {'Content-Type': 'application/json', 'Ocp-Apim-Subscription-Key': settings.arc_primary_key}
+    body = {"grant_type": "authorization_code", "code": code, "client_id": settings.arc_client_id, "client_secret": client_secret, "state": state}
+    url = "https://api.usgbc.org/arc/data/dev/auth/oauth2/token/"
+    json_body = json.dumps(body)
+
+    # API request
+    try:
+        r = requests.post(url, headers=headers, data=json_body)
+        data = r.json()
+        print(data)
+
+        # getting current system time
+        current_time = get_current_time()
+
+        ArckeyDict["client_name"] = client_name
+        ArckeyDict["access_token"] = data["access_token"]
+        ArckeyDict["refresh_token"] = data["refresh_token"]
+        ArckeyDict["current_time"] = current_time
+
+        # updating latest keys in the database
+        crud.create_arc_keytable(db=db, arc_key_values=None, arc_key_dict=ArckeyDict)
+        # return data["access_token"]
+
+
+    except Exception as e:
+        print(f"Error: {e} \n Error in generate_auth2_token funtion")
+        return 104
+
+
+
+
+
 
 
 # if __name__ == "__main__":

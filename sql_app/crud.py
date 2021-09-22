@@ -58,8 +58,11 @@ def create_arc_metadata(db: Session, arc_meta_data: schemas.ArcMetaData):
 
 
 # Add the provided values to the arc key table
-def create_arc_keytable(db: Session, arc_key_values: schemas.ArcKeyTable):
-    arc_key_values = arc_key_values.dict()
+def create_arc_keytable(db: Session, arc_key_values: schemas.ArcKeyTable = None, arc_key_dict: dict = None):
+    if(arc_key_values):
+        arc_key_values = arc_key_values.dict()
+    elif(arc_key_dict):
+        arc_key_values = arc_key_dict
     print(arc_key_values)
     print(db)
     db_measurement = models.ArcKeyTable(**arc_key_values)
