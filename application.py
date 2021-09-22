@@ -115,17 +115,8 @@ async def post_consumption(meter_id: str, leed_id: str, client: str, datain: sch
 # Arc create meter in ARC
 @app.post("/arc/create_meter")
 async def create_arc_meter(datain: schemas.ArcCreateMeter, db: Session = Depends(get_db)):
-    print(datain)
-
+    # print(datain)
     arc.arc_post.create_meter_object(db=db, leed_id=datain.leed_id, client_name=datain.client_name, meter_type=datain.meter_type, unit=datain.meter_unit, meter_id=datain.meter_id, name=datain.meter_name, partner_details=datain.renteknik_meter)
-    # meter_data = crud.get_arc_meterdata(db, meter_id)
-    # for data in datain.measurements:
-    #     data.meter_id = meter_id
-    #     data.leed_id = leed_id
-    #     data.client = client
-    # electrical_hierarchy = meter_data.electrical_hierarchy
-    # time_data = {"duartion_format": "hours", "duration": 1, "time_zone": "Canada/Pacific"}
-    # send_arc_consumption(db, datain.dict(), electrical_hierarchy, time_data)
     return 200
 
 
@@ -133,8 +124,8 @@ async def create_arc_meter(datain: schemas.ArcCreateMeter, db: Session = Depends
 # Arc Meta data post link
 @app.post("/arc/metadata")
 async def post_arc_metadata(datain: schemas.ArcMetaData, db: Session = Depends(get_db)):
-    for data in datain:
-        print(data)
+    # for data in datain:
+    #     print(data)
     crud.create_arc_metadata(db, datain)
     return 200
 
@@ -142,8 +133,8 @@ async def post_arc_metadata(datain: schemas.ArcMetaData, db: Session = Depends(g
 # Arc Keys post link
 @app.post("/arc/keys")
 async def post_arc_key(datain: schemas.ArcKeyTable, db: Session = Depends(get_db)):
-    for data in datain:
-        print(data)
+    # for data in datain:
+    #     print(data)
     datain.dict()
     crud.create_arc_keytable(db, datain)
     return 200
@@ -152,8 +143,8 @@ async def post_arc_key(datain: schemas.ArcKeyTable, db: Session = Depends(get_db
 # Arc Meter data post link
 @app.post("/arc/meter")
 async def post_arc_meter(datain: schemas.ArcMeterTable, db: Session = Depends(get_db)):
-    for data in datain:
-        print(data)
+    # for data in datain:
+    #     print(data)
     crud.create_arc_metertable(db, datain)
     return 200
 

@@ -113,7 +113,7 @@ def get_asset_score(leed_id: str, date: str):
     try:
         r = requests.get(url, headers=headers, params=params)
         data = r.json()
-        print(data)
+        # print(data)
         return data
     except Exception as e:
         print(f"Error: {e} \n Unable to access get asset score API")
@@ -141,7 +141,7 @@ def asset_search(db: Session, leed_id: str, client_name: str):
     try:
         r = requests.get(url, headers=headers, params=params)
         data = r.json()
-        print(data)
+        # print(data)
         return data
     except Exception as e:
         print(f"Error: {e} \n Unable to access asset search API")
@@ -167,7 +167,7 @@ def get_asset_list(db: Session, leed_id: str, client_name: str):
     try:
         r = requests.get(url, headers=headers)
         data = r.json()
-        print(data)
+        # print(data)
         return data
     except Exception as e:
         print(f"Error: {e} \n Unable to access get asset list API")
@@ -194,7 +194,7 @@ def get_asset_object_detail(db: Session, leed_id: str, client_name: str):
     try:
         r = requests.get(url, headers=headers)
         data = r.json()
-        print(data)
+        # print(data)
         return data
     except Exception as e:
         print(f"Error: {e} \n Unable to access get asset object detail API")
@@ -220,7 +220,7 @@ def get_fuel_category(db: Session, leed_id: str, client_name: str):
     try:
         r = requests.get(url, headers=headers)
         data = r.json()
-        print(data)
+        # print(data)
         return data
     except Exception as e:
         print(f"Error: {e} \n Unable to access get fuel category API")
@@ -243,10 +243,10 @@ def get_meter_consumption_list(db: Session, leed_id: str, client_name: str, mete
     try:
         r = requests.get(url, headers=headers)
         data = r.json()
-        print(data)
         return data
     except Exception as e:
         print(f"Error: {e} \n Unable to access get meter consumption list API")
+
         return 105
 
 
@@ -270,7 +270,7 @@ def get_meter_consumption_detail(db: Session, leed_id: str, meter_id: str, clien
     try:
         r = requests.get(url, headers=headers)
         data = r.json()
-        print(data)
+        # print(data)
         return data
     except Exception as e:
         print(f"Error: {e} \n Unable to access get meter consumption API")

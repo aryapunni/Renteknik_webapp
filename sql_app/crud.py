@@ -49,8 +49,8 @@ def create_panpower(db: Session, measurements: schemas.PanPowerDictCover):
 # Add the provided values to the arc meta data table
 def create_arc_metadata(db: Session, arc_meta_data: schemas.ArcMetaData):
     arc_meta_data = arc_meta_data.dict()
-    print(arc_meta_data)
-    print(db)
+    # print(arc_meta_data)
+    # print(db)
     db_measurement = models.ArcMetaData(**arc_meta_data)
     db.add(db_measurement)
     db.commit()
@@ -63,8 +63,8 @@ def create_arc_keytable(db: Session, arc_key_values: schemas.ArcKeyTable = None,
         arc_key_values = arc_key_values.dict()
     elif(arc_key_dict):
         arc_key_values = arc_key_dict
-    print(arc_key_values)
-    print(db)
+    # print(arc_key_values)
+    # print(db)
     db_measurement = models.ArcKeyTable(**arc_key_values)
     db.add(db_measurement)
     db.commit()
@@ -74,8 +74,8 @@ def create_arc_keytable(db: Session, arc_key_values: schemas.ArcKeyTable = None,
 # Add the provided values to the arc meter table
 def create_arc_metertable(db: Session, arc_meter_values: schemas.ArcMeterTable):
     arc_meter_values = arc_meter_values.dict()
-    print(arc_meter_values)
-    print(db)
+    # print(arc_meter_values)
+    # print(db)
     db_measurement = models.ArcMeterTable(**arc_meter_values)
     db.add(db_measurement)
     db.commit()
