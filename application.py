@@ -65,6 +65,13 @@ async def panpower1012_post(datain: schemas.PanPowerDictCover, client: str, db: 
     return 200
 
 
+# panpower10/12 post function
+@app.post("/panpower/test")
+async def panpower_post(datain: dict):
+    print(json.dumps(datain, indent=4, sort_keys=True))
+    return 200
+
+
 # panpower10/12 data get function
 @app.get("/panpower/panpower1012/{client}")
 async def get_panpower1012(client: str, db: Session = Depends(get_db)):
