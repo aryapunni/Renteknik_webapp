@@ -113,7 +113,7 @@ def generate_salt(primary_key: str = settings.arc_primary_key):
 
     # Headers and url for the API request
     headers = {'Ocp-Apim-Subscription-Key': primary_key}
-    url = "https://api.usgbc.org/arc/data/dev/auth/oauth2/salt/"
+    url = f"{settings.arc_url}/auth/oauth2/salt/"
 
     # API request
     try:
@@ -170,7 +170,7 @@ def generate_auth2_token(db: Session, leed_id: str, client_name: str):
     # headers, body, and url for API request
     headers = {'Content-Type': 'application/json', 'Ocp-Apim-Subscription-Key': settings.arc_primary_key}
     body = {"grant_type": "refresh_token", "code": code, "client_id": settings.arc_client_id, "client_secret": client_secret, "state": state}
-    url = "https://api.usgbc.org/arc/data/dev/auth/oauth2/token/"
+    url = f"{settings.arc_url}/auth/oauth2/token/"
     json_body = json.dumps(body)
 
     # API request

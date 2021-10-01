@@ -193,7 +193,7 @@ def create_meter_object(db: Session, leed_id: str = "8000037879", client_name: s
     # headers, params, body and url for the API
     headers = {'Authorization': f'Bearer {access_token}', 'Content-Type': 'application/json', 'Ocp-Apim-Subscription-Key': primary_key}
     body = {"name": name, "type": meter_type, "native_unit": unit, "partner_details": partner_details, "partner_meter_id": meter_id}
-    url = f"https://api.usgbc.org/arc/data/dev/assets/LEED:{leed_id}/meters/"
+    url = f"{settings.arc_url}/assets/LEED:{leed_id}/meters/"
 
     # convertin body to Json
     json_body = json.dumps(body)
@@ -222,7 +222,7 @@ def create_meter_consumption(db: Session, leed_id: str, client_name: str, meter_
     # headers, params, body and url for the API
     headers = {'Authorization': f'Bearer {access_token}', 'Content-Type': 'application/json', 'Ocp-Apim-Subscription-Key': primary_key}
     body = {"start_date": start_date, "end_date": end_date, "reading": reading}
-    url = f"https://api.usgbc.org/arc/data/dev/assets/LEED:{leed_id}/meters/ID:{meter_id}/consumption/"
+    url = f"{settings.arc_url}/assets/LEED:{leed_id}/meters/ID:{meter_id}/consumption/"
 
     # converting body of the API to Json
     json_body = json.dumps(body)
@@ -237,15 +237,3 @@ def create_meter_consumption(db: Session, leed_id: str, client_name: str, meter_
         print("meter consumption API error")
 
 
-# if __name__ == "__main__":
-
-    # generate_auth2_code()
-    # auth2()
-    # generate_hash()
-    # generate_auth2_token()
-    # create_meter_object()
-    # generate_auth2_refresh_token()
-    # get_meter_list()
-    # get_current_time()
-    # create_meter_consumption()
-    # get_access_token()

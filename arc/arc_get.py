@@ -34,7 +34,7 @@ def get_meter_list(db: Session, leed_id: str, client_name: str):
 
     # header and url for accessing the API
     headers = {'Authorization': f'Bearer {access_token}', 'Ocp-Apim-Subscription-Key': primary_key}
-    url = f"https://api.usgbc.org/arc/data/dev/assets/LEED:{leed_id}/meters/"
+    url = f"{settings.arc_url}/assets/LEED:{leed_id}/meters/"
 
     # API reuest
     try:
@@ -61,7 +61,7 @@ def get_asset_aggregated_data(data_endpoint: str, leed_id: str, start_date: str,
     # header, url, input params
     headers = {'Ocp-Apim-Subscription-Key': primary_key}
     params = urllib.parse.urlencode({'start_date': start_date, 'end_date': end_date, 'unit': unit, 'leed_ids': leed_id})
-    url = f"https://api.usgbc.org/arc/data/dev/assets/{data_endpoint}/analytics/?unit={unit}&leed_ids={leed_id}"
+    url = f"{settings.arc_url}/assets/{data_endpoint}/analytics/?unit={unit}&leed_ids={leed_id}"
 
     # API request
     try:
@@ -84,7 +84,7 @@ def get_asset_comprehensive_score(leed_id: str, date: str):
 
     #url and headers for the API
     headers = {'Ocp-Apim-Subscription-Key': primary_key}
-    url = f"https://api.usgbc.org/arc/data/dev/assets/LEED:{leed_id}/scores/re-entry/?at={date}"
+    url = f"{settings.arc_url}/assets/LEED:{leed_id}/scores/re-entry/?at={date}"
 
     #API request
     try:
@@ -107,7 +107,7 @@ def get_asset_score(leed_id: str, date: str):
     # headers, params and url for the API
     headers = {'Ocp-Apim-Subscription-Key': primary_key}
     params = urllib.parse.urlencode({'at': date})
-    url = f"https://api.usgbc.org/arc/data/dev/assets/LEED:{leed_id}/scores/"
+    url = f"{settings.arc_url}/assets/LEED:{leed_id}/scores/"
 
     # API request
     try:
@@ -135,7 +135,7 @@ def asset_search(db: Session, leed_id: str, client_name: str):
     # headers, params and url for the API
     headers = {'Authorization': f'Bearer {access_token}', 'Ocp-Apim-Subscription-Key': primary_key}
     params = urllib.parse.urlencode({'q': leed_id})
-    url = "https://api.usgbc.org/arc/data/dev/assets/search/"
+    url = f"{settings.arc_url}/assets/search/"
 
     # API request
     try:
@@ -161,7 +161,7 @@ def get_asset_list(db: Session, leed_id: str, client_name: str):
    
     # headers, params and url for the API
     headers = {'Authorization': f'Bearer {access_token}', 'Ocp-Apim-Subscription-Key': primary_key}
-    url = "https://api.usgbc.org/arc/data/dev/assets/"
+    url = f"{settings.arc_url}/assets/"
 
     # API request
     try:
@@ -188,7 +188,7 @@ def get_asset_object_detail(db: Session, leed_id: str, client_name: str):
    
     # headers, params and url for the API
     headers = {'Authorization': f'Bearer {access_token}', 'Ocp-Apim-Subscription-Key': primary_key}
-    url = f"https://api.usgbc.org/arc/data/dev/assets/LEED:{leed_id}/"
+    url = f"{settings.arc_url}/assets/LEED:{leed_id}/"
 
     # API request
     try:
@@ -214,7 +214,7 @@ def get_fuel_category(db: Session, leed_id: str, client_name: str):
 
     # headers, params and url for the API
     headers = {'Authorization': f'Bearer {access_token}', 'Ocp-Apim-Subscription-Key': primary_key}
-    url = "https://api.usgbc.org/arc/data/dev/fuel/category/"
+    url = f"{settings.arc_url}/dev/fuel/category/"
    
     # API request
     try:
@@ -236,7 +236,7 @@ def get_meter_consumption_list(db: Session, leed_id: str, client_name: str, mete
 
     # headers, params and url for the API
     headers = {'Authorization': f'Bearer {access_token}', 'Ocp-Apim-Subscription-Key': primary_key}
-    url = f"https://api.usgbc.org/arc/data/dev/assets/LEED:{leed_id}/meters/ID:{meter_id}/consumption/"
+    url = f"{settings.arc_url}/dev/assets/LEED:{leed_id}/meters/ID:{meter_id}/consumption/"
 
 
     # API request
@@ -264,7 +264,7 @@ def get_meter_consumption_detail(db: Session, leed_id: str, meter_id: str, clien
 
     # Headers and url for the API request
     headers = {'Authorization': f'Bearer {access_token}', 'Ocp-Apim-Subscription-Key': primary_key}
-    url = f"https://api.usgbc.org/arc/data/dev/assets/LEED:{leed_id}/meters/ID:{meter_id}/consumption/" #ID:{meter_number}/"
+    url = f"{settings.arc_url}/assets/LEED:{leed_id}/meters/ID:{meter_id}/consumption/" #ID:{meter_number}/"
 
     # API request
     try:
@@ -277,25 +277,3 @@ def get_meter_consumption_detail(db: Session, leed_id: str, meter_id: str, clien
         return 105
 
 
-
-# if __name__ == "__main__":
-
-    # generate_auth2_code()
-    # auth2()
-    # generate_hash()
-    # generate_auth2_token()
-    # create_meter_object()
-    # generate_auth2_refresh_token()
-    # get_meter_list()
-    # get_asset_aggregated_data()
-    # get_asset_comprehensive_score()
-    # get_asset_score()
-    # asset_search()
-    # get_asset_list()
-    # get_asset_object_detail()
-    # get_fuel_category()
-    # get_meter_consumption_list()
-    # get_meter_consumption_detail()
-    # get_current_time()
-    # create_meter_consumption()
-    # get_access_token()

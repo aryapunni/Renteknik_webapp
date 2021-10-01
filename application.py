@@ -185,15 +185,15 @@ async def update_arc_metadata(datain: schemas.ArcMetaData, db: Session = Depends
 # Arc data posting link
 @app.get("/arc/consumption")
 async def get_consumption(db: Session = Depends(get_db)):
-    return get_meter_list(db=db, leed_id="8000038413", client_name="magna")
-    # return get_meter_consumption_detail(db=db, leed_id="8000037879", meter_id="11843135", meter_number="157798271", client_name="burberry")
+    # return get_meter_list(db=db, leed_id="8000038413", client_name="magna")
+    # return get_meter_consumption_detail(db=db, leed_id="8000037879", meter_id="11843135", client_name="burberry")
     # return get_asset_aggregated_data(data_endpoint="electricity", leed_id="8000037879", start_date="2020-08-29", end_date="2017-08-30", unit="kWh")
     # return get_asset_comprehensive_score(leed_id="8000037879", date="2021-08-11")
     # return get_asset_score(leed_id="8000037879", date="2021-08-11")
     # return asset_search(db=db, leed_id="8000037879", client_name="burberry")
     # return get_asset_list(db=db, leed_id="8000037879", client_name="burberry")
     # return get_asset_object_detail(db=db, leed_id="8000037879", client_name="burberry")
-    # return get_fuel_category(db=db, leed_id="8000037879", client_name="burberry")
+    return get_fuel_category(db=db, leed_id="8000037879", client_name="burberry")
     # return get_meter_consumption_list(db=db, leed_id="8000037879", client_name="burberry", meter_id="11879657")
 
 
