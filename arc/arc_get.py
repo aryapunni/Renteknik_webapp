@@ -30,7 +30,7 @@ def get_meter_list(db: Session, leed_id: str, client_name: str):
 
     # header needs access token, so we generate access token
 
-    access_token = get_access_token(db=db, leed_id=leed_id, client_name=client_name)
+    access_token = get_access_token(db=db, client_name=client_name)
 
     # header and url for accessing the API
     headers = {'Authorization': f'Bearer {access_token}', 'Ocp-Apim-Subscription-Key': primary_key}
@@ -130,7 +130,7 @@ def asset_search(db: Session, leed_id: str, client_name: str):
     primary_key = settings.arc_primary_key
 
     # To use this API we need access token
-    access_token = get_access_token(db=db, leed_id=leed_id, client_name=client_name)
+    access_token = get_access_token(db=db, client_name=client_name)
 
     # headers, params and url for the API
     headers = {'Authorization': f'Bearer {access_token}', 'Ocp-Apim-Subscription-Key': primary_key}
@@ -157,7 +157,7 @@ def get_asset_list(db: Session, leed_id: str, client_name: str):
     primary_key = settings.arc_primary_key
 
     # To use this API we need access token
-    access_token = get_access_token(db=db, leed_id=leed_id, client_name=client_name)
+    access_token = get_access_token(db=db, client_name=client_name)
    
     # headers, params and url for the API
     headers = {'Authorization': f'Bearer {access_token}', 'Ocp-Apim-Subscription-Key': primary_key}
@@ -184,7 +184,7 @@ def get_asset_object_detail(db: Session, leed_id: str, client_name: str):
     primary_key = settings.arc_primary_key
 
     # To use this API we need access token
-    access_token = get_access_token(db=db, leed_id=leed_id, client_name=client_name)
+    access_token = get_access_token(db=db, client_name=client_name)
    
     # headers, params and url for the API
     headers = {'Authorization': f'Bearer {access_token}', 'Ocp-Apim-Subscription-Key': primary_key}
@@ -210,7 +210,7 @@ def get_fuel_category(db: Session, leed_id: str, client_name: str):
     primary_key: str = settings.arc_primary_key
 
     # To use this API we need access token
-    access_token = get_access_token(db=db, leed_id=leed_id, client_name=client_name)
+    access_token = get_access_token(db=db, client_name=client_name)
 
     # headers, params and url for the API
     headers = {'Authorization': f'Bearer {access_token}', 'Ocp-Apim-Subscription-Key': primary_key}
@@ -232,7 +232,7 @@ def get_meter_consumption_list(db: Session, leed_id: str, client_name: str, mete
     primary_key: str = settings.arc_primary_key
 
     # To use this API we need access token
-    access_token = get_access_token(db=db, leed_id=leed_id, client_name=client_name)
+    access_token = get_access_token(db=db, client_name=client_name)
 
     # headers, params and url for the API
     headers = {'Authorization': f'Bearer {access_token}', 'Ocp-Apim-Subscription-Key': primary_key}
@@ -260,7 +260,7 @@ def get_meter_consumption_detail(db: Session, leed_id: str, meter_id: str, clien
     primary_key: str = settings.arc_primary_key
 
     # This API requires access token for retrieving data
-    access_token = get_access_token(db=db, leed_id=leed_id, client_name=client_name)
+    access_token = get_access_token(db=db, client_name=client_name)
 
     # Headers and url for the API request
     headers = {'Authorization': f'Bearer {access_token}', 'Ocp-Apim-Subscription-Key': primary_key}

@@ -148,6 +148,9 @@ async def create_arc_meter(datain: schemas.ArcCreateMeter, db: Session = Depends
 
 
 # Arc Meta data post link
+# inputs are: leed_id, client_name, customer_uid
+# electrical_hierarchy, timezone
+# duration_format, duration
 @app.post("/arc/metadata")
 async def post_arc_metadata(datain: schemas.ArcMetaData, db: Session = Depends(get_db)):
     # Add metadata for a specific leed ID in the system
@@ -155,18 +158,20 @@ async def post_arc_metadata(datain: schemas.ArcMetaData, db: Session = Depends(g
     return 200
 
 
+# --- Note that this link is only to be used when there is a key and token to be uploded directly --- #
 # Arc Keys post link
 # To create a new entry in the system if you have access token, refresh token, and time with you ready
 # Different for different clients
 @app.post("/arc/keys")
 async def post_arc_key(datain: schemas.ArcKeyTable, db: Session = Depends(get_db)):
-    #  .
     datain.dict()
     crud.create_arc_keytable(db, datain)
     return 200
 
 
 # Arc Meter data post link
+# adding values to the meter table such as: meter_id, leed_id, customer_id
+# meter_name, meter_type, meter_unit, renteknik_meter
 @app.post("/arc/meter")
 async def post_arc_meter(datain: schemas.ArcMeterTable, db: Session = Depends(get_db)):
     # Meter data for each Leed Ids
@@ -175,6 +180,8 @@ async def post_arc_meter(datain: schemas.ArcMeterTable, db: Session = Depends(ge
 
 
 # Arc Meta data update link
+# updates electrical hierarchy, timezone
+# duration format and durations based on leed ID
 @app.post("/arc/metadata/update")
 async def update_arc_metadata(datain: schemas.ArcMetaData, db: Session = Depends(get_db)):
     crud.update_arcmetadata_leedid(db=db, leed_id=datain.leed_id, electrical_hierarchy=datain.electrical_hierarchy, timezone=datain.timezone, duration_format=datain.duration_format, duration=datain.duration)
@@ -182,7 +189,9 @@ async def update_arc_metadata(datain: schemas.ArcMetaData, db: Session = Depends
 
 
 #------------------------------------------------------------------------------#
-# Arc data posting link
+
+
+# Arc get links
 @app.get("/arc/consumption")
 async def get_consumption(db: Session = Depends(get_db)):
     # return get_meter_list(db=db, leed_id="8000038413", client_name="magna")
@@ -196,30 +205,6 @@ async def get_consumption(db: Session = Depends(get_db)):
     return get_fuel_category(db=db, leed_id="8000037879", client_name="burberry")
     # return get_meter_consumption_list(db=db, leed_id="8000037879", client_name="burberry", meter_id="11879657")
 
-
-# Arc Test Functions Get
-# arc generate salt string
-@app.get("/arc/saltstring")
-async def get_saltstring(db: Session = Depends(get_db)):
-    saltstring = arc.arc.generate_salt(db=db)
-    return saltstring
-
-
-# Arc Test Functions Get
-# arc generate salt string
-@app.get("/arc/token")
-async def get_token(db: Session = Depends(get_db)):
-    saltstring = arc.arc.generate_auth2_token(db=db, leed_id="8000037879", client_name="abacus") #"8000038023"
-    return saltstring
-
-
-# Arc test function to get
-# database values
-@app.get("/arc/table/{meter_id}")
-async def get_arc_table(meter_id: str, db: Session = Depends(get_db)):
-    val = crud.get_arc_meterdata(db=db, meter_id=meter_id)
-    # print(val.leed_id)
-    return val
 
 
 # Arc new client appplication registration adding

@@ -68,7 +68,7 @@ def check_access_expiry(old_time: float):
 # Function returns 1 - If token have alreadyexpired
 # Arguments
 # primary_key - leed primary key of this purticular project
-def get_access_token(db: Session, leed_id: str, client_name: str):
+def get_access_token(db: Session, client_name: str):
 
     #Retrieving access token and current time from the database table
     try:
@@ -95,7 +95,7 @@ def get_access_token(db: Session, leed_id: str, client_name: str):
     # If "access_expired" is 1: access token expired
     # generate access_token
     if access_expired == 1:
-        access_token = generate_auth2_token(db=db, leed_id=leed_id, client_name=client_name)
+        access_token = generate_auth2_token(db=db, client_name=client_name)
         return access_token
 
     # If "access_expired" is 1: access token expired
@@ -136,7 +136,7 @@ def generate_hash(state: str):
 
 
 # generate auth2 token for API subscriptions
-def generate_auth2_token(db: Session, leed_id: str, client_name: str):
+def generate_auth2_token(db: Session, client_name: str):
 
     # Getting primary key for using throughout this function
     primary_key = settings.arc_primary_key

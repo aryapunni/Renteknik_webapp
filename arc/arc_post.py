@@ -133,6 +133,7 @@ def process_arc_data(measurements: dict, electrical_hierarchy: list, time_data: 
             if(measurement["device_name"] == val):
                 energy = measurement["energy"]
                 total_energy = total_energy + energy
+                print(f"energy: {energy}, total: {total_energy}")
 
     # Send measured time to processing time
     # changing time zone
@@ -188,7 +189,7 @@ def create_meter_object(db: Session, leed_id: str = "8000037879", client_name: s
     primary_key = settings.arc_primary_key
 
     # To use this API we need access token
-    access_token = get_access_token(db=db, leed_id=leed_id, client_name=client_name)
+    access_token = get_access_token(db=db, client_name=client_name)
 
     # headers, params, body and url for the API
     headers = {'Authorization': f'Bearer {access_token}', 'Content-Type': 'application/json', 'Ocp-Apim-Subscription-Key': primary_key}
@@ -217,7 +218,7 @@ def create_meter_consumption(db: Session, leed_id: str, client_name: str, meter_
     primary_key: str = settings.arc_primary_key
    
     # To use this API we need access token
-    access_token = get_access_token(db=db, leed_id=leed_id, client_name=client_name)
+    access_token = get_access_token(db=db, client_name=client_name)
 
     # headers, params, body and url for the API
     headers = {'Authorization': f'Bearer {access_token}', 'Content-Type': 'application/json', 'Ocp-Apim-Subscription-Key': primary_key}
