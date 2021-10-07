@@ -12,10 +12,11 @@ from config import settings
 from arc.arc_get import get_asset_comprehensive_score, get_meter_list, asset_search, get_asset_list, get_asset_object_detail, get_fuel_category, get_meter_consumption_list, get_meter_consumption_detail, get_asset_aggregated_data, get_asset_score
 # get_asset_aggregated_data, get_asset_score
 from arc.arc_post import send_arc_consumption
+import logging
 
 app = FastAPI()
 
-# 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
+logging.basicConfig(filename='abacus.log', level=logging.DEBUG)
 
 models.Base.metadata.create_all(bind=engine)
 

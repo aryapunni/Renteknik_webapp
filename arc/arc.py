@@ -13,13 +13,6 @@ from sqlalchemy.orm import Session
 from sql_app.database import SessionLocal, engine
 from fastapi import Depends
 
-# ARC_PRIMARY_KEY = "5f3f67ada316489e819dca0456904ce8"
-# ARC_SECONDARY_KEY = "119d57b07f75450683186e57a9ffe4f1"
-
-# ARC_CLIENT_ID = "ivh2tLYURNgTwCdcqX2nbl1U5rs2KnHTIAkyXVFB"
-# ARC_SECRET = "ujeUGNMu4vPOfjXnWdVDs08Sx9WRQQirr9DXUUOJKq3H5O9eWpJPLPUxzFIxqppWJ9L2MziF2zs02vxMcTLwTsdtvsnXX7LkkAeDpkA5B90FrcFE13Tv3w7jtCUtqhpk"
-
-
 
 models.Base.metadata.create_all(bind=engine)
 
