@@ -125,16 +125,18 @@ def process_arc_data(measurements: dict, electrical_hierarchy: list, time_data: 
 
     # loop through different dictionaries in the input
     for measurement in measurements:
+        print(f"energy value in: {measurement['device_name']}: {energy}")
 
-        print(json.dumps(measurement, indent=4, sort_keys=True))
         # loop through the electrical hierarchy for calculating energy
         # --> if device name is equal to the electrical hierarchy added
         # Then add the energy to total energy
         for val in electrical_hierarchy:
             if(measurement["device_name"] == val):
+                print()
+                print(json.dumps(measurement, indent=4, sort_keys=True))
                 energy = measurement["energy"]
                 total_energy = total_energy + energy
-                print(f"{measurement['device_name']}: {energy}")
+                print(f"{val}: {energy}")
         print(f"total: {total_energy}\n\n")
 
     # Send measured time to processing time
