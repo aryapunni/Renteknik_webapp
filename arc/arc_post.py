@@ -125,7 +125,7 @@ def process_arc_data(measurements: dict, electrical_hierarchy: list, time_data: 
 
     # loop through different dictionaries in the input
     for measurement in measurements:
-        print(f"energy value in: {measurement['device_name']}: {energy}")
+        print(f"energy value in: {measurement['device_name']}: {measurement['energy']}")
 
         # loop through the electrical hierarchy for calculating energy
         # --> if device name is equal to the electrical hierarchy added
