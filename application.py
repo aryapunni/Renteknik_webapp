@@ -16,7 +16,7 @@ import logging
 
 app = FastAPI()
 
-logging.basicConfig(filename='abacus.log', level=logging.DEBUG)
+logging.basicConfig(filename='abacus.log', filemode='w', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.DEBUG)
 
 models.Base.metadata.create_all(bind=engine)
 
