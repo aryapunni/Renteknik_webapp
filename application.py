@@ -12,7 +12,11 @@ from config import settings
 from arc.arc_get import get_asset_comprehensive_score, get_meter_list, asset_search, get_asset_list, get_asset_object_detail, get_fuel_category, get_meter_consumption_list, get_meter_consumption_detail, get_asset_aggregated_data, get_asset_score
 # get_asset_aggregated_data, get_asset_score
 from arc.arc_post import send_arc_consumption
+import os
 import logging
+import sys
+
+
 
 app = FastAPI()
 

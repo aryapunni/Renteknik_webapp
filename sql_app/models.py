@@ -77,6 +77,7 @@ class ArcMetaData(Base):
     id = Column(Integer, primary_key=True, index=True)
     leed_id = Column(String)
     client_name = Column(String)
+    customer_name = Column(String)
     customer_uid = Column(String)
     electrical_hierarchy = Column(String)
     timezone = Column(String)
@@ -107,3 +108,5 @@ class ArcMeterTable(Base):
     meter_type = Column(String)
     meter_unit = Column(String)
     renteknik_meter = Column(String)
+    duration_format = Column(String)
+    duration = Column(String)

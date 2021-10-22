@@ -126,6 +126,7 @@ class ArcEnergyDictCover(BaseModel):
 class ArcMetaData(BaseModel):
     leed_id: str
     client_name: str
+    customer_name: str
     customer_uid: str
     electrical_hierarchy: str
     timezone: str
@@ -169,7 +170,8 @@ class ArcMeterTable(BaseModel):
     meter_type: str
     meter_unit: str
     renteknik_meter: str
-
+    duration_format: str
+    duration: str
 
     class Config:
         orm_mode = True
