@@ -237,7 +237,7 @@ def create_meter_consumption(db: Session, leed_id: str, client_name: str, meter_
     try:
         r = requests.post(url, headers=headers, data=json_body)
         data = r.json()
-        # print(data)
+        print(data)
         return data
     except Exception as e:
         print("meter consumption API error")
