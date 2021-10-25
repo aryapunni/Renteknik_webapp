@@ -220,6 +220,7 @@ def create_meter_object(db: Session, leed_id: str = "8000037879", client_name: s
 def create_meter_consumption(db: Session, leed_id: str, client_name: str, meter_id: str, start_date: str, end_date: str, reading: float):
 
     primary_key: str = settings.arc_primary_key
+    print("meter consumption")
    
     # To use this API we need access token
     access_token = get_access_token(db=db, client_name=client_name)
