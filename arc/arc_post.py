@@ -125,19 +125,15 @@ def process_arc_data(measurements: dict, electrical_hierarchy: list, time_data: 
 
     # loop through different dictionaries in the input
     for measurement in measurements:
-        print(f"energy value in: {measurement['device_name']}: {measurement['energy']}")
 
         # loop through the electrical hierarchy for calculating energy
         # --> if device name is equal to the electrical hierarchy added
         # Then add the energy to total energy
         for val in electrical_hierarchy:
             if(measurement["device_name"] == val):
-                print()
-                print(json.dumps(measurement, indent=4, sort_keys=True))
                 energy = measurement["energy"]
                 total_energy = total_energy + energy
-                print(f"{val}: {energy}")
-        print(f"total: {total_energy}\n\n")
+        print(f"{measurement['device_name']}, total: {total_energy}")
 
     # Send measured time to processing time
     # changing time zone
@@ -220,8 +216,7 @@ def create_meter_object(db: Session, leed_id: str = "8000037879", client_name: s
 def create_meter_consumption(db: Session, leed_id: str, client_name: str, meter_id: str, start_date: str, end_date: str, reading: float):
 
     primary_key: str = settings.arc_primary_key
-    print("meter consumption")
-   
+
     # To use this API we need access token
     access_token = get_access_token(db=db, client_name=client_name)
 

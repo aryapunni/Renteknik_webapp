@@ -20,7 +20,7 @@ import sys
 
 app = FastAPI()
 
-logging.basicConfig(filename='abacus.log', filemode='w', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.DEBUG)
+# logging.basicConfig(filename='abacus.log', filemode='w', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.DEBUG)
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -116,6 +116,15 @@ async def post_consumption(meter_id: str, leed_id: str, client: str, datain: sch
 
     # Fetch data from the data base based on the leed id
     meta_data = crud.get_arc_metadata_leedid(db, leed_id)
+
+    data = datain.dict()
+
+    with open('data.json', 'a') as file:
+        json.dump(data, file, indent = 4)
+        file.write("\n")
+
+
+    # print(json.dumps(datain, indent=4, sort_keys=True))
 
     # If that leed id is not available in the database
     # Send a 404 error
