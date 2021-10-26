@@ -133,7 +133,8 @@ def process_arc_data(measurements: dict, electrical_hierarchy: list, time_data: 
             if(measurement["device_name"] == val):
                 energy = measurement["energy"]
                 total_energy = total_energy + energy
-        print(f"{measurement['device_name']}, total: {total_energy}")
+        print(f"energy: {energy}, total: {total_energy}")
+        # print(f"{measurement['device_name']}, total: {total_energy}")
 
     # Send measured time to processing time
     # changing time zone
