@@ -185,7 +185,7 @@ def send_arc_consumption(db: Session, datain: dict, electrical_hierarchy: str, t
 # unit: specifying which unit the data of this meter will have
 # meter_id: check meter list API for get meter_id
 # name: end point for creating meter ie electricty/water/co2 etc
-def create_meter_object(db: Session, leed_id: str = "8000037879", client_name: str = "burberry", meter_type: int = 46, unit: str = "kWh", meter_id: str = "126030", name: str = "electricity", partner_details: str = "3"):
+def create_meter_object(db: Session, leed_id: str, client_name: str, meter_type: int, unit: str, meter_id: str, name: str = "electricity", partner_details: str = "3"):
 
     primary_key = settings.arc_primary_key
 
@@ -202,7 +202,7 @@ def create_meter_object(db: Session, leed_id: str = "8000037879", client_name: s
     try:
         r = requests.post(url, headers=headers, data=json_body)
         data = r.json()
-        # print(f"requests data = {data}")
+        print(f"requests data = {data}")
         # return data
     except Exception as e:
         print("[Errno {0}] {1}".format(e.errno, e.strerror))
