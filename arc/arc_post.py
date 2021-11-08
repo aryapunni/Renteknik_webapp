@@ -64,8 +64,13 @@ def start_end_time(datetime_string: str, duration_format: str, duration: int, zo
     # change input string to datetime format
     start_date = datetime.strptime(datetime_string, fmt)
 
+    print(f"start_date before timezone change: {start_date}")
+
     # change input datetime to required timezone format
     start_date = change_timezone(start_date, zone)
+
+
+    print(f"start_date after timezone change: {start_date}")
 
     # Three categories of end times:
     # 1. when duration is in minutes --> First condition
@@ -100,6 +105,7 @@ def start_end_time(datetime_string: str, duration_format: str, duration: int, zo
     # to a list so as to return
     dates.append(start_date)
     dates.append(end_date)
+    print(f"Dates after all processing: {dates}")
 
     return dates
 
@@ -133,12 +139,13 @@ def process_arc_data(measurements: dict, electrical_hierarchy: list, time_data: 
             if(measurement["device_name"] == val):
                 energy = measurement["energy"]
                 total_energy = total_energy + energy
-        print(f"energy: {energy}, total: {total_energy}")
+        print(f"total: {total_energy}")
         # print(f"{measurement['device_name']}, total: {total_energy}")
 
     # Send measured time to processing time
     # changing time zone
     # changing format
+    print(f"measurement time directly from panpower {arc_dict['measurement_time']}")
     date_change = start_end_time(arc_dict["measurement_time"], time_data["duartion_format"], time_data["duration"], time_data["time_zone"])
 
     # Since the measured time has been modified to
