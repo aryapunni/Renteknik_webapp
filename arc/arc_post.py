@@ -138,7 +138,8 @@ def process_arc_data(measurements: dict, electrical_hierarchy: list, time_data: 
         for val in electrical_hierarchy:
             if(measurement["device_name"] == val):
                 energy = measurement["energy"]
-                total_energy = round((total_energy + energy), 2)
+                total_energy = total_energy + energy
+                total_energy = round(total_energy, 2)
         print(f"total + {energy}: {total_energy}")
         # print(f"{measurement['device_name']}, total: {total_energy}")
 
