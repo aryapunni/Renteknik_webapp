@@ -206,7 +206,8 @@ def generate_newclient_auth2(db: Session, client_name: str, code: str):
     # headers, body, and url for API request
     headers = {'Content-Type': 'application/json', 'Ocp-Apim-Subscription-Key': settings.arc_primary_key}
     body = {"grant_type": "authorization_code", "code": code, "client_id": settings.arc_client_id, "client_secret": client_secret, "state": state}
-    url = "https://api.usgbc.org/arc/data/dev/auth/oauth2/token/"
+    # url = "https://api.usgbc.org/arc/data/dev/auth/oauth2/token/"
+    url = f"{settings.arc_url}/auth/oauth2/token/"
     json_body = json.dumps(body)
 
     # API request
