@@ -140,7 +140,7 @@ def process_arc_data(measurements: dict, electrical_hierarchy: list, time_data: 
                 energy = measurement["energy"]
                 total_energy = total_energy + energy
                 total_energy = round(total_energy, 2)
-        print(f"total + {energy}: {total_energy}")
+        print(f"total + {measurement['energy']} = {total_energy}")
         # print(f"{measurement['device_name']}, total: {total_energy}")
 
     # Send measured time to processing time
