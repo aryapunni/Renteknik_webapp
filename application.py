@@ -210,51 +210,52 @@ async def update_arc_metadata(datain: schemas.ArcMetaData, db: Session = Depends
 
 
 # To get the arc consumption details
+# leed_id: 800003789
+# client_name: burberry
+# meter_id: 11879657
 @app.get("/arc/meter_consumption_list")
-async def get_arc_meter_consumption_list(db: Session = Depends(get_db)):
-    return get_meter_consumption_list(db=db, leed_id="8000037879", client_name="burberry", meter_id="11879657")
+async def get_arc_meter_consumption_list(leed_id: str, client_name: str, meter_id: str, db: Session = Depends(get_db)):
+    return get_meter_consumption_list(db=db, leed_id=leed_id, client_name=client_name, meter_id=meter_id)
 
 
 
 # API to get fuel data from Arc
 @app.get("/arc/fuel")
-async def get_arc_fuel(db: Session = Depends(get_db)):
-    return get_fuel_category(db=db, leed_id="8000037879", client_name="burberry")
-
-
+async def get_arc_fuel(leed_id: str, client_name: str, db: Session = Depends(get_db)):
+    return get_fuel_category(db=db, leed_id=leed_id, client_name=client_name)
 
 
 # API to get asset object details data from Arc
 @app.get("/arc/asset_object")
-async def get_arc_asset_object(db: Session = Depends(get_db)):
-    return get_asset_object_detail(db=db, leed_id="8000037879", client_name="burberry")
+async def get_arc_asset_object(leed_id: str, client_name: str, db: Session = Depends(get_db)):
+    return get_asset_object_detail(db=db, leed_id=leed_id, client_name=client_name)
 
 
 
 # API to get asset object details data from Arc
 @app.get("/arc/asset_list")
-async def get_arc_asset_list(db: Session = Depends(get_db)):
-    return get_asset_list(db=db, leed_id="8000037879", client_name="burberry")
+async def get_arc_asset_list(leed_id: str, client_name: str, db: Session = Depends(get_db)):
+    return get_asset_list(db=db, leed_id=leed_id, client_name=client_name)
 
 
 
 # API to get asset object details data from Arc
 @app.get("/arc/asset_search")
-async def get_arc_asset_search(db: Session = Depends(get_db)):
-    return asset_search(db=db, leed_id="8000037879", client_name="burberry")
+async def get_arc_asset_search(leed_id: str, client_name: str, db: Session = Depends(get_db)):
+    return asset_search(db=db, leed_id=leed_id, client_name=client_name)
 
 
 # API to get asset object details data from Arc
 @app.get("/arc/asset_score")
-async def get_arc_asset_score(db: Session = Depends(get_db)):
-    return get_asset_score(leed_id="8000037879", date="2021-08-11")
+async def get_arc_asset_score(leed_id: str, date: str, db: Session = Depends(get_db)):
+    return get_asset_score(leed_id=leed_id, date=date)
 
 
 
 # API to get fuel data from Arc
 @app.get("/arc/asset_comprehenive_score")
-async def get_arc_asset_comprehensive_score(db: Session = Depends(get_db)):
-    return get_asset_comprehensive_score(leed_id="8000037879", date="2021-08-11")
+async def get_arc_asset_comprehensive_score(leed_id: str, date: str, db: Session = Depends(get_db)):
+    return get_asset_comprehensive_score(leed_id=leed_id, date=date)
 
 
 
@@ -262,7 +263,7 @@ async def get_arc_asset_comprehensive_score(db: Session = Depends(get_db)):
 # startdate/enddate format - start_date="2020-08-29", end_date="2017-08-30" year-month-date
 @app.get("/arc/asset_aggregated_data/{data_endpoint}/{leed_id}/{start_date}/{end_date}/{unit}")
 async def get_arc_asset_aggregated_data(data_endpoint: str, leed_id: str, start_date: str, end_date: str, unit: str, db: Session = Depends(get_db)):
-    return get_asset_aggregated_data(data_endpoint=data_endpoint, leed_id=leed_id, start_date="2020-08-29", end_date="2017-08-30", unit=unit)
+    return get_asset_aggregated_data(data_endpoint=data_endpoint, leed_id=leed_id, start_date=start_date, end_date=end_date, unit=unit)
 
 
 
@@ -293,7 +294,17 @@ async def create_new_client(code: str, client: str, db: Session = Depends(get_db
 
 #------------------ARC INTEGRATION GET AND POST FUNCTIONS-------------------#
 
+
+#------------------Z3 POST FUNCTION-------------------#
+
+# Z3 Function
+@app.post("/z3")
+async def z3_post(data):
+    print(data)
+
+#------------------Z3 POST FUNCTION-------------------#
+
 # FastAPI initial test function
 @app.get("/")
 async def root():
-    return {"message": "Hello World"}
+    return 200
