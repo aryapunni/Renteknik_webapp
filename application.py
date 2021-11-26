@@ -251,47 +251,47 @@ async def update_arc_metadata(datain: schemas.ArcMetaData, db: Session = Depends
 # leed_id: 800003789
 # client_name: burberry
 # meter_id: 11879657
-@app.get("/arc/meter_consumption_list")
+@app.get("/arc/meter_consumption_list/{leed_id}/{client_name}/{meter_id}")
 async def get_arc_meter_consumption_list(leed_id: str, client_name: str, meter_id: str, db: Session = Depends(get_db)):
     return get_meter_consumption_list(db=db, leed_id=leed_id, client_name=client_name, meter_id=meter_id)
 
 
 
 # API to get fuel data from Arc
-@app.get("/arc/fuel")
+@app.get("/arc/fuel/{leed_id}/{client_name}")
 async def get_arc_fuel(leed_id: str, client_name: str, db: Session = Depends(get_db)):
     return get_fuel_category(db=db, leed_id=leed_id, client_name=client_name)
 
 
 # API to get asset object details data from Arc
-@app.get("/arc/asset_object")
+@app.get("/arc/asset_object/{leed_id}/{client_name}")
 async def get_arc_asset_object(leed_id: str, client_name: str, db: Session = Depends(get_db)):
     return get_asset_object_detail(db=db, leed_id=leed_id, client_name=client_name)
 
 
 
 # API to get asset object details data from Arc
-@app.get("/arc/asset_list")
+@app.get("/arc/asset_list/{leed_id}/{client_name}")
 async def get_arc_asset_list(leed_id: str, client_name: str, db: Session = Depends(get_db)):
     return get_asset_list(db=db, leed_id=leed_id, client_name=client_name)
 
 
 
 # API to get asset object details data from Arc
-@app.get("/arc/asset_search")
+@app.get("/arc/asset_search/{leed_id}/{client_name}")
 async def get_arc_asset_search(leed_id: str, client_name: str, db: Session = Depends(get_db)):
     return asset_search(db=db, leed_id=leed_id, client_name=client_name)
 
 
 # API to get asset object details data from Arc
-@app.get("/arc/asset_score")
+@app.get("/arc/asset_score/{leed_id}/{date}")
 async def get_arc_asset_score(leed_id: str, date: str, db: Session = Depends(get_db)):
     return get_asset_score(leed_id=leed_id, date=date)
 
 
 
 # API to get fuel data from Arc
-@app.get("/arc/asset_comprehenive_score")
+@app.get("/arc/asset_comprehenive_score/{leed_id}/{date}")
 async def get_arc_asset_comprehensive_score(leed_id: str, date: str, db: Session = Depends(get_db)):
     return get_asset_comprehensive_score(leed_id=leed_id, date=date)
 
