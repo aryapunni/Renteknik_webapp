@@ -149,6 +149,44 @@ async def post_consumption(meter_id: str, leed_id: str, client: str, datain: sch
     return 200
 
 
+
+@app.post("/arc/co2_consumption/{client}/{leed_id}/{meter_id}")
+async def post_co2_consumption(meter_id: str, leed_id: str, client: str, datain: schemas.ArcEnergyDictCover, db: Session = Depends(get_db)):
+
+    # Fetch data from the data base based on the leed id
+    meta_data = crud.get_arc_metadata_leedid(db, leed_id)
+
+    data = datain.dict()
+
+    with open('data.json', 'a') as file:
+        json.dump(data, file, indent = 4)
+        file.write("\n")
+
+
+    # print(json.dumps(datain, indent=4, sort_keys=True))
+
+    # If that leed id is not available in the database
+    # Send a 404 error
+    if meta_data is None:
+        print("There is no such Project in that Leed ID")
+        raise HTTPException(status_code=404, detail="Leed ID not found")
+
+    # If the data fetching was successfull proceed to send data to Arc
+    for data in datain.measurements:
+        data.meter_id = meter_id
+        data.leed_id = leed_id
+        data.client = client
+
+    # Electrical hierarchy for filtering data
+    electrical_hierarchy = meta_data.electrical_hierarchy
+
+    # Timezone and time duration information for processing data
+    time_data = {"duartion_format": meta_data.duration_format, "duration": meta_data.duration, "time_zone": meta_data.timezone}
+
+    # Send data to Arc
+    send_arc_consumption(db, datain.dict(), electrical_hierarchy, time_data)
+    return 200
+
 # Arc create meter in ARC
 @app.post("/arc/create_meter")
 async def create_arc_meter(datain: schemas.ArcCreateMeter, db: Session = Depends(get_db)):
