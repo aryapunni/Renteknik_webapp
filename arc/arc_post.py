@@ -187,6 +187,35 @@ def send_arc_consumption(db: Session, datain: dict, electrical_hierarchy: str, t
     create_meter_consumption(db, consumption["leed_id"], consumption["client"], consumption["meter_id"], consumption["start_date"], consumption["end_date"], consumption["energy"])
 
 
+
+# Recieve data for Arc from front end
+# Send it for processing
+# Send processed data to Arc API function
+# Arguments:
+# datain: collection of dictionaries coming from panoramic power
+# electrical_hierarchy: list of elaments that we have to count when we add energy
+def send_arc_co2_consumption(db: Session, datain: dict):
+
+    primary_key = settings.arc_primary_key
+
+    co2 = 0
+
+    # data in has an inside dictionary with name measurements
+    measurements = datain["measurements"]
+    # print(measurements)
+
+    # process co2 data - ie adding all the flow
+    for measurement in measurements:
+        print(measurement["flow"])
+        if measurement["flow"] is not None:
+            co2 = co2 + measurement["flow"]
+    print(co2)
+
+    # Sending data to arc
+    # create_co2_consumption(db, consumption["leed_id"], consumption["client"], consumption["meter_id"], consumption["start_date"], consumption["end_date"], consumption["energy"])
+
+
+
 # creating a meter object in Arc
 # Arguments: leed_id - leed id of the given project
 # meter_type : meter type 46 for electrical meters
@@ -247,3 +276,33 @@ def create_meter_consumption(db: Session, leed_id: str, client_name: str, meter_
         print("meter consumption API error")
 
 
+
+# Create consumption for CO2 meter
+# Arguments:
+# leed_id: leed_id of the purticular project
+# meter_id: id of the purticular meter to which we are entering data
+# start_date, end_date: start and ending time and date of the data we are entering
+# reading: meter reading for the purticular meter at this given time
+def create_co2_consumption(db: Session, leed_id: str, client_name: str, meter_id: str, start_date: str, end_date: str, reading: float):
+
+    primary_key: str = settings.arc_primary_key
+
+    # To use this API we need access token
+    access_token = get_access_token(db=db, client_name=client_name)
+
+    # headers, params, body and url for the API
+    headers = {'Authorization': f'Bearer {access_token}', 'Content-Type': 'application/json', 'Ocp-Apim-Subscription-Key': primary_key}
+    body = {"start_date": start_date, "end_date": end_date, "reading": reading}
+    url = f"{settings.arc_url}/assets/LEED:{leed_id}/meters/ID:{meter_id}/consumption/"
+
+    # converting body of the API to Json
+    json_body = json.dumps(body)
+
+    # API request
+    try:
+        r = requests.post(url, headers=headers, data=json_body)
+        data = r.json()
+        print(data)
+        return data
+    except Exception as e:
+        print("meter consumption API error")

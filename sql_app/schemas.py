@@ -100,18 +100,36 @@ class ArcEnergyConsumption(BaseModel):
 
 # schema for arc data CO2
 class ArcCo2Consumption(BaseModel):
-    client: str
-    meter_id: str
-    leed_id: str
-    meter_id: int = Field(..., alias='METER_ID')
-    measurement_time: str = Field(..., alias='measurement_time(UTC)')
-    energy: float = Field(..., alias='energy(Wh)')
+    client: Optional[str]
+    leed_id: Optional[str]
+    meter_id: Optional[int]
+    measurement_time: str = Field(..., alias='MEASUREMENT_TIME(UTC)')
+    energy: Optional[Union[float, str]] = Field(..., alias='ENERGY(Wh)')
+    flow: Optional[Union[float, str]] = Field(..., alias='FLOW')
+    volume: Optional[Union[float, str]] = Field(..., alias='VOLUME')
+
+
+    # validator function to check input value coming in are N/A or a float
+    # If it is a N/A ie a string it will conver to None
+    @validator('flow', 'volume')
+    def float_string_validator(cls, value):
+        result = float_or_string(value)
+        if result == 0:
+            return None
+        return value
+
 
 
 
 # schema for ArcEnergyConsumption
 class ArcEnergyDictCover(BaseModel):
     measurements: List[ArcEnergyConsumption]
+
+
+
+# schema for ArcCo2Consumption
+class ArcCo2DictCover(BaseModel):
+    measurements: List[ArcCo2Consumption]
 
 
 # schema for Arc metadata
