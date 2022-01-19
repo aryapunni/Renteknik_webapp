@@ -1,5 +1,6 @@
 
 from fastapi import FastAPI, Depends, HTTPException
+from fastapi.responses import FileResponse
 import sqlalchemy
 from sqlalchemy.orm import Session
 from typing import Optional, List, Union, Optional
@@ -15,6 +16,7 @@ from arc.arc_post import send_arc_consumption, send_arc_co2_consumption
 import os
 import logging
 import sys
+from datetime import datetime, timedelta, tzinfo
 
 
 
@@ -41,6 +43,7 @@ def get_db():
         db.close()
 
 
+
 # panpower pulse post function
 @app.post("/panpower/panpowerpulse/{client}")
 async def panpowerpulse_post(datain: schemas.PanpowerPulseDictCover, client: str, db: Session = Depends(get_db)):
@@ -48,6 +51,8 @@ async def panpowerpulse_post(datain: schemas.PanpowerPulseDictCover, client: str
         data.client = client
     crud.create_panpulse(db=db, measurements=datain)
     return 200
+
+
 
 
 # panpower 42 post function
@@ -63,8 +68,8 @@ async def panpower42_post(datain: schemas.Pan42DictCover, client: str, db: Sessi
 @app.post("/panpower/panpower1012/{client}")
 async def panpower1012_post(datain: schemas.PanPowerDictCover, client: str, db: Session = Depends(get_db)):
     for data in datain.measurements:
-        data_1 = data.dict()
-        print(json.dumps(data_1, indent=4, sort_keys=True))
+        # data_1 = data.dict()
+        # print(json.dumps(data_1, indent=4, sort_keys=True))
         data.client = client
     crud.create_panpower(db=db, measurements=datain)
     return 200
@@ -87,6 +92,7 @@ async def get_panpower1012(client: str, db: Session = Depends(get_db)):
     return  crud.get_panpower1012_client_data(db=db, client_name=client)
 
 
+
 # panpower42 data get function
 @app.get("/panpower/panpower42/{client}")
 async def get_panpower42(client: str, db: Session = Depends(get_db)):
@@ -106,6 +112,104 @@ async def get_panpowerpulse(client: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Client not found")
     return  crud.get_panpowerpulse_client_data(db=db, client_name=client)
 #------------------PANORAMIC POWER GET AND POST FUNCTIONS-------------------#
+
+
+#------------------DATA BASE MANIPULATION FUNCTIONS-------------------#
+
+# date validate function
+def validate_dates(date1: str, date2: str):
+
+    # Time format
+    fmt = "%Y-%m-%d"
+
+    # Removing the extra z from the panpower data
+    # Inorder to make the date format compatible with Arc
+    if date1.endswith('Z'):
+        date1 = date1[:-1]
+
+    is_valid_date = True
+
+    try:
+        date1 = datetime.strptime(date1, fmt)
+        date2 = datetime.strptime(date2, fmt)
+    except ValueError:
+        is_valid_date = False
+
+    return [is_valid_date, date1, date2]
+
+
+# validate start and end dates are in order
+# Start date should be earlier than end date
+def validate_start_end_dates(date1: datetime, date2: datetime):
+
+    difference = (date2 - date1).days
+
+    valid_start_end_date = False
+
+    if difference > 0:
+
+        valid_start_end_date = True
+      
+    return valid_start_end_date
+
+
+# Add energy for energy star
+def sum_of_energy(datain: schemas.PanPowerDictCover):
+    sum_energy = 0
+    for value in datain:
+        sum_energy = sum_energy + value.energy
+    return sum_energy
+
+# Data fetching function for energy star
+# input: from date, to date, client name, database name
+@app.get("/energystar/{data}/{client}/{start_date}/{end_date}") #2021-09-17
+async def energystar_data(db: Session = Depends(get_db), data: str = "panpower1012", client: str = "1-3reandrive", start_date: str = "2021-09-17", end_date: str = "2021-09-18"):
+
+    #Validate whether the input strings are actual dates
+    is_valid_date = validate_dates(start_date, end_date)
+    sum_energy = 0
+
+    if is_valid_date[0]:
+
+        # if they are valid dates, check whether they are in order
+        # ie start date lesser than end date
+        valid_start_end_date = validate_start_end_dates(is_valid_date[1], is_valid_date[2])
+
+        if valid_start_end_date:
+
+            # if they are in order set the dates in order flag
+            start_date = is_valid_date[1]
+            end_date = is_valid_date[2]
+            date_in_order = True
+        else:
+            # date not in order
+            date_in_order = False
+            raise HTTPException(status_code=404, detail="Dates not in order")
+
+
+    else:
+        # Dates not valid
+        raise HTTPException(status_code=404, detail="Dates not valid")
+
+
+    if date_in_order:
+
+        # print("dates in order")
+        if data == "panpower1012":
+            db_client = crud.energy_star_fetch_data(db=db, client=client, start_date=start_date, end_date=end_date)
+            sum_energy = sum_of_energy(db_client)
+        return sum_energy, db_client[0].measurement_time, db_client[len(db_client) - 1].measurement_time
+
+
+
+    else:
+        print("dates not in order")
+
+    # return data, client, start_date, end_date
+
+
+
+#------------------DATA BASE MANIPULATION FUNCTIONS-------------------#
 
 
 
@@ -342,6 +446,32 @@ async def z3_post(data):
     print(data)
 
 #------------------Z3 POST FUNCTION-------------------#
+
+
+
+
+#------------------Z3 GET FUNCTION-------------------#
+#----------------------------------------------------#
+#----------------------------------------------------#
+#----------------------------------------------------#
+#----------------------------------------------------#
+#----------------------------------------------------#
+#------------------Z3 GET FUNCTION-------------------#
+
+
+
+#------------------FILE DOWNLOAD FEATURE-------------------#
+
+# Path to download files
+@app.get("/download")
+async def download():
+    filepath = os.getcwd() + "/" + "first.json"
+    return FileResponse(path=filepath, media_type="application/octet-stream", filename="first.json")
+
+
+#------------------FILE DOWNLOAD FEATURE-------------------#
+
+
 
 # FastAPI initial test function
 @app.get("/")

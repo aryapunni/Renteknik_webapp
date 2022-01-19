@@ -1,7 +1,8 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Float
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Float, DateTime
 from sqlalchemy.orm import relationship
 
 from .database import Base
+from datetime import datetime
 
 
 # Database table structure for panpowerpulsemeasurement
@@ -35,7 +36,7 @@ class Panpower1012Measurement(Base):
     client = Column(String)
     device_id = Column(Integer)
     device_name = Column(String)
-    measurement_time = Column(String)
+    measurement_time = Column(DateTime)
     resolution = Column(Integer)
     site_id = Column(Integer)
     site_name = Column(String)

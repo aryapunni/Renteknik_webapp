@@ -1,5 +1,7 @@
 from typing import Optional, List, Union
 from pydantic import BaseModel, Field, ValidationError, validator, root_validator
+from datetime import datetime
+
 
 
 # function to find whether input in float or string
@@ -52,7 +54,7 @@ class PanPower(BaseModel):
     client: Optional[str]
     device_id: int = Field(..., alias='device_id')
     device_name: str = Field(..., alias='device_name')
-    measurement_time: str = Field(..., alias='measurement_time(UTC)')
+    measurement_time: Union[str, datetime] = Field(..., alias='measurement_time(UTC)')
     resolution: int = Field(..., alias='resolution(minutes)')
     site_id: int = Field(..., alias='site_id')
     site_name: str = Field(..., alias='site_name')
@@ -64,6 +66,25 @@ class PanPower(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+    # validator function to check input value coming in are N/A or a float
+    # If it is a N/A ie a string it will conver to None
+    @validator('measurement_time')
+    def datetime_converter(cls, value):
+        # Time format
+        fmt = "%Y-%m-%dT%H:%M:%S"
+
+        # Removing the extra z from the panpower data
+        # Inorder to make the date format compatible with Arc
+        if isinstance(value, str):
+            if value.endswith('Z'):
+                value = value[:-1]
+
+        value = datetime.strptime(value, fmt)
+        return value
+
+
 
 
 # schema for array of measurements(panpower)

@@ -199,6 +199,7 @@ def send_arc_co2_consumption(db: Session, datain: dict):
     primary_key = settings.arc_primary_key
 
     co2 = 0
+    arc_time_data = []
 
     # data in has an inside dictionary with name measurements
     measurements = datain["measurements"]
@@ -206,13 +207,20 @@ def send_arc_co2_consumption(db: Session, datain: dict):
 
     # process co2 data - ie adding all the flow
     for measurement in measurements:
-        print(measurement["flow"])
+        leed_id = measurement["leed_id"]
+        client = measurement["client"]
+        meter_id = measurement["meter_id"]
+        measurement_time = measurement["measurement_time"]
+
         if measurement["flow"] is not None:
             co2 = co2 + measurement["flow"]
-    print(co2)
+            print(measurement)
+            print(co2, measurement["leed_id"], measurement["client"], measurement["meter_id"], measurement["measurement_time"])
+    arc_time_data = start_end_time(measurement_time, "hours", 1, "America/Toronto")
+    print(arc_time_data)
 
     # Sending data to arc
-    # create_co2_consumption(db, consumption["leed_id"], consumption["client"], consumption["meter_id"], consumption["start_date"], consumption["end_date"], consumption["energy"])
+    create_co2_consumption(db, leed_id, client, meter_id, arc_time_data[0], arc_time_data[1], co2)
 
 
 

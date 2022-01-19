@@ -2,6 +2,7 @@
 
 
 from sqlalchemy.orm import Session
+from sqlalchemy import select
 
 from . import models, schemas
 
@@ -39,7 +40,7 @@ def create_panpower(db: Session, measurements: schemas.PanPowerDictCover):
     for measurement in measurements:
         measure = measurements[measurement]
         for val in measure:
-            # print(f"val = {val},\n")
+            # print(f"val = {type(val['measurement_time'])},\n")
             db_measurement = models.Panpower1012Measurement(**val)
             db.add(db_measurement)
     db.commit()
@@ -144,3 +145,27 @@ def update_arcmetadata_leedid(db: Session, leed_id: str, electrical_hierarchy: s
     db.query(models.ArcMetaData).filter(models.ArcMetaData.leed_id == leed_id).update({models.ArcMetaData.electrical_hierarchy: electrical_hierarchy, models.ArcMetaData.timezone: timezone, models.ArcMetaData.duration_format: duration_format, models.ArcMetaData.duration: duration}, synchronize_session = False)
     db.commit()
     db.flush()
+
+
+# Getting data for Energystar update from data base
+# Monthly data Based on the date and client name
+def energy_star_fetch_data(db: Session, client: str, start_date: str, end_date: str):
+
+    # select where method to choose data from the data base
+    stmt = select(models.Panpower1012Measurement).where(models.Panpower1012Measurement.client == client, models.Panpower1012Measurement.measurement_time > start_date,
+                                                        models.Panpower1012Measurement.measurement_time <= end_date)
+    result = db.execute(stmt)
+
+    # Printing the data output
+    # for user_obj in result.scalars():
+        # print(user_obj.energy, user_obj.measurement_time, user_obj.client)
+
+
+    # Query filter & method to filter data from database
+    values = db.query(models.Panpower1012Measurement).filter(models.Panpower1012Measurement.client == client) \
+        .filter((models.Panpower1012Measurement.measurement_time > start_date) & (models.Panpower1012Measurement.measurement_time <= end_date)).all()
+
+
+    db.commit()
+    db.flush()
+    return values
