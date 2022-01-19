@@ -156,9 +156,9 @@ def energy_star_fetch_data(db: Session, client: str, start_date: str, end_date: 
                                                         models.Panpower1012Measurement.measurement_time <= end_date)
     result = db.execute(stmt)
 
-    # Printing the data output
-    # for user_obj in result.scalars():
-        # print(user_obj.energy, user_obj.measurement_time, user_obj.client)
+    Printing the data output
+    for user_obj in result.scalars():
+        print(user_obj.energy, user_obj.measurement_time, user_obj.client)
 
 
     # Query filter & method to filter data from database
