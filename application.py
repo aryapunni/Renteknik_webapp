@@ -197,9 +197,10 @@ async def energystar_data(db: Session = Depends(get_db), data: str = "panpower10
         # print("dates in order")
         if data == "panpower1012":
             db_client = crud.energy_star_fetch_data(db=db, client=client, start_date=start_date, end_date=end_date)
-            sum_energy = sum_of_energy(db_client)
-        return sum_energy, db_client[0].measurement_time, db_client[len(db_client) - 1].measurement_time
 
+            sum_energy = sum_of_energy(db_client)
+        # return sum_energy, db_client[0].measurement_time, db_client[len(db_client) - 1].measurement_time
+        return sum_energy
 
 
     else:
