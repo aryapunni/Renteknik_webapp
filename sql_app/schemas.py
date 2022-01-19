@@ -20,7 +20,7 @@ class PanpowerPulse(BaseModel):
     meter_type: str = Field(..., alias='METER_TYPE')
     meter_name: str = Field(..., alias='METER_NAME')
     meter_unit: str = Field(..., alias='METER_UNIT')
-    measurement_time: str = Field(..., alias='MEASUREMENT_TIME(UTC)')
+    measurement_time: Union[str, datetime] = Field(..., alias='MEASUREMENT_TIME(UTC)')
     resolution: int = Field(..., alias='RESOLUTION(min)')
     site_id: int = Field(..., alias='SITE_ID')
     site_name: str = Field(..., alias='SITE_NAME')
@@ -42,6 +42,23 @@ class PanpowerPulse(BaseModel):
         if result == 0:
             return None
         return value
+
+# validator function to check input value coming in are N/A or a float
+    # If it is a N/A ie a string it will conver to None
+    @validator('measurement_time')
+    def datetime_converter(cls, value):
+        # Time format
+        fmt = "%Y-%m-%dT%H:%M:%S"
+
+        # Removing the extra z from the panpower data
+        # Inorder to make the date format compatible with Arc
+        if isinstance(value, str):
+            if value.endswith('Z'):
+                value = value[:-1]
+
+        value = datetime.strptime(value, fmt)
+        return value
+
 
 
 # schema for array of measurements(panpower pulse)

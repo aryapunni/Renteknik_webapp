@@ -169,3 +169,27 @@ def energy_star_fetch_data(db: Session, client: str, start_date: str, end_date: 
     db.commit()
     db.flush()
     return values
+
+
+# Getting data for Energystar update from data base
+# Monthly data Based on the date and client name
+def energy_star_fetch_pulsedata(db: Session, client: str, start_date: str, end_date: str):
+
+    # select where method to choose data from the data base
+    stmt = select(models.PanpowerPulseMeasurement).where(models.PanpowerPulseMeasurement.client == client, models.PanpowerPulseMeasurement.measurement_time > start_date,
+                                                        models.PanpowerPulseMeasurement.measurement_time <= end_date)
+    result = db.execute(stmt)
+
+    # Printing the data output
+    for user_obj in result.scalars():
+        print(user_obj.energy, user_obj.measurement_time, user_obj.client)
+
+
+    # Query filter & method to filter data from database
+    values = db.query(models.PanpowerPulseMeasurement).filter(models.PanpowerPulseMeasurement.client == client) \
+        .filter((models.PanpowerPulseMeasurement.measurement_time > start_date) & (models.PanpowerPulseMeasurement.measurement_time <= end_date)).all()
+
+
+    db.commit()
+    db.flush()
+    return values

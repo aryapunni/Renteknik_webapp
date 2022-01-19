@@ -17,6 +17,7 @@ import os
 import logging
 import sys
 from datetime import datetime, timedelta, tzinfo
+import pprint
 
 
 
@@ -49,9 +50,10 @@ def get_db():
 async def panpowerpulse_post(datain: schemas.PanpowerPulseDictCover, client: str, db: Session = Depends(get_db)):
     for data in datain.measurements:
         data.client = client
+        data_1 = data.dict()
+        pprint.pprint(data_1)
     crud.create_panpulse(db=db, measurements=datain)
     return 200
-
 
 
 
@@ -62,6 +64,7 @@ async def panpower42_post(datain: schemas.Pan42DictCover, client: str, db: Sessi
         data.client = client
     crud.create_pan42(db=db, measurements=datain)
     return 200
+
 
 
 # panpower10/12 post function
@@ -75,11 +78,13 @@ async def panpower1012_post(datain: schemas.PanPowerDictCover, client: str, db: 
     return 200
 
 
+
 # panpower10/12 post function
 @app.post("/panpower/test")
 async def panpower_post(datain: dict):
     print(json.dumps(datain, indent=4, sort_keys=True))
     return 200
+
 
 
 # panpower10/12 data get function
@@ -101,6 +106,7 @@ async def get_panpower42(client: str, db: Session = Depends(get_db)):
         print("there is no such client")
         raise HTTPException(status_code=404, detail="Client not found")
     return  crud.get_pan42_client_data(db=db, client_name=client)
+
 
 
 # panpowerpulse data get function
@@ -198,13 +204,27 @@ async def energystar_data(db: Session = Depends(get_db), data: str = "panpower10
         if data == "panpower1012":
             db_client = crud.energy_star_fetch_data(db=db, client=client, start_date=start_date, end_date=end_date)
 
-            sum_energy = sum_of_energy(db_client)
-        # return sum_energy, db_client[0].measurement_time, db_client[len(db_client) - 1].measurement_time
-        return sum_energy
+            if db_client == 0:
+                raise HTTPException(status_code=404, detail="Client not found")
 
+
+            sum_energy = sum_of_energy(db_client)
+            # return sum_energy, db_client[0].measurement_time, db_client[len(db_client) - 1].measurement_time
+            return sum_energy
+
+        elif data == "panpowerpulse":
+            db_client = crud.energy_star_fetch_pulsedata(db=db, client=client, start_date=start_date, end_date=end_date)
+
+            if db_client == 0:
+                raise HTTPException(status_code=404, detail="Client not found")
+
+      
 
     else:
         print("dates not in order")
+        raise HTTPException(status_code=404, detail="Dates not in order")
+
+
 
     # return data, client, start_date, end_date
 
