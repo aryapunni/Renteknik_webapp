@@ -1,5 +1,5 @@
 
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.responses import FileResponse
 import sqlalchemy
 from sqlalchemy.orm import Session
@@ -366,7 +366,14 @@ async def create_new_client(code: str, client: str, db: Session = Depends(get_db
 
 # Z3 Function
 @app.post("/z3")
-async def z3_post(data: schemas.PanPowerDictCover):
+async def z3_post(data: Request):
+    req_info = await data.json()
+    return {
+        "status" : "SUCCESS",
+        "data" : req_info
+    }
+
+
     print(data)
     return 200
 
