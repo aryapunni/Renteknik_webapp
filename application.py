@@ -366,7 +366,7 @@ async def create_new_client(code: str, client: str, db: Session = Depends(get_db
 
 # Z3 Function
 @app.post("/z3")
-async def z3_post(data):
+async def z3_post(data: schemas.PanPowerDictCover):
     print(data)
     return 200
 
