@@ -152,14 +152,14 @@ def update_arcmetadata_leedid(db: Session, leed_id: str, electrical_hierarchy: s
 def energy_star_fetch_data(db: Session, client: str, start_date: str, end_date: str):
 
     # select where method to choose data from the data base
-    stmt = select(models.Panpower1012Measurement).where(models.Panpower1012Measurement.client == client, models.Panpower1012Measurement.measurement_time > start_date,
-                                                        models.Panpower1012Measurement.measurement_time <= end_date)
+    stmt = select(models.Panpower1012Measurement).where(models.Panpower1012Measurement.client == client, models.Panpower1012Measurement.measurement_time >= start_date,
+                                                        models.Panpower1012Measurement.measurement_time < end_date)
     result = db.execute(stmt)
 
     # Printing the data output
     for user_obj in result.scalars():
-        print(user_obj.energy, user_obj.measurement_time, user_obj.client)
-
+        # print(user_obj.energy, user_obj.measurement_time, user_obj.client)
+        pass
 
     # Query filter & method to filter data from database
     values = db.query(models.Panpower1012Measurement).filter(models.Panpower1012Measurement.client == client) \
@@ -182,8 +182,8 @@ def energy_star_fetch_pulsedata(db: Session, client: str, start_date: str, end_d
 
     # Printing the data output
     for user_obj in result.scalars():
-        print(user_obj.energy, user_obj.measurement_time, user_obj.client)
-
+        # print(user_obj.energy, user_obj.measurement_time, user_obj.client)
+        pass
 
     # Query filter & method to filter data from database
     values = db.query(models.PanpowerPulseMeasurement).filter(models.PanpowerPulseMeasurement.client == client) \

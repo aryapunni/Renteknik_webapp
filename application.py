@@ -375,7 +375,6 @@ async def z3_post(data: Request):
     }
 
 
-    print(data)
     return 200
 
 #------------------Z3 POST FUNCTION-------------------#
