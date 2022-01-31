@@ -163,7 +163,7 @@ def energy_star_fetch_data(db: Session, client: str, start_date: str, end_date: 
 
     # Query filter & method to filter data from database
     values = db.query(models.Panpower1012Measurement).filter(models.Panpower1012Measurement.client == client) \
-        .filter((models.Panpower1012Measurement.measurement_time > start_date) & (models.Panpower1012Measurement.measurement_time <= end_date)).all()
+        .filter((models.Panpower1012Measurement.measurement_time >= start_date) & (models.Panpower1012Measurement.measurement_time < end_date)).all()
 
 
     db.commit()
