@@ -65,8 +65,39 @@ def validate_start_end_dates(date1: datetime, date2: datetime):
 def sum_of_energy(datain: schemas.PanPowerDictCover):
     sum_energy = 0
     for value in datain:
+        print(value.measurement_time, "\t", value.energy, "\t",  value.device_name)
         sum_energy = sum_energy + value.energy
-    return sum_energy
+    return sum_energy/1000
+
+
+# calculating flow for 1-3 reandrive specifically
+def sum_of_flow_reandrive(datain: schemas.PanpowerPulse, start_date: datetime, end_date: datetime):
+    water_volume = 0
+    hot_water_volume = 0
+    gas_meter = 0
+    result = {}
+    duration = (end_date - start_date).days
+    for value in datain:
+        if (value.meter_name == "Spa water meter") or (value.meter_name == "Pool Water") or (value.meter_name == "Cold Water"):
+            water_volume = water_volume + value.volume
+        elif value.meter_name == "Hot Water":
+            hot_water_volume = hot_water_volume + value.volume
+        elif value.meter_name == "GAS METER":
+            gas_meter = gas_meter + value.volume
+        else:
+            print("different parameter")
+
+    hot_water_volume = hot_water_volume - (100*24*duration)
+    print(water_volume, hot_water_volume, gas_meter)
+    result = {"water_volume": water_volume, "hot_water_volume": hot_water_volume, "gas_meter": gas_meter}
+
+    return result
+
+# Add flow value from pulse data
+def sum_of_flow(datain: schemas.PanpowerPulse, start_date: datetime, end_date: datetime):
+    if datain[0].client == "1-3reandrive":
+        result = sum_of_flow_reandrive(datain, start_date, end_date)
+    return result
 
 
 # energy star report generation - Initial validation funtion
@@ -119,10 +150,11 @@ def energy_star_report(db: Session, data: str, client: str, start_date: str, end
             if db_client == 0:
                 raise HTTPException(status_code=404, detail="Client not found")
 
+            else:
+                sum_flow = sum_of_flow(db_client, start_date, end_date)
+                return sum_flow
 
-
-
-
+           
     else:
         print("dates not in order")
         raise HTTPException(status_code=404, detail="Dates not in order")
