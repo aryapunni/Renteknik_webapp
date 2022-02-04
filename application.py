@@ -372,7 +372,7 @@ async def z3_post(data: dict): #Request
     # req_info_dict = req_info.dict()
     req_info = data
 
-    print(req_info)
+    print(type(req_info), type(data))
     # print(req_info_dict)
 
     dtype = req_info['dtype']
