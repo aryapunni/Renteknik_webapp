@@ -1,6 +1,7 @@
 
 from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.responses import FileResponse
+from fastapi.middleware.cors import CORSMiddleware
 import sqlalchemy
 from sqlalchemy.orm import Session
 from typing import Optional, List, Union, Optional
@@ -22,6 +23,24 @@ from energystar import utils
 
 
 app = FastAPI()
+
+
+
+origins = [
+    "http://abacuslive.ca/z3",
+    "https://abacuslive.ca/z3",
+    "http://abacuslive.ca/z3:80",
+    "https://abacuslive.ca/z3:443",
+]
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # logging.basicConfig(filename='abacus.log', filemode='w', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.DEBUG)
 
@@ -372,11 +391,15 @@ async def create_new_client(code: str, client: str, db: Session = Depends(get_db
 @app.post("/z3")
 async def z3_post(data: dict):
     print(data)
+    now = datetime.now()
+    timestamp = int(datetime.timestamp(now))
+    server_response  = str(timestamp) + ", " + "0"
 
-    return {
-        "status" : "SUCCESS",
-        "data" : data
-    }
+
+
+
+    return server_response
+
 
 
     # return 200
