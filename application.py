@@ -368,7 +368,7 @@ async def create_new_client(code: str, client: str, db: Session = Depends(get_db
 @app.post("/z3")
 async def z3_post(data: Request):
     req_info = await data.json()
-    req_info_dict = data.dict()
+    req_info_dict = req_info.dict()
 
     print(req_info)
     print(req_info_dict)
