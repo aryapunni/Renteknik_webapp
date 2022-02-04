@@ -368,17 +368,37 @@ async def create_new_client(code: str, client: str, db: Session = Depends(get_db
 @app.post("/z3")
 async def z3_post(data: Request):
     req_info = await data.json()
+    req_info_dict = data.json()
 
     print(req_info)
+    print(req_info_dict)
 
-    print(req_info['dtype'])
+    dtype = req_info['dtype']
+    pins = req_info['pins']
+    names = req_info['names']
+    units = req_info['units ']
+    uhtml = req_info['uhtml']
+    uflow = req_info['uflow']
+    uflowhtml = req_info['uflowhtml']
+    tflow= req_info['tflow']
+    scale = req_info['scale']
+    offset = req_info['offset']
+    model = req_info['model']
+    hwver = req_info['hwver']
+    fwver = req_info['fwver']
+    fwdate = req_info['fwdate']
+    fwbuild = req_info['fwbuild']
+    mac = req_info['mac']
+    label = req_info['label']
+    desc = req_info['desc']
+
     return {
         "status" : "SUCCESS",
         "data" : req_info
     }
 
 
-    return 200
+    # return 200
 
 #------------------Z3 POST FUNCTION-------------------#
 
