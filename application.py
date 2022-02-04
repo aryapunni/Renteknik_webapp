@@ -366,12 +366,13 @@ async def create_new_client(code: str, client: str, db: Session = Depends(get_db
 
 # Z3 Function
 @app.post("/z3")
-async def z3_post(data: Request):
+async def z3_post(data: dict): #Request
     req_info = await data.json()
-    req_info_dict = req_info.dict()
+    print(type(req_info))
+    # req_info_dict = req_info.dict()
 
     print(req_info)
-    print(req_info_dict)
+    # print(req_info_dict)
 
     dtype = req_info['dtype']
     pins = req_info['pins']
