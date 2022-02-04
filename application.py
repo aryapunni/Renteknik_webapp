@@ -365,38 +365,17 @@ async def create_new_client(code: str, client: str, db: Session = Depends(get_db
 #------------------Z3 POST FUNCTION-------------------#
 
 # Z3 Function
+# for unknown json input:
+# async def z3_post(data: Request):
+#     req_info = await data.json()
+
 @app.post("/z3")
-async def z3_post(data: dict): #Request
-    # req_info = await data.json()
-    # print(type(req_info))
-    # req_info_dict = req_info.dict()
-    req_info = data
-
-    print(type(req_info), type(data))
-    # print(req_info_dict)
-
-    dtype = req_info['dtype']
-    pins = req_info['pins']
-    names = req_info['names']
-    units = req_info['units']
-    uhtml = req_info['uhtml']
-    uflow = req_info['uflow']
-    uflowhtml = req_info['uflowhtml']
-    tflow= req_info['tflow']
-    scale = req_info['scale']
-    offset = req_info['offset']
-    model = req_info['model']
-    hwver = req_info['hwver']
-    fwver = req_info['fwver']
-    fwdate = req_info['fwdate']
-    fwbuild = req_info['fwbuild']
-    mac = req_info['mac']
-    label = req_info['label']
-    desc = req_info['desc']
+async def z3_post(data: dict):
+    print(data)
 
     return {
         "status" : "SUCCESS",
-        "data" : req_info
+        "data" : data
     }
 
 
