@@ -376,7 +376,7 @@ async def z3_post(data: Request):
     dtype = req_info['dtype']
     pins = req_info['pins']
     names = req_info['names']
-    units = req_info['units ']
+    units = req_info['units']
     uhtml = req_info['uhtml']
     uflow = req_info['uflow']
     uflowhtml = req_info['uflowhtml']
