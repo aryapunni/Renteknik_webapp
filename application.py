@@ -69,7 +69,14 @@ def get_db():
 # panpower pulse post function
 @app.post("/panpower/panpowerpulse/{client}")
 async def panpowerpulse_post(datain: schemas.PanpowerPulseDictCover, client: str, db: Session = Depends(get_db)):
+
+    metadata = crud.get_panpowermetadata_sitename(db, client)
+    if metadata is None:
+        print("there is no such client")
+        raise HTTPException(status_code=404, detail="Client not found")
+
     for data in datain.measurements:
+        data.measurement_time = utils.change_timezone(data.measurement_time, metadata.timezone)
         data.client = client
         data_1 = data.dict()
         pprint.pprint(data_1)
@@ -91,13 +98,18 @@ async def panpower42_post(datain: schemas.Pan42DictCover, client: str, db: Sessi
 # panpower10/12 post function
 @app.post("/panpower/panpower1012/{client}")
 async def panpower1012_post(datain: schemas.PanPowerDictCover, client: str, db: Session = Depends(get_db)):
+
+    metadata = crud.get_panpowermetadata_sitename(db, client)
+
+    if metadata is None:
+        print("there is no such client")
+        raise HTTPException(status_code=404, detail="Client not found")
+
     for data in datain.measurements:
-        print(f"old time {data.measurement_time}")
-        data.measurement_time = utils.change_timezone(data.measurement_time, "America/Toronto")
-        print(f"new time + {data.measurement_time}")
-        # data_1 = data.dict()
-        # print(json.dumps(data_1, indent=4, sort_keys=True))
+        data.measurement_time = utils.change_timezone(data.measurement_time, metadata.timezone)
         data.client = client
+        data_1 = data.dict()
+        pprint.pprint(data_1)
     crud.create_panpower(db=db, measurements=datain)
     return 200
 
