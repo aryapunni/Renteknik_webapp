@@ -6,6 +6,15 @@ from sqlalchemy import select
 
 from . import models, schemas
 
+# Add the provided values to the arc meta data table
+def create_panpower_metadata(db: Session, panpower_meta_data: schemas.PanpowerMetaData):
+    panpower_meta_data = panpower_meta_data.dict()
+    # print(arc_meta_data)
+    # print(db)
+    db_measurement = models.PanpowerMetaData(**panpower_meta_data)
+    db.add(db_measurement)
+    db.commit()
+    db.refresh(db_measurement)
 
 
 # Add the provided values to the Pan42 table.
@@ -81,6 +90,12 @@ def create_arc_metertable(db: Session, arc_meter_values: schemas.ArcMeterTable):
     db.add(db_measurement)
     db.commit()
     db.refresh(db_measurement)
+
+
+
+# Get the metadata from panpower metadata database
+def get_panpowermetadata_sitename(db: Session, site_name: str):
+    return db.query(models.PanpowerMetaData).filter(models.PanpowerMetaData.site_name == site_name).first()
 
 
 # Get the given client name from panpower1012

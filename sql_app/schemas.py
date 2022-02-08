@@ -12,6 +12,28 @@ def float_or_string(value):
     elif isinstance(value, str):
         return 0
 
+# general metadata
+# site name: name given in the panpower database
+# client : Name of the client as of the panoramic database
+# electrical_hierarchy - strings seperated by space
+# time_zone: time zone of the project locattion
+# api_name: panpower post api
+# device sensor types: pan1012 or pan 42 or pulse
+# remarks: general remarks if any
+class PanpowerMetaData(BaseModel):
+    site_name: str
+    client_name: str
+    site_uid: str
+    electrical_hierarchy: str
+    timezone: str
+    dst: str
+    api_name: str
+    device_sensor_types: str
+    remarks: str
+
+    class Config:
+        orm_mode = True
+
 
 # Schema for panpower pulse measurements
 class PanpowerPulse(BaseModel):
@@ -57,6 +79,7 @@ class PanpowerPulse(BaseModel):
                 value = value[:-1]
 
         value = datetime.strptime(value, fmt)
+
         return value
 
 

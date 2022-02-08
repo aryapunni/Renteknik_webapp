@@ -4,6 +4,21 @@ from sqlalchemy.orm import relationship
 from .database import Base
 from datetime import datetime
 
+# Data base table structure for Panpower meta data
+class PanpowerMetaData(Base):
+    __tablename__ = "PanpowerMetaData"
+
+    id = Column(Integer, primary_key=True, index=True)
+    site_name = Column(String)
+    client_name = Column(String)
+    site_uid = Column(String)
+    electrical_hierarchy = Column(String)
+    timezone = Column(String)
+    dst = Column(String)
+    api_name = Column(String)
+    device_sensor_types = Column(String)
+    remarks = Column(String)
+
 
 # Database table structure for panpowerpulsemeasurement
 class PanpowerPulseMeasurement(Base):

@@ -31,14 +31,16 @@ origins = [
     "https://abacuslive.ca/z3",
     "http://abacuslive.ca/z3:80",
     "https://abacuslive.ca/z3:443",
+    "http://localhost/z3"
 ]
 
+# origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT"],
     allow_headers=["*"],
 )
 
@@ -90,6 +92,9 @@ async def panpower42_post(datain: schemas.Pan42DictCover, client: str, db: Sessi
 @app.post("/panpower/panpower1012/{client}")
 async def panpower1012_post(datain: schemas.PanPowerDictCover, client: str, db: Session = Depends(get_db)):
     for data in datain.measurements:
+        print(f"old time {data.measurement_time}")
+        data.measurement_time = utils.change_timezone(data.measurement_time, "America/Toronto")
+        print(f"new time + {data.measurement_time}")
         # data_1 = data.dict()
         # print(json.dumps(data_1, indent=4, sort_keys=True))
         data.client = client
@@ -136,6 +141,17 @@ async def get_panpowerpulse(client: str, db: Session = Depends(get_db)):
         print("there is no such client")
         raise HTTPException(status_code=404, detail="Client not found")
     return  crud.get_panpowerpulse_client_data(db=db, client_name=client)
+
+
+# Panpower Meta data post link
+# input: PanpowerMetaData schema
+@app.post("/panpower/metadata")
+async def post_panpower_metadata(datain: schemas.PanpowerMetaData, db: Session = Depends(get_db)):
+    print(datain)
+    crud.create_panpower_metadata(db, datain)
+    return 200
+
+
 #------------------PANORAMIC POWER GET AND POST FUNCTIONS-------------------#
 
 
@@ -382,23 +398,29 @@ async def create_new_client(code: str, client: str, db: Session = Depends(get_db
 
 
 #------------------Z3 POST FUNCTION-------------------#
+@app.post("/z3")
+async def z3_post(data: Request):
+    req_info = await data.json()
+    print(req_info)
+    now = datetime.now()
+    timestamp = int(datetime.timestamp(now))
+    server_response  = str(timestamp) + ", " + "0"
+
+    return server_response
 
 # Z3 Function
 # for unknown json input:
 # async def z3_post(data: Request):
 #     req_info = await data.json()
 
-@app.post("/z3")
-async def z3_post(data: dict):
-    print(data)
-    now = datetime.now()
-    timestamp = int(datetime.timestamp(now))
-    server_response  = str(timestamp) + ", " + "0"
+# @app.post("/z3")
+# async def z3_post(data: dict):
+#     print(data)
+#     now = datetime.now()
+#     timestamp = int(datetime.timestamp(now))
+#     server_response  = str(timestamp) + ", " + "0"
 
-
-
-
-    return server_response
+#     return server_response
 
 
 

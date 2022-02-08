@@ -6,6 +6,7 @@ from sql_app import models, schemas, crud
 from sqlalchemy.orm import Session
 from sql_app.database import SessionLocal, engine
 import sys
+from pytz import timezone, UTC
 
 sys.path.append('/abacus/sql_app')
 
@@ -20,6 +21,28 @@ def get_db():
         yield db
     finally:
         db.close()
+
+
+# Function to change one time zone to another
+# inputs: date to be changed: in date time format
+# zone name: The zone to which the given date should be converted
+def change_timezone(date: datetime, zonename: str):
+    # out put format of changed timezone
+    fmt = "%Y-%m-%dT%H:%M:%S"
+
+    # assigning input date as UTC time format
+    input_zone = timezone('UTC')
+
+    # change input date to changed time zone
+    zone = timezone(zonename)
+    input_datetime = input_zone.localize(date, is_dst=True)
+    changed_datetime = zone.localize(date, is_dst=True)
+    changed_datetime = input_datetime.astimezone(zone)
+
+    # change returning timezone changed date to required format
+    changed_datetime = changed_datetime.strftime(fmt)
+    return_date = datetime.strptime(changed_datetime, fmt)
+    return return_date
 
 
 
