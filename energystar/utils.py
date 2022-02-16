@@ -101,6 +101,7 @@ def sum_of_flow_reandrive(datain: schemas.PanpowerPulse, start_date: datetime, e
     result = {}
     duration = (end_date - start_date).days
     for value in datain:
+        print(value.measurement_time, value.meter_name, value.volume)
         if (value.meter_name == "Spa water meter") or (value.meter_name == "Pool Water") or (value.meter_name == "Cold Water"):
             water_volume = water_volume + value.volume
         elif value.meter_name == "Hot Water":
