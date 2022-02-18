@@ -280,3 +280,17 @@ class ArcCreateMeter(BaseModel):
     class Config:
         orm_mode = True
 
+
+
+# Table for storing data from Z3
+# cmd: data type
+# time: measurement time
+# ybase: year base, arg_hdr:, arg_m:
+# data = [] - actual data
+class z3_netmeter(BaseModel):
+    cmd: str
+    time: str
+    ybase: str
+    arg_hdr: str
+    arg_m: str
+    data: list
