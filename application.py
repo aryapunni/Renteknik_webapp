@@ -124,11 +124,10 @@ async def panpower1012_post(datain: schemas.PanPowerDictCover, client: str, db: 
         data.client = client
         data_1 = data.dict()
         pprint.pprint(data_1)
+
+
     crud.create_panpower(db=db, measurements=datain)
 
-    json_object = json.dumps(datain, indent=4, sort_keys=True)
-    with open("data.json", "w") as out_file:
-        out_file.write(json_object)
 
     return 200
 
@@ -136,11 +135,16 @@ async def panpower1012_post(datain: schemas.PanPowerDictCover, client: str, db: 
 
 # panpower10/12 post function
 @app.post("/panpower/test")
-async def panpower_post(datain: dict):
-    print(json.dumps(datain, indent=4, sort_keys=True))
-    json_object = json.dumps(datain, indent=4, sort_keys=True)
-    with open("data.json", "w") as out_file:
-        out_file.write(json_object)
+async def panpower_post(datain: schemas.PanPowerDictCover):
+    # print(json.dumps(datain, indent=4, sort_keys=True))
+    # json_object = json.dumps(datain, indent=4, sort_keys=True)
+    for data in datain.measurements:
+        data_1 = data.dict()
+        pprint.pprint(data_1)
+        json_object = json.dumps(data_1, default=str, indent=4, sort_keys=True)
+
+        with open("data.json", "a") as out_file:
+            out_file.write(json_object)
     return 200
 
 
