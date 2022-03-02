@@ -1,6 +1,13 @@
 
 from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.responses import FileResponse
+
+from fastapi import FastAPI, Request
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+from jinja2 import Environment, FileSystemLoader
+
 from fastapi.middleware.cors import CORSMiddleware
 import sqlalchemy
 from sqlalchemy.orm import Session
@@ -24,6 +31,10 @@ from energystar import utils
 
 app = FastAPI()
 
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+
+templates = Jinja2Templates(directory="templates")
 
 
 origins = [
@@ -64,6 +75,9 @@ def get_db():
     finally:
         db.close()
 
+@app.get("/template/{id}", response_class=HTMLResponse)
+async def read_item(request: Request, id: str):
+    return templates.TemplateResponse("table.html", {"request": request, "id": id})
 
 
 # panpower pulse post function
@@ -111,6 +125,11 @@ async def panpower1012_post(datain: schemas.PanPowerDictCover, client: str, db: 
         data_1 = data.dict()
         pprint.pprint(data_1)
     crud.create_panpower(db=db, measurements=datain)
+
+    json_object = json.dumps(datain, indent=4, sort_keys=True)
+    with open("data.json", "w") as out_file:
+        out_file.write(json_object)
+
     return 200
 
 
@@ -170,20 +189,43 @@ async def post_panpower_metadata(datain: schemas.PanpowerMetaData, db: Session =
 #------------------PANORAMIC POWER GET AND POST FUNCTIONS-------------------#
 
 
-#------------------DATA BASE MANIPULATION FUNCTIONS-------------------#
+#------------------ENERGY STAR FUNCTIONS-------------------#
 
 
 # Data fetching function for energy star
 # input: from date, to date, client name, database name
 @app.get("/energystar/{data}/{client}/{start_date}/{end_date}") #2021-09-17
-async def energystar_data(db: Session = Depends(get_db), data: str = "panpower1012", client: str = "1-3reandrive", start_date: str = "2021-09-17", end_date: str = "2021-09-18"):
+async def energystar_data(data: str, client: str, start_date: str, end_date: str, db: Session = Depends(get_db)):
 
     trial_variable = utils.energy_star_report(db=db, data=data, client=client, start_date=start_date, end_date=end_date)
     return trial_variable
 
 
+# Data fetching for 1-3 Rean drive
+# Full month
+@app.get("/energystar/fullmonth/{client}")
+async def report_gen_1_3reandrive(request: Request, client: str, db: Session = Depends(get_db)):
+    lists = []
+    lists = utils.monthly_report_gen(client)
+    print(lists)
+    energy = lists[0]
+    hot_water = lists[1]
+    cold_water = lists[2]
+    gas_meter = lists[3]
 
-#------------------DATA BASE MANIPULATION FUNCTIONS-------------------#
+    utils.reandrive_barchart(energy=energy, hot_water=hot_water, cold_water=cold_water, gas_meter=gas_meter)
+
+    # env = Environment(loader=FileSystemLoader('templates'))
+    # template = env.get_template('table.html')
+    # html = template.render(page_title_text='My report',
+                       # title_text='Daily S&P 500 prices report')
+
+    # return 200
+
+    return templates.TemplateResponse("table.html", {"request": request, "energy": energy, "hot_water": hot_water, "cold_water": cold_water, "gas_meter": gas_meter}) #
+
+
+#------------------ENERGY STAR FUNCTIONS-------------------#
 
 
 
@@ -197,9 +239,9 @@ async def post_consumption(meter_id: str, leed_id: str, client: str, datain: sch
 
     data = datain.dict()
 
-    with open('data.json', 'a') as file:
-        json.dump(data, file, indent = 4)
-        file.write("\n")
+    # with open('data.json', 'a') as file:
+    #     json.dump(data, file, indent = 4)
+    #     file.write("\n")
 
 
     # print(json.dumps(datain, indent=4, sort_keys=True))
