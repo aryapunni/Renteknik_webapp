@@ -143,8 +143,8 @@ async def panpower_post(datain: schemas.PanPowerDictCover):
         pprint.pprint(data_1)
         json_object = json.dumps(data_1, default=str, indent=4, sort_keys=True)
 
-        with open("data.json", "a") as out_file:
-            out_file.write(json_object)
+        # with open("data.json", "a") as out_file:
+        #     out_file.write(json_object)
     return 200
 
 
