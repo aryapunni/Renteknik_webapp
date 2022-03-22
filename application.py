@@ -135,7 +135,7 @@ async def panpower1012_post(datain: schemas.PanPowerDictCover, client: str, db: 
 
 # panpower10/12 post function
 @app.post("/panpower/test")
-async def panpower_post(datain: schemas.PanPowerDictCover):
+async def panpower_post(datain: dict):
     # print(json.dumps(datain, indent=4, sort_keys=True))
     # json_object = json.dumps(datain, indent=4, sort_keys=True)
     for data in datain.measurements:
