@@ -287,7 +287,7 @@ async def post_co2_consumption(meter_id: str, leed_id: str, client: str, datain:
     #     file.write("\n")
 
 
-    # print(json.dumps(datain, indent=4, sort_keys=True))
+    print(json.dumps(datain, indent=4, sort_keys=True))
 
     # If that leed id is not available in the database
     # Send a 404 error
