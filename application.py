@@ -135,16 +135,16 @@ async def panpower1012_post(datain: schemas.PanPowerDictCover, client: str, db: 
 
 # panpower10/12 post function
 @app.post("/panpower/test")
-async def panpower_post(datain: dict):
-    # print(json.dumps(datain, indent=4, sort_keys=True))
-    # json_object = json.dumps(datain, indent=4, sort_keys=True)
-    for data in datain.measurements:
-        data_1 = data.dict()
-        pprint.pprint(data_1)
-        json_object = json.dumps(data_1, default=str, indent=4, sort_keys=True)
+async def panpower_post(datain):
+    print(json.dumps(datain, indent=4, sort_keys=True))
+    json_object = json.dumps(datain, indent=4, sort_keys=True)
+    # for data in datain.measurements:
+        # data_1 = data.dict()
+        # pprint.pprint(data_1)
+        # json_object = json.dumps(data_1, default=str, indent=4, sort_keys=True)
 
-        with open("test.json", "a") as out_file:
-            out_file.write(json_object)
+        # with open("test.json", "a") as out_file:
+            # out_file.write(json_object)
     return 200
 
 
