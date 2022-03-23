@@ -89,11 +89,30 @@ async def panpowerpulse_post(datain: schemas.PanpowerPulseDictCover, client: str
         print("there is no such client")
         raise HTTPException(status_code=404, detail="Client not found")
 
+
+    print("----------------------Actual data----------------------")
+
+
+    for data in datain.measurements:
+        data_2 = data.dict()
+        pprint.pprint(data_2)
+        json_object = json.dumps(data_2, default=str, indent=4, sort_keys=True)
+
+        with open("pan1012_actual.json", "a") as out_file:
+            out_file.write(json_object)
+
+    print("----------------------Time zone data----------------------")
+
     for data in datain.measurements:
         data.measurement_time = utils.change_timezone(data.measurement_time, metadata.timezone)
         data.client = client
         data_1 = data.dict()
         pprint.pprint(data_1)
+        json_object = json.dumps(data_1, default=str, indent=4, sort_keys=True)
+
+        with open("pan1012_timezone.json", "a") as out_file:
+            out_file.write(json_object)
+
     crud.create_panpulse(db=db, measurements=datain)
     return 200
 
@@ -119,11 +138,29 @@ async def panpower1012_post(datain: schemas.PanPowerDictCover, client: str, db: 
         print("there is no such client")
         raise HTTPException(status_code=404, detail="Client not found")
 
+
+    print("----------------------Actual data----------------------")
+
+    for data in datain.measurements:
+        data_2 = data.dict()
+        pprint.pprint(data_2)
+        json_object = json.dumps(data_2, default=str, indent=4, sort_keys=True)
+
+        with open("pan_actual.json", "a") as out_file:
+            out_file.write(json_object)
+
+
+    print("----------------------Time zone data----------------------")
+
     for data in datain.measurements:
         data.measurement_time = utils.change_timezone(data.measurement_time, metadata.timezone)
         data.client = client
         data_1 = data.dict()
         pprint.pprint(data_1)
+        json_object = json.dumps(data_1, default=str, indent=4, sort_keys=True)
+
+        with open("pan_timezone.json", "a") as out_file:
+            out_file.write(json_object)
 
 
     crud.create_panpower(db=db, measurements=datain)
@@ -136,7 +173,7 @@ async def panpower1012_post(datain: schemas.PanPowerDictCover, client: str, db: 
 # panpower10/12 post function
 @app.post("/panpower/test")
 async def panpower_post(datain: schemas.PanPowerDictCover):
-    print(json.dumps(datain, indent=4, sort_keys=True))
+    # print(json.dumps(datain, indent=4, sort_keys=True))
     json_object = json.dumps(datain, indent=4, sort_keys=True)
     for data in datain.measurements:
         data_1 = data.dict()
