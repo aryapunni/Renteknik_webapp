@@ -1,8 +1,9 @@
 # CRUD: CREATE READ UPDATE DELETE
 
-
+import pandas as pd
 from sqlalchemy.orm import Session
 from sqlalchemy import select
+from collections import defaultdict
 
 from . import models, schemas
 
@@ -162,24 +163,46 @@ def update_arcmetadata_leedid(db: Session, leed_id: str, electrical_hierarchy: s
     db.flush()
 
 
+
+# def query_to_dict(rset):
+#     result = defaultdict(list)
+#     for obj in rset:
+#         instance = inspect(obj)
+#         for key, x in instance.attrs.items():
+#             result[key].append(x.value)
+#     return result
+
 # Getting data for Energystar update from data base
 # Monthly data Based on the date and client name
 def energy_star_fetch_data(db: Session, client: str, start_date: str, end_date: str):
 
     # select where method to choose data from the data base
     stmt = select(models.Panpower1012Measurement).where(models.Panpower1012Measurement.client == client, models.Panpower1012Measurement.measurement_time >= start_date,
-                                                        models.Panpower1012Measurement.measurement_time < end_date)
-    result = db.execute(stmt)
+                                                        models.Panpower1012Measurement.measurement_time < end_date) \
+                                                        .group_by(models.Panpower1012Measurement.measurement_time, models.Panpower1012Measurement.device_id)
+
+
+
+    result = db.execute(stmt).all()
+
+    # print(result[0])
+
 
     # Printing the data output
-    for user_obj in result.scalars():
+    for val in result:
+        # print(val)
+        for values in val:
+            print(values.measurement_time)
         # print(user_obj.energy, user_obj.measurement_time, user_obj.client)
-        pass
+        # pass
 
     # Query filter & method to filter data from database
     values = db.query(models.Panpower1012Measurement).filter(models.Panpower1012Measurement.client == client) \
-        .filter((models.Panpower1012Measurement.measurement_time >= start_date) & (models.Panpower1012Measurement.measurement_time < end_date)).all()
+        .filter((models.Panpower1012Measurement.measurement_time >= start_date) & (models.Panpower1012Measurement.measurement_time < end_date)) \
+        .group_by(models.Panpower1012Measurement.measurement_time, models.Panpower1012Measurement.device_id).all()
 
+
+    # print(type(values[0]))
 
     db.commit()
     db.flush()
@@ -192,13 +215,18 @@ def energy_star_fetch_pulsedata(db: Session, client: str, start_date: str, end_d
 
     # select where method to choose data from the data base
     stmt = select(models.PanpowerPulseMeasurement).where(models.PanpowerPulseMeasurement.client == client, models.PanpowerPulseMeasurement.measurement_time > start_date,
-                                                        models.PanpowerPulseMeasurement.measurement_time <= end_date)
-    result = db.execute(stmt)
+                                                        models.PanpowerPulseMeasurement.measurement_time <= end_date).distinct()
+    result = pd.read_sql(db.execute(stmt), db.bind)
+
+    result = result.drop_duplicates()
+
+    print(f"====================>> Result \n\n {result}")
 
     # Printing the data output
-    for user_obj in result.scalars():
+    for user_obj in result:
+        print(user_obj)
         # print(user_obj.energy, user_obj.measurement_time, user_obj.client)
-        pass
+        # pass
 
     # Query filter & method to filter data from database
     values = db.query(models.PanpowerPulseMeasurement).filter(models.PanpowerPulseMeasurement.client == client) \

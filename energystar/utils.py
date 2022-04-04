@@ -7,6 +7,11 @@ from sqlalchemy.orm import Session
 from sql_app.database import SessionLocal, engine
 import sys
 from pytz import timezone, UTC
+import seaborn as sns
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
 
 sys.path.append('/abacus/sql_app')
 
@@ -184,5 +189,54 @@ def energy_star_report(db: Session, data: str, client: str, start_date: str, end
         raise HTTPException(status_code=404, detail="Dates not in order")
 
 
+def monthly_report_gen(client: str):
+
+    energy = {'Jan': "23740", 'Feb': "23680", 'Mar': "0", 'Apr': "0", 'May': "0", 'Jun': "0", 'Jul': "0", 'Aug': "0", 'Sep': "0", 'Oct': "0", 'Nov': "0", 'Dec': "0"}
+    hot_water = {'Jan': "2368", 'Feb': "1878", 'Mar': "0", 'Apr': "0", 'May': "0", 'Jun': "0", 'Jul': "0", 'Aug': "0", 'Sep': "0", 'Oct': "0", 'Nov': "0", 'Dec': "0"}
+    cold_water = {'Jan': "6296", 'Feb': "8408", 'Mar': "0", 'Apr': "0", 'May': "0", 'Jun': "0", 'Jul': "0", 'Aug': "0", 'Sep': "0", 'Oct': "0", 'Nov': "0", 'Dec': "0"}
+    gas_meter = {'Jan': "87550", 'Feb': "65660", 'Mar': "0", 'Apr': "0", 'May': "0", 'Jun': "0", 'Jul': "0", 'Aug': "0", 'Sep': "0", 'Oct': "0", 'Nov': "0", 'Dec': "0"}
+    print(client)
+    return [energy, hot_water, cold_water, gas_meter]
+
 
     # return data, client, start_date, end_date
+
+def reandrive_barchart(energy: dict, hot_water: dict, cold_water: dict, gas_meter: dict):
+
+    months = list(energy.keys())
+
+    energy = [int(energy[k]) for k in months]
+    print(energy)
+    g = sns.barplot(x=months, y=energy)
+    plt.title("Energy Plot")
+    plt.ylim(23000, 24000)
+    plt.xlabel("Months")
+    plt.ylabel("Energy(kWh)")
+    plt.savefig('static/energy.png')
+
+    hot_water = [int(hot_water[k]) for k in months]
+    print(hot_water)
+    sns.barplot(x=months, y=hot_water)
+    plt.title("Hot Water Plot")
+    plt.ylim(100, 2400)
+    plt.xlabel("Months")
+    plt.ylabel("HotWater(ft3)")
+    plt.savefig('static/hot_water.png')
+
+    cold_water = [int(cold_water[k]) for k in months]
+    sns.barplot(x=months, y=cold_water)
+    print(cold_water)
+    plt.ylim(6000, 8000)
+    plt.title("Cold Water Plot")
+    plt.xlabel("Months")
+    plt.ylabel("ColdWater(ft3)")
+    plt.savefig('static/cold_water.png')
+
+    gas_meter = [int(gas_meter[k]) for k in months]
+    print(gas_meter)
+    plt.title("Gas Meter Plot")
+    plt.ylim(10000, 90000)
+    plt.xlabel("Months")
+    plt.ylabel("GasMeteer(ft3)")
+    sns.barplot(x=months, y=gas_meter)
+    plt.savefig('static/gas_meter.png')
