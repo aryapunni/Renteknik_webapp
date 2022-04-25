@@ -1,0 +1,49 @@
+<link rel="stylesheet" type="text/css" href="template.css"/>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <title>{{title}}</title>
+    <meta name="viewport" content="initial-scale=1.0; maximum-scale=1.0; width=device-width;">
+</head>
+
+<body>
+    <div class="table-title" align="center">
+        <h4><img src="file:///home/arya/code/python_public/static/Logo no tag Small.jpg" style="width:100%"></h4>
+        <p style="font-weight: bold"></p>
+    </div>
+    <div class="table-title" align="center">
+        <h2>Report 2022</h2>
+        <h5>Facility: TSCC-1496 The Chrysler</h5>
+
+        <h5>Address: 1-3 Rean Drive, Toronto, ON </h5>
+
+        <h5>Report: Shared Facilities Annual Energy Breakdown </h5>
+        <p style="font-weight: bold"></p>
+    </div>
+    <div align="center">
+        {{ df }}
+    </div>
+
+    <div class="image-grid" align="center" style="width: 100%">
+
+        <div class="row">
+            <p align="center">{{ message }}</p>
+            <div class="column">
+                <img src="file:///home/arya/AWS2/abacus/energystar/report/quantiphi/energy.png" style="width:100%">
+            </div>
+            <div class="column">
+                <img src="file:///home/arya/AWS2/abacus/energystar/report/quantiphi/gas_meter.png"  style="width:100%">
+            </div>
+            <div class="column">
+                <img src="file:///home/arya/AWS2/abacus/energystar/report/quantiphi/cold_water.png"  style="width:100%">
+            </div>
+            <div class="column">
+                <img src="file:///home/arya/AWS2/abacus/energystar/report/quantiphi/hot_water.png"  style="width:100%">
+            </div>
+        </div>
+
+
+    </div>
+
+</body>
+</html>
