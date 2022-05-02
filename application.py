@@ -330,18 +330,13 @@ async def post_co2_consumption(meter_id: str, leed_id: str, client: str, datain:
 
     data = datain.dict()
 
-    # with open('data.json', 'a') as file:
-    #     json.dump(data, file, indent = 4)
-    #     file.write("\n")
-
-
-    # print(json.dumps(datain, indent=4, sort_keys=True))
 
     # If that leed id is not available in the database
     # Send a 404 error
     if meta_data is None:
         print("There is no such Project in that Leed ID")
-        # raise HTTPException(status_code=404, detail="Leed ID not found")
+        raise HTTPException(status_code=404, detail="Leed ID not found")
+
 
     # If the data fetching was successfull proceed to send data to Arc
     for data in datain.measurements:
@@ -353,11 +348,16 @@ async def post_co2_consumption(meter_id: str, leed_id: str, client: str, datain:
     # # Electrical hierarchy for filtering data
     # electrical_hierarchy = meta_data.electrical_hierarchy
 
-    # # Timezone and time duration information for processing data
-    # time_data = {"duartion_format": meta_data.duration_format, "duration": meta_data.duration, "time_zone": meta_data.timezone}
+    # Timezone and time duration information for processing data
+    time_data = {"duartion_format": meta_data.duration_format, "duration": meta_data.duration, "time_zone": meta_data.timezone}
+
+
+    # Send meter details: electrical meter name to fetch data from
+    meter_data = crud.get_arc_meter_data_meter_id(db, meter_id)
+    print(meter_data.renteknik_meter)
 
     # # Send data to Arc
-    send_arc_co2_consumption(db, datain.dict())
+    send_arc_co2_consumption(db, datain.dict(), meter_data.renteknik_meter, time_data)
     return 200
 
 # Arc create meter in ARC

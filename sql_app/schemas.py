@@ -168,6 +168,7 @@ class ArcCo2Consumption(BaseModel):
     energy: Optional[Union[float, str]] = Field(..., alias='ENERGY(Wh)')
     flow: Optional[Union[float, str]] = Field(..., alias='FLOW')
     volume: Optional[Union[float, str]] = Field(..., alias='VOLUME')
+    meter_name: str = Field(..., alias='METER_NAME')
 
 
     # validator function to check input value coming in are N/A or a float

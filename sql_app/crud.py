@@ -139,6 +139,10 @@ def get_arc_metadata_leedid(db: Session, leed_id: str):
     return db.query(models.ArcMetaData).filter(models.ArcMetaData.leed_id == leed_id).first()
 
 
+# Get data from Arc meta data table based on the leed id
+def get_arc_meter_data_meter_id(db: Session, meter_id: str):
+    return db.query(models.ArcMeterTable).filter(models.ArcMeterTable.meter_id == meter_id).first()
+
 # # Get the given leed id from panpower1012
 # def get_arc_leed_data(db: Session, leed_id: str):
 #     return db.query(models.ArcMetaData).filter(models.ArcMetaData.leed_id == leed_id).first()

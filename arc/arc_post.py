@@ -188,13 +188,15 @@ def send_arc_consumption(db: Session, datain: dict, electrical_hierarchy: str, t
 
 
 
+
+
 # Recieve data for Arc from front end
 # Send it for processing
 # Send processed data to Arc API function
 # Arguments:
 # datain: collection of dictionaries coming from panoramic power
 # electrical_hierarchy: list of elaments that we have to count when we add energy
-def send_arc_co2_consumption(db: Session, datain: dict):
+def send_arc_co2_consumption(db: Session, datain: dict, meter_data: str, time_data: dict):
 
     primary_key = settings.arc_primary_key
 
@@ -212,11 +214,13 @@ def send_arc_co2_consumption(db: Session, datain: dict):
         meter_id = measurement["meter_id"]
         measurement_time = measurement["measurement_time"]
 
-        if measurement["flow"] is not None:
+
+        if (measurement["flow"] is not None) and (measurement["meter_name"] == meter_data):
+
             co2 = co2 + measurement["flow"]
             print(measurement)
             print(co2, measurement["leed_id"], measurement["client"], measurement["meter_id"], measurement["measurement_time"])
-    arc_time_data = start_end_time(measurement_time, "hours", 1, "America/Toronto")
+    arc_time_data = start_end_time(measurement_time, time_data["duartion_format"], int(time_data["duration"]), time_data["time_zone"])
     print(arc_time_data)
 
     # Sending data to arc
