@@ -345,8 +345,6 @@ async def post_co2_consumption(meter_id: str, leed_id: str, client: str, datain:
         data.client = client
 
     print(data)
-    # # Electrical hierarchy for filtering data
-    # electrical_hierarchy = meta_data.electrical_hierarchy
 
     # Timezone and time duration information for processing data
     time_data = {"duartion_format": meta_data.duration_format, "duration": meta_data.duration, "time_zone": meta_data.timezone}
@@ -357,6 +355,10 @@ async def post_co2_consumption(meter_id: str, leed_id: str, client: str, datain:
     print(meter_data.renteknik_meter)
 
     # # Send data to Arc
+    # Passing params: data from panpower
+    # meta data.renteknik_meter: the name of the device from
+    # which you should grab the flow data
+    # time data: time zone and duration at which data should be sent
     send_arc_co2_consumption(db, datain.dict(), meter_data.renteknik_meter, time_data)
     return 200
 
