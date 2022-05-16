@@ -12,10 +12,10 @@ from random import getrandbits, randint
 def random_hex(length=10):
     return '%0x' % getrandbits(length * 4)
 months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
-energy =   ["23,740", "23,680", "26,380", 0, 0, 0, 0, 0, 0, 0, 0, 0]
-hot_water =   ["2,368", "1,878", "1,336", 0, 0, 0, 0, 0, 0, 0, 0, 0]
-cold_water =   ["6,296", "8,408", "10,484", 0, 0, 0, 0, 0, 0, 0, 0, 0]
-gas_meter =   ["87,550", "65,660", "129,600", 0, 0, 0, 0, 0, 0, 0, 0, 0]
+energy =   ["23,740", "23,680", "26,380","24,700", 0, 0, 0, 0, 0, 0, 0, 0]
+hot_water =   ["2,368", "1,878", "1,336", "339", 0, 0, 0, 0, 0, 0, 0, 0]
+cold_water =   ["6,296", "8,408", "10,484", "7,400", 0, 0, 0, 0, 0, 0, 0, 0]
+gas_meter =   ["87,550", "65,660", "129,600", "109,900", 0, 0, 0, 0, 0, 0, 0, 0]
 df = pd.DataFrame([{"Months":months[i],
                     "Electricity(kWh)":energy[i],
                     "Hot Water(ft3)":hot_water[i],

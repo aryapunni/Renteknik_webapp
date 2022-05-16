@@ -14,12 +14,12 @@ def random_hex(length=10):
 
 
 
-data = [['Maximum Production Daily Consumption', 1194.21],
-        ['Maximum Off-Hour Daily Consumption', 413.80],
-        ['Off-Time Percentage', 32.75],
-        ['Average On-Time Consumption', 687.24],
-        ['Average Off-Time Consumption', 151.60],
-        ['Off-Time Target', 8246.95],]
+data = [['Maximum Production Daily Consumption (kWh)', 1194.21],
+        ['Maximum Off-Hour Daily Consumption(kWh)', 538.25],
+        ['Off-Time Percentage (%)', 21.56],
+        ['Hourly Average On-Time Consumption (kWh)', 714.99],
+        ['Hourly Average Off-Time Consumption (kWh)', 154.20],
+        ['Off-Time Target (kWh)', 142.99],]
 df = pd.DataFrame(data, columns = ['Category', 'Value'])
 
 
@@ -35,7 +35,7 @@ template = env.get_template("tableTemplate.html")
 # pass df, title, message to the template.
 html_out = template.render(df=dfhtml,
                            title="Renteknik Group Inc.",
-                           message="Energy Plots")
+                           message="")
 
 # write the html to file
 with open("output.html", 'wb') as file_:

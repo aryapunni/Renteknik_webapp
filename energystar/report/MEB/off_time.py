@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+
 import csv
 from datetime import datetime
 from datetime import time
@@ -9,13 +10,12 @@ import plotly.graph_objects as go
 from statistics import mean
 import graphs
 
-def timestamp_datetime(time_stamp: str):
-    fmt = "%Y-%m-%d %H:%M"
+def which_weekday(day: int):
+    days = ["Monday", "Tuesday", "Wednesday",
+        "Thursday", "Friday", "Saturday", "Sunday"]
+    # print(f"Weekday is {days[day]}")
+    return days[day]
 
-    date = datetime.strptime(time_stamp, fmt)
-    return date
-def average_ontime(ontime: list):
-    print(ontime)
 
 
 def unique(value: list):
@@ -25,17 +25,89 @@ def unique(value: list):
             output.append(val)
     return output
 
+def create_ontime_list(ontime_interval: int):
+
+    interval = {}
+    day_val = 0
+    start_val = 0
+    end_val = 0
+    day = []
+    start = []
+    end = []
+
+    print("\nFollow this instructions for entering interval")
+    print("\nMonday 0\nTuesday 1\nWednesday 2\nThursday 3\nFriday 4\nSaturday 5\nSunday 6\n\n")
+    print("\nTime 0 to 24 Format\n")
+
+
+    for i in range(0, ontime_interval):
+        print(i)
+        day_val, start_val, end_val = map(int, input("Enter the time: ").split())
+        day.append(day_val)
+        start.append(start_val)
+        end.append(end_val)
+
+    interval["day"] = day
+    interval["start"] = start
+    interval["end"] = end
+    print(interval)
+    return interval
+
+
 def get_electrical_hierarchy():
 
     hierarchy = []
-    n = int(input("Enter the number of elements: "))
+    n = int(input("\nEnter the number of elements: "))
 
     for i in range(0, n):
-        element = input("Enter the electrical hierarchy: ")
+        element = input("\nEnter the electrical hierarchy: ")
         hierarchy.append(element)
     print(hierarchy)
     return hierarchy
 
+
+
+def timestamp_datetime(time_stamp: str):
+    fmt = "%Y-%m-%d %H:%M"
+
+    date = datetime.strptime(time_stamp, fmt)
+    return date
+
+
+def ontime_or_offtime(ontime_intervals: dict, date: datetime):
+    on_time_flag = 0
+    index = 0
+    start_time = 0
+    end_time = 0
+    current_time = 0
+    weekday = which_weekday(date.weekday())
+    if date.weekday() in ontime_intervals["day"]:
+        index = ontime_intervals["day"].index(date.weekday())
+        start_time = time(ontime_intervals["start"][index], 0, 0)
+        end_time = time(ontime_intervals["end"][index], 0, 0)
+        current_time = date.time()
+        if(start_time <= current_time < end_time):
+            print(f"\nDay: {date}")
+            print(f"weekday: {weekday}")
+            print("on TIME")
+            on_time_flag = 1
+        else:
+
+            print(f"\nweekday: {weekday}")
+            print("off TIME")
+            on_time_flag = 0
+    else:
+
+        print(f"\nweekday: {weekday}")
+        print("off_time")
+        on_time_flag = 0
+
+
+        # print(f"\nDATE:{date}\nindex: {index}\ndate.weekday() : {date.weekday()}\nWeekday: {weekday}")
+        # print(f"start_time: {start_time}\nend_time: {end_time}\ncurrent_time: {date.time()}")
+
+
+    return on_time_flag
 
 if __name__ == "__main__":
 
@@ -71,6 +143,12 @@ if __name__ == "__main__":
     hourly_offtime_target = 0
     average_ontime_list = []
     average_offtime_list = []
+    on_time_intervals = 0
+    ontime_interval_list = []
+    ontime_flag = 0
+
+
+    cut_off_val = int(input("Enter the cut off value: "))
 
     filename = input("Enter the file name: ")
 
@@ -86,8 +164,7 @@ if __name__ == "__main__":
         list_of_column_names = list(dict_from_csv.keys())
 
         # displaying the list of column names
-        print("List of column names : ",
-              list_of_column_names)
+        print("\nList of column names : \n\n",list_of_column_names,"\n")
 
 
     # Getting csv indexes from user
@@ -95,8 +172,9 @@ if __name__ == "__main__":
 
 
 
-
-
+    on_time_intervals = int(input("\nEnter the number of on time intervals: "))
+    ontime_interval_list = create_ontime_list(on_time_intervals)
+    print(ontime_interval_list)
 
     with open(filename, "r") as f:
         reader = csv.DictReader(f)
@@ -116,68 +194,23 @@ if __name__ == "__main__":
                 energy = energy + float(lines[index])
 
 
-
-            # Sum of MDP and MDP2 constitutes the total energy
-            # energy = float(lines['MDP   (kWh)']) + float(lines['MDP2   (kWh)'])
-
-            # print(f"energy: {energy}, energy new: {energy}")
-            # extracting MDP and MDP2 from csv (Not necessary)
-            # MDP.append(lines['MDP   (kWh)'])
-            # MDP_2.append(lines['MDP2   (kWh)'])
-
-
-            # If date.weekday() returns 5 or 6, those dates are weekends
-            # If it is weekend append the energy value to the list off_time
-            if date.weekday() > 4:
-                # Computing total off hours
-                total_off_hours = total_off_hours + 1
-
-                # Creating a list with the timestamps (hourly data)
+            ontime_flag = ontime_or_offtime(ontime_interval_list, date)
+            if(ontime_flag):
+                total_on_hours = total_on_hours + 1
                 date_list.append(date)
-
-                # since this is weekend all energy data goes to off time
+                on_time.append(energy)
+                off_time.append(0)
+                off_time_cutoff.append(0)
+                average.append(135)
+            else:
+                total_off_hours = total_off_hours + 1
+                date_list.append(date)
                 on_time.append(0)
                 off_time.append(energy)
-
-                # off time time cutoff is off time energy - 150
-                # 150 is a constant energy value which will not change at any time
-                # there is no way that value can be reduced
-                # So no need to analyse that
-                off_time_cutoff.append(energy - 150)
+                off_time_cutoff.append(energy - cut_off_val)
                 average.append(135)
-
-            else:
-
-                # All values other than weekend comes here
-                # Extract time from the timestamp (remove date data)
-                time_now = date.time()
-
-                # setting On time and Off time for a weekday
-                four_am = time(hour=4, minute=0, second=0)
-                four_pm = time(hour=16, minute=0, second=0)
-
-                # 4 am to 3.59 pm is ON time
-                if four_am <= time_now < four_pm:
-                    # Same things we did for OFF time/Weekend
-                    # Just append values to On time not to Off time
-                    total_on_hours = total_on_hours + 1
-                    date_list.append(date)
-                    on_time.append(energy)
-                    off_time.append(0)
-                    off_time_cutoff.append(0)
-                    average.append(135)
-                # 4 pm to 3 59 am on a weekday is Off time
-                else:
-                    # Same things we did for OFF time/Weekend
-                    total_off_hours = total_off_hours + 1
-                    date_list.append(date)
-                    on_time.append(0)
-                    off_time.append(energy)
-                    off_time_cutoff.append(energy - 150)
-                    average.append(135)
-
-
-    # Create a list with non zero values in Ontime
+            # print(ontime_flag)
+        # Create a list with non zero values in Ontime
     # Remove all the zeros from On time as it represents Off time
     nonzero_ontime = [i for i in on_time if i != 0]
 

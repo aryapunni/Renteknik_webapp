@@ -196,7 +196,7 @@ def send_arc_consumption(db: Session, datain: dict, electrical_hierarchy: str, t
 # Arguments:
 # datain: collection of dictionaries coming from panoramic power
 # electrical_hierarchy: list of elaments that we have to count when we add energy
-def send_arc_co2_consumption(db: Session, datain: dict, meter_data: str, time_data: dict):
+def send_arc_co2_consumption(db: Session, datain: dict, meter_name: str, time_data: dict):
 
     primary_key = settings.arc_primary_key
 
@@ -215,13 +215,14 @@ def send_arc_co2_consumption(db: Session, datain: dict, meter_data: str, time_da
         measurement_time = measurement["measurement_time"]
 
 
-        if (measurement["flow"] is not None) and (measurement["meter_name"] == meter_data):
+        if (measurement["flow"] is not None) and (measurement["meter_name"] == meter_name):
 
             co2 = co2 + measurement["flow"]
             print(measurement)
             print(co2, measurement["leed_id"], measurement["client"], measurement["meter_id"], measurement["measurement_time"])
     arc_time_data = start_end_time(measurement_time, time_data["duartion_format"], int(time_data["duration"]), time_data["time_zone"])
     print(arc_time_data)
+    co2 = co2/24
 
     # Sending data to arc
     create_co2_consumption(db, leed_id, client, meter_id, arc_time_data[0], arc_time_data[1], co2)

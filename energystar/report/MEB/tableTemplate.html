@@ -12,10 +12,12 @@
         <p style="font-weight: bold"></p>
     </div>
     <div class="table-title" align="center">
-        <h2>MEB REPORT 2022</h2>
+        <h3>Monthy Energy Benchmarking Report</h3>
+        <h5>Month: March 2022</h5>
         <h5>Facility: Magna Exteriors - Belvidere</h5>
-
-        <p style="font-weight: bold"></p>
+        <h5>Address: 675 Corporate Pkwy, Belvidere</h5>
+        <h5>Contact: Isaac J Hock, Facilities Manager, Magna Exteriors</h5>
+        <!-- <p style="font-weight: bold"></p> -->
     </div>
     
 
@@ -23,14 +25,16 @@
 
         <div class="row">
             <p align="center">{{ message }}</p>
-            <!-- <img src="file:///home/arya/AWS2/test/MEB/marti/newplot_1000.png" style="width:100%">
-            <img src="file:///home/arya/AWS2/test/MEB/marti/newplot_average_1000.png" style="width:100%"> -->
+            
             <div class="column">
-                <img src="file:///home/arya/AWS2/test/MEB/marti/newplot_1000.png" style="width:100%">
+                <h5>Average Monthly Energy Benchmarking Report (Daily Average)</h5>
+                <img src="file:///home/arya/AWS2/abacus/energystar/report/MEB/graphs/figarea.png" style="width:100%">
             </div>
             <div class="column">
-                <img src="file:///home/arya/AWS2/test/MEB/marti/newplot_average_1000.png" style="width:100%">
+                <h5 style="padding-top: 150px;">Average Monthly Energy Benchmarking Report (Hourly Average)</h5>
+                <img src="file:///home/arya/AWS2/abacus/energystar/report/MEB/graphs/figarea3.png" style="width:100%">
             </div>
+            
             <!-- <div class="column"> -->
             <!--     <img src="file:///home/arya/AWS2/abacus/energystar/report/quantiphi/cold_water.png"  style="width:100%"> -->
             <!-- </div> -->
@@ -44,6 +48,7 @@
 
     <div  class="dataframe">
     <div align="center">
+        <h4>Summary</h4>
         {{ df }}
     </div>
     </div>

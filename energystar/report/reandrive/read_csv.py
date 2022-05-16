@@ -9,7 +9,7 @@ if __name__ == "__main__":
     hot_water = 0
     length = 0
 
-    with open('march.csv', mode ='r') as file:
+    with open('april.csv', mode ='r') as file:
 
         reader = csv.DictReader(file)
         count = sum(1 for _ in reader)
@@ -38,5 +38,5 @@ if __name__ == "__main__":
 
 
 
-    hot_water_volume = hot_water - (100*24*(count-1))
+    hot_water_volume = hot_water - (100*24*(count - 1))
     print(f"water_volume = {water_volume},  hot_water = {hot_water} , {hot_water_volume}, {count}")
