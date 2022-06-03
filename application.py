@@ -75,6 +75,8 @@ def get_db():
     finally:
         db.close()
 
+
+#Testing a template(HTML)
 @app.get("/template/{id}", response_class=HTMLResponse)
 async def read_item(request: Request, id: str):
     return templates.TemplateResponse("table.html", {"request": request, "id": id})
@@ -89,29 +91,37 @@ async def panpowerpulse_post(datain: schemas.PanpowerPulseDictCover, client: str
         print("there is no such client")
         raise HTTPException(status_code=404, detail="Client not found")
 
+    # This Section is for testing the incoming data before time zone change
+    # Uncomment this section when necessary
+    # print("----------------------Actual data----------------------")
 
-    print("----------------------Actual data----------------------")
 
+    # for data in datain.measurements:
+    #     data_2 = data.dict()
+    #     pprint.pprint(data_2)
+    #     json_object = json.dumps(data_2, default=str, indent=4, sort_keys=True)
+
+    #     with open("pan1012_actual.json", "a") as out_file:
+    #         out_file.write(json_object)
+
+    # print("----------------------Time zone data----------------------")
 
     for data in datain.measurements:
-        data_2 = data.dict()
-        pprint.pprint(data_2)
-        json_object = json.dumps(data_2, default=str, indent=4, sort_keys=True)
-
-        with open("pan1012_actual.json", "a") as out_file:
-            out_file.write(json_object)
-
-    print("----------------------Time zone data----------------------")
-
-    for data in datain.measurements:
+        # Change measurement time of the data based on the meta data
         data.measurement_time = utils.change_timezone(data.measurement_time, metadata.timezone)
-        data.client = client
-        data_1 = data.dict()
-        pprint.pprint(data_1)
-        json_object = json.dumps(data_1, default=str, indent=4, sort_keys=True)
 
-        with open("pan1012_timezone.json", "a") as out_file:
-            out_file.write(json_object)
+        # Add the client name
+        data.client = client
+
+        # This section is for testing the incoming data
+        # After changing the time zone
+        # Uncomment when necessary
+        # data_1 = data.dict()
+        # pprint.pprint(data_1)
+        # json_object = json.dumps(data_1, default=str, indent=4, sort_keys=True)
+
+        # with open("pan1012_timezone.json", "a") as out_file:
+        #     out_file.write(json_object)
 
     crud.create_panpulse(db=db, measurements=datain)
     return 200
@@ -119,6 +129,7 @@ async def panpowerpulse_post(datain: schemas.PanpowerPulseDictCover, client: str
 
 
 # panpower 42 post function
+# Not many lines because there is no pan42 devices
 @app.post("/panpower/panpower42/{client}")
 async def panpower42_post(datain: schemas.Pan42DictCover, client: str, db: Session = Depends(get_db)):
     for data in datain.measurements:
@@ -133,40 +144,50 @@ async def panpower42_post(datain: schemas.Pan42DictCover, client: str, db: Sessi
 async def panpower1012_post(datain: schemas.PanPowerDictCover, client: str, db: Session = Depends(get_db)):
 
 
+    # Getting the metadata from database
     metadata = crud.get_panpowermetadata_sitename(db, client)
 
     if metadata is None:
         print("there is no such client")
         raise HTTPException(status_code=404, detail="Client not found")
 
+    # This Section is for testing the incoming data before time zone change
+    # Uncomment this section when necessary
 
-    print("----------------------Actual data----------------------")
+    # print("----------------------Actual data----------------------")
+
+    # for data in datain.measurements:
+    #     data_2 = data.dict()
+    #     pprint.pprint(data_2)
+    #     json_object = json.dumps(data_2, default=str, indent=4, sort_keys=True)
+
+    #     with open("pan_actual.json", "a") as out_file:
+    #         out_file.write(json_object)
+
+
+    # print("----------------------Time zone data----------------------")
 
     for data in datain.measurements:
-        data_2 = data.dict()
-        pprint.pprint(data_2)
-        json_object = json.dumps(data_2, default=str, indent=4, sort_keys=True)
 
-        with open("pan_actual.json", "a") as out_file:
-            out_file.write(json_object)
-
-
-    print("----------------------Time zone data----------------------")
-
-    for data in datain.measurements:
+        # Change measurement time of the data based on the meta data
         data.measurement_time = utils.change_timezone(data.measurement_time, metadata.timezone)
-        data.client = client
-        data_1 = data.dict()
-        pprint.pprint(data_1)
-        json_object = json.dumps(data_1, default=str, indent=4, sort_keys=True)
 
-        with open("pan_timezone.json", "a") as out_file:
-            out_file.write(json_object)
+
+        # Add the client name
+        data.client = client
+
+        # This section is for testing the incoming data
+        # After changing the time zone
+        # Uncomment when necessary
+        # data_1 = data.dict()
+        # pprint.pprint(data_1)
+        # json_object = json.dumps(data_1, default=str, indent=4, sort_keys=True)
+
+        # with open("pan_timezone.json", "a") as out_file:
+        #     out_file.write(json_object)
 
 
     crud.create_panpower(db=db, measurements=datain)
-
-
     return 200
 
 
