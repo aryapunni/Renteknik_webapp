@@ -193,8 +193,11 @@ async def panpower1012_post(datain: schemas.PanPowerDictCover, client: str, db: 
 
 
 # panpower10/12 post function
+# This is a function for testing purposes only
+# Change schema based on the json input type
 @app.post("/panpower/test")
 async def panpower_post(datain: schemas.PanpowerPulseDictCover): #datapulse: schemas.PanpowerPulseDictCover
+
     # print(json.dumps(datain, indent=4, sort_keys=True))
     # json_object = json.dumps(datain, indent=4, sort_keys=True)
     for data in datain.measurements:
@@ -219,6 +222,7 @@ async def panpower_post(datain: schemas.PanpowerPulseDictCover): #datapulse: sch
 
 
 # panpower10/12 data get function
+# To get data from database and display it in JSON format in the get path specified
 @app.get("/panpower/panpower1012/{client}")
 async def get_panpower1012(client: str, db: Session = Depends(get_db)):
     db_client = crud.get_panpower1012_client(db=db, client_name=client)
@@ -230,6 +234,7 @@ async def get_panpower1012(client: str, db: Session = Depends(get_db)):
 
 
 # panpower42 data get function
+# To get data from database and display it in JSON format in the get path specified
 @app.get("/panpower/panpower42/{client}")
 async def get_panpower42(client: str, db: Session = Depends(get_db)):
     db_client = crud.get_pan42_client(db=db, client_name=client)
@@ -241,6 +246,7 @@ async def get_panpower42(client: str, db: Session = Depends(get_db)):
 
 
 # panpowerpulse data get function
+# To get data from database and display it in JSON format in the get path specified
 @app.get("/panpower/panpowerpulse/{client}")
 async def get_panpowerpulse(client: str, db: Session = Depends(get_db)):
     db_client = crud.get_panpowerpulse_client(db=db, client_name=client)
@@ -252,6 +258,8 @@ async def get_panpowerpulse(client: str, db: Session = Depends(get_db)):
 
 # Panpower Meta data post link
 # input: PanpowerMetaData schema
+# metadata includes: site_name, client name, site uid, electrical hierarchy, time zone
+# dst, api name, device sensor types, remarks
 @app.post("/panpower/metadata")
 async def post_panpower_metadata(datain: schemas.PanpowerMetaData, db: Session = Depends(get_db)):
     print(datain)
@@ -265,22 +273,30 @@ async def post_panpower_metadata(datain: schemas.PanpowerMetaData, db: Session =
 #------------------ENERGY STAR FUNCTIONS-------------------#
 
 
+# ***************************THIS FUNTION NEEDS WORK******************************* #
 # Data fetching function for energy star
 # input: from date, to date, client name, database name
+# Created mainly for reandrive
+# This funtion/path only works if client name = site id
+# This function should be changed to work on site ID
 @app.get("/energystar/{data}/{client}/{start_date}/{end_date}") #2021-09-17
 async def energystar_data(data: str, client: str, start_date: str, end_date: str, db: Session = Depends(get_db)):
 
-    trial_variable = utils.energy_star_report(db=db, data=data, client=client, start_date=start_date, end_date=end_date)
-    return trial_variable
+    energy_usage = utils.energy_star_report(db=db, data=data, client=client, start_date=start_date, end_date=end_date)
+    return energy_usage
 
-
+# ***************************THIS FUNTION NEEDS WORK******************************* #
 # Data fetching for 1-3 Rean drive
 # Full month
+# This function is specifically for 1-3 reandrive so no need to add client name
+# To make it more generalised add date and client name site name etc
 @app.get("/energystar/fullmonth/{client}")
 async def report_gen_1_3reandrive(request: Request, client: str, db: Session = Depends(get_db)):
     lists = []
+
+    # This is a hardcoded value that is being transfered back here
+    # This is a stupid way to make a function work
     lists = utils.monthly_report_gen(client)
-    print(lists)
     energy = lists[0]
     hot_water = lists[1]
     cold_water = lists[2]
@@ -288,12 +304,6 @@ async def report_gen_1_3reandrive(request: Request, client: str, db: Session = D
 
     utils.reandrive_barchart(energy=energy, hot_water=hot_water, cold_water=cold_water, gas_meter=gas_meter)
 
-    # env = Environment(loader=FileSystemLoader('templates'))
-    # template = env.get_template('table.html')
-    # html = template.render(page_title_text='My report',
-                       # title_text='Daily S&P 500 prices report')
-
-    # return 200
 
     return templates.TemplateResponse("table.html", {"request": request, "energy": energy, "hot_water": hot_water, "cold_water": cold_water, "gas_meter": gas_meter}) #
 
