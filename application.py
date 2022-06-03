@@ -314,6 +314,7 @@ async def report_gen_1_3reandrive(request: Request, client: str, db: Session = D
 
 #------------------ARC INTEGRATION GET AND POST FUNCTIONS-------------------#
 # Arc data posting link
+# This link is used for adding energy usage to ARC
 @app.post("/arc/consumption/{client}/{leed_id}/{meter_id}")
 async def post_consumption(meter_id: str, leed_id: str, client: str, datain: schemas.ArcEnergyDictCover, db: Session = Depends(get_db)):
 
@@ -322,12 +323,6 @@ async def post_consumption(meter_id: str, leed_id: str, client: str, datain: sch
 
     data = datain.dict()
 
-    # with open('data.json', 'a') as file:
-    #     json.dump(data, file, indent = 4)
-    #     file.write("\n")
-
-
-    # print(json.dumps(datain, indent=4, sort_keys=True))
 
     # If that leed id is not available in the database
     # Send a 404 error
@@ -352,7 +347,8 @@ async def post_consumption(meter_id: str, leed_id: str, client: str, datain: sch
     return 200
 
 
-
+# Arc data posting link
+# This link is used for adding water and co2 usage to ARC
 @app.post("/arc/co2_consumption/{client}/{leed_id}/{meter_id}")
 async def post_co2_consumption(meter_id: str, leed_id: str, client: str, datain: schemas.ArcCo2DictCover, db: Session = Depends(get_db)):
 
@@ -382,13 +378,14 @@ async def post_co2_consumption(meter_id: str, leed_id: str, client: str, datain:
 
 
     # Send meter details: electrical meter name to fetch data from
+    # get arc meter data based on the input meter ID
     meter_data = crud.get_arc_meter_data_meter_id(db, meter_id)
     print(meter_data.renteknik_meter)
 
     # # Send data to Arc
     # Passing params: data from panpower
-    # meta data.renteknik_meter: the name of the device from
-    # which you should grab the flow data
+    # meta data.renteknik_meter: the name of the device from -
+    #  - which you should grab the flow data
     # time data: time zone and duration at which data should be sent
     send_arc_co2_consumption(db, datain.dict(), meter_data.renteknik_meter, time_data)
     return 200
@@ -450,7 +447,7 @@ async def update_arc_metadata(datain: schemas.ArcMetaData, db: Session = Depends
 
 
 
-# Arc get links
+#----------------------------Arc get links---------------------------------#
 
 
 # To get the arc consumption details
@@ -525,7 +522,7 @@ async def get_arc_meter_list(leed_id: str, client_name: str, db: Session = Depen
 
 
 
-#------------------------------------------------------------------------------#
+#------------------------------Arc get links------------------------------------------------#
 
 
 # Arc new client appplication registration adding
