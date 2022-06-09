@@ -196,7 +196,7 @@ async def panpower1012_post(datain: schemas.PanPowerDictCover, client: str, db: 
 # This is a function for testing purposes only
 # Change schema based on the json input type
 @app.post("/panpower/test")
-async def panpower_post(datain: schemas.PanpowerPulseDictCover): #datapulse: schemas.PanpowerPulseDictCover
+async def panpower_post(datain: schemas.PanPowerDictCover): #datapulse: schemas.PanpowerPulseDictCover
 
     # print(json.dumps(datain, indent=4, sort_keys=True))
     # json_object = json.dumps(datain, indent=4, sort_keys=True)
