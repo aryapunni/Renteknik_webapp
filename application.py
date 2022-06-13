@@ -20,6 +20,7 @@ from config import settings
 from arc.arc_get import get_asset_comprehensive_score, get_meter_list, asset_search, get_asset_list, get_asset_object_detail, get_fuel_category, get_meter_consumption_list, get_meter_consumption_detail, get_asset_aggregated_data, get_asset_score
 # get_asset_aggregated_data, get_asset_score
 from arc.arc_post import send_arc_consumption, send_arc_co2_consumption
+from climacheckAPI.clima_post import post_data
 import os
 import logging
 import sys
@@ -216,6 +217,30 @@ async def panpower_post(datain: schemas.PanPowerDictCover): #datapulse: schemas.
 
         with open("meb_timezone.json", "a") as out_file:
             out_file.write(json_object)
+
+    return 200
+
+
+# panpower10/12 post function
+# This is a function for testing purposes only
+# Change schema based on the json input type
+@app.post("/panpowers/tests")
+async def panpower_raw_post(datain: dict): #datapulse: schemas.PanpowerPulseDictCover
+
+    json_object = json.dumps(datain, default=str, indent=4, sort_keys=True)
+
+    with open("meb_raw.json", "a") as out_file:
+        out_file.write(json_object)
+
+    # for data in datain["measurements"]:
+    #     data_1 = data.dict()
+    #     pprint.pprint(data_1)
+    #     json_object = json.dumps(data_1, default=str, indent=4, sort_keys=True)
+
+    #     with open("meb_raw.json", "a") as out_file:
+    #         out_file.write(json_object)
+
+
 
     return 200
 
@@ -591,6 +616,41 @@ async def download():
 
 #------------------FILE DOWNLOAD FEATURE-------------------#
 
+
+#------------------CLIMACHECK API-------------------#
+
+
+
+# panpower10/12 post function
+@app.post("/climacheck/{client}")
+async def climacheck_post(datain: schemas.PanPowerDictCover, client: str):
+
+
+    # This Section is for testing the incoming data before time zone change
+    # Uncomment this section when necessary
+
+    # print("----------------------Actual data----------------------")
+
+    for data in datain.measurements:
+        data_2 = data.dict()
+        pprint.pprint(data_2)
+        json_object = json.dumps(data_2, default=str, indent=4, sort_keys=True)
+
+    post_data()
+
+    #     with open("pan_actual.json", "a") as out_file:
+    #         out_file.write(json_object)
+
+
+    # print("----------------------Time zone data----------------------")
+
+
+    return 200
+
+
+
+
+#------------------CLIMACHECK API-------------------#
 
 
 # FastAPI initial test function
