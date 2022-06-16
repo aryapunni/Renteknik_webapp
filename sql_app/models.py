@@ -95,7 +95,6 @@ class ArcMetaData(Base):
     client_name = Column(String)
     customer_name = Column(String)
     customer_uid = Column(String)
-    electrical_hierarchy = Column(String)
     timezone = Column(String)
     duration_format = Column(String)
     duration = Column(String)

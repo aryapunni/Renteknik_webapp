@@ -208,7 +208,6 @@ class ArcMetaData(BaseModel):
     client_name: str
     customer_name: str
     customer_uid: str
-    electrical_hierarchy: str
     timezone: str
     duration_format: str
     duration: str

@@ -633,10 +633,10 @@ async def climacheck_post(datain: schemas.PanPowerDictCover, client: str):
 
     for data in datain.measurements:
         data_2 = data.dict()
-        pprint.pprint(data_2)
+        # pprint.pprint(data_2)
         json_object = json.dumps(data_2, default=str, indent=4, sort_keys=True)
 
-    post_data()
+    post_data(datain)
 
     #     with open("pan_actual.json", "a") as out_file:
     #         out_file.write(json_object)
