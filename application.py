@@ -206,7 +206,7 @@ async def panpower_post(datain: schemas.PanPowerDictCover): #datapulse: schemas.
         pprint.pprint(data_1)
         json_object = json.dumps(data_1, default=str, indent=4, sort_keys=True)
 
-        with open("meb.json", "a") as out_file:
+        with open("meb.json", "r") as out_file:
             out_file.write(json_object)
 
     for data in datain.measurements:
@@ -215,7 +215,7 @@ async def panpower_post(datain: schemas.PanPowerDictCover): #datapulse: schemas.
         pprint.pprint(data_2)
         json_object = json.dumps(data_2, default=str, indent=4, sort_keys=True)
 
-        with open("meb_timezone.json", "a") as out_file:
+        with open("meb_timezone.json", "r") as out_file:
             out_file.write(json_object)
 
     return 200
@@ -229,7 +229,7 @@ async def panpower_raw_post(datain: dict): #datapulse: schemas.PanpowerPulseDict
 
     json_object = json.dumps(datain, default=str, indent=4, sort_keys=True)
 
-    with open("meb_raw.json", "a") as out_file:
+    with open("meb_raw.json", "r") as out_file:
         out_file.write(json_object)
 
     # for data in datain["measurements"]:
@@ -343,8 +343,11 @@ async def report_gen_1_3reandrive(request: Request, client: str, db: Session = D
 @app.post("/arc/consumption/{client}/{leed_id}/{meter_id}")
 async def post_consumption(meter_id: str, leed_id: str, client: str, datain: schemas.ArcEnergyDictCover, db: Session = Depends(get_db)):
 
-    # Fetch data from the data base based on the leed id
+    # Fetch data from the meta data table from data base based on the leed id
     meta_data = crud.get_arc_metadata_leedid(db, leed_id)
+
+    # Fetch meter table data from the data base based on the meter id
+    meter_data = crud.get_arc_meter_data_meter_id(db, meter_id)
 
     data = datain.dict()
 
@@ -355,6 +358,14 @@ async def post_consumption(meter_id: str, leed_id: str, client: str, datain: sch
         print("There is no such Project in that Leed ID")
         raise HTTPException(status_code=404, detail="Leed ID not found")
 
+
+    # If that meter id is not available in the database
+    # Send a 404 error
+    if meter_data is None:
+        print("There is no such meter in that meter ID")
+        raise HTTPException(status_code=404, detail="Meter ID not found")
+
+
     # If the data fetching was successfull proceed to send data to Arc
     for data in datain.measurements:
         data.meter_id = meter_id
@@ -362,7 +373,7 @@ async def post_consumption(meter_id: str, leed_id: str, client: str, datain: sch
         data.client = client
 
     # Electrical hierarchy for filtering data
-    electrical_hierarchy = meta_data.electrical_hierarchy
+    electrical_hierarchy = meter_data.renteknik_meter
 
     # Timezone and time duration information for processing data
     time_data = {"duartion_format": meta_data.duration_format, "duration": meta_data.duration, "time_zone": meta_data.timezone}
@@ -380,6 +391,11 @@ async def post_co2_consumption(meter_id: str, leed_id: str, client: str, datain:
     # Fetch data from the data base based on the leed id
     meta_data = crud.get_arc_metadata_leedid(db, leed_id)
 
+
+    # Fetch meter table data from the data base based on the meter id
+    meter_data = crud.get_arc_meter_data_meter_id(db, meter_id)
+
+
     data = datain.dict()
 
 
@@ -388,6 +404,14 @@ async def post_co2_consumption(meter_id: str, leed_id: str, client: str, datain:
     if meta_data is None:
         print("There is no such Project in that Leed ID")
         raise HTTPException(status_code=404, detail="Leed ID not found")
+
+
+
+    # If that meter id is not available in the database
+    # Send a 404 error
+    if meter_data is None:
+        print("There is no such meter in that meter ID")
+        raise HTTPException(status_code=404, detail="Meter ID not found")
 
 
     # If the data fetching was successfull proceed to send data to Arc
@@ -410,7 +434,7 @@ async def post_co2_consumption(meter_id: str, leed_id: str, client: str, datain:
     # # Send data to Arc
     # Passing params: data from panpower
     # meta data.renteknik_meter: the name of the device from -
-    #  - which you should grab the flow data
+    #  - which you should grab the flow data electrical hierarchy
     # time data: time zone and duration at which data should be sent
     send_arc_co2_consumption(db, datain.dict(), meter_data.renteknik_meter, time_data)
     return 200
@@ -465,6 +489,17 @@ async def post_arc_meter(datain: schemas.ArcMeterTable, db: Session = Depends(ge
 @app.post("/arc/metadata/update")
 async def update_arc_metadata(datain: schemas.ArcMetaData, db: Session = Depends(get_db)):
     crud.update_arcmetadata_leedid(db=db, leed_id=datain.leed_id, electrical_hierarchy=datain.electrical_hierarchy, timezone=datain.timezone, duration_format=datain.duration_format, duration=datain.duration)
+    return 200
+
+
+# Arc Meta data update link
+# updates electrical hierarchy, timezone
+# duration format and durations based on leed ID
+@app.post("/arc/meter/update")
+async def update_arc_meter_table(datain: schemas.ArcMeterTable, db: Session = Depends(get_db)):
+    crud.update_arcmetertable_meterid(db=db, meter_id=datain.meter_id, leed_id=datain.leed_id, customer_id=datain.customer_id,
+                                      meter_name=datain.meter_name, meter_type=datain.meter_type, meter_unit=datain.meter_unit,
+                                      renteknik_meter=datain.renteknik_meter, duration_format=datain.duration_format, duration=datain.duration)
     return 200
 
 

@@ -168,6 +168,18 @@ def update_arcmetadata_leedid(db: Session, leed_id: str, electrical_hierarchy: s
 
 
 
+# Get the arc keys from arc key table based on the given leed id
+def update_arcmetertable_meterid(db: Session, meter_id:str, leed_id: str, customer_id: str, meter_name: str, meter_type: str, meter_unit: str, renteknik_meter: str, duration_format: str, duration: str):
+    db.query(models.ArcMeterTable).filter(models.ArcMeterTable.meter_id == meter_id).update({models.ArcMeterTable.leed_id: leed_id, models.ArcMeterTable.customer_id: customer_id,
+                                                                                           models.ArcMeterTable.meter_name: meter_name, models.ArcMeterTable.meter_type: meter_type,
+                                                                                           models.ArcMeterTable.meter_unit: meter_unit, models.ArcMeterTable.renteknik_meter: renteknik_meter,
+                                                                                           models.ArcMeterTable.duration_format: duration_format, models.ArcMeterTable.duration: duration}, synchronize_session = False)
+    db.commit()
+    db.flush()
+
+
+
+
 # def query_to_dict(rset):
 #     result = defaultdict(list)
 #     for obj in rset:

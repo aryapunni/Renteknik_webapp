@@ -184,7 +184,8 @@ def send_arc_consumption(db: Session, datain: dict, electrical_hierarchy: str, t
     print(consumption)
 
     # Sending data to arc
-    create_meter_consumption(db, consumption["leed_id"], consumption["client"], consumption["meter_id"], consumption["start_date"], consumption["end_date"], consumption["energy"])
+    # --------------------------------un comment -----------------------------
+    # create_meter_consumption(db, consumption["leed_id"], consumption["client"], consumption["meter_id"], consumption["start_date"], consumption["end_date"], consumption["energy"])
 
 
 
@@ -223,9 +224,11 @@ def send_arc_co2_consumption(db: Session, datain: dict, meter_name: str, time_da
     arc_time_data = start_end_time(measurement_time, time_data["duartion_format"], int(time_data["duration"]), time_data["time_zone"])
     print(arc_time_data)
     co2 = co2/24
+    print(co2)
 
     # Sending data to arc
-    create_co2_consumption(db, leed_id, client, meter_id, arc_time_data[0], arc_time_data[1], co2)
+    # --------------------------------Uncomment----------------------------
+    # create_co2_consumption(db, leed_id, client, meter_id, arc_time_data[0], arc_time_data[1], co2)
 
 
 
