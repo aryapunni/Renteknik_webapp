@@ -206,7 +206,7 @@ async def panpower_post(datain: schemas.PanPowerDictCover): #datapulse: schemas.
         pprint.pprint(data_1)
         json_object = json.dumps(data_1, default=str, indent=4, sort_keys=True)
 
-        with open("meb.json", "r") as out_file:
+        with open("meb.json", "w") as out_file:
             out_file.write(json_object)
 
     for data in datain.measurements:
@@ -215,7 +215,7 @@ async def panpower_post(datain: schemas.PanPowerDictCover): #datapulse: schemas.
         pprint.pprint(data_2)
         json_object = json.dumps(data_2, default=str, indent=4, sort_keys=True)
 
-        with open("meb_timezone.json", "r") as out_file:
+        with open("meb_timezone.json", "w") as out_file:
             out_file.write(json_object)
 
     return 200
@@ -229,7 +229,7 @@ async def panpower_raw_post(datain: dict): #datapulse: schemas.PanpowerPulseDict
 
     json_object = json.dumps(datain, default=str, indent=4, sort_keys=True)
 
-    with open("meb_raw.json", "r") as out_file:
+    with open("meb_raw.json", "w") as out_file:
         out_file.write(json_object)
 
     # for data in datain["measurements"]:
