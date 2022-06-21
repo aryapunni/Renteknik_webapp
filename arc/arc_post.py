@@ -15,12 +15,6 @@ from sqlalchemy.orm import Session
 from sql_app.database import SessionLocal, engine
 
 
-# ARC_PRIMARY_KEY = "5f3f67ada316489e819dca0456904ce8"
-# ARC_SECONDARY_KEY = "119d57b07f75450683186e57a9ffe4f1"
-
-# ARC_CLIENT_ID = "ivh2tLYURNgTwCdcqX2nbl1U5rs2KnHTIAkyXVFB"
-# ARC_SECRET = "ujeUGNMu4vPOfjXnWdVDs08Sx9WRQQirr9DXUUOJKq3H5O9eWpJPLPUxzFIxqppWJ9L2MziF2zs02vxMcTLwTsdtvsnXX7LkkAeDpkA5B90FrcFE13Tv3w7jtCUtqhpk"
-
 # https://api.usgbc.org/arc/data/dev/auth/oauth2/authorize/?subscription-key=5f3f67ada316489e819dca0456904ce8&client_id=ivh2tLYURNgTwCdcqX2nbl1U5rs2KnHTIAkyXVFB&redirect_uri=https://abacuslive.ca&state=a8d5051d-25e9-4c1e-a4e7-d999f9cf0591
 
 # https://abacuslive.ca/?code=Sog6a5XE5DAfn7COn7qc7YuetEktIB&state=a8d5051d-25e9-4c1e-a4e7-d999f9cf0591
@@ -64,7 +58,7 @@ def start_end_time(datetime_string: str, duration_format: str, duration: int, zo
     # change input string to datetime format
     start_date = datetime.strptime(datetime_string, fmt)
 
-    print(f"start_date before timezone change: {start_date}")
+    print(f"\nstart_date before timezone change: {start_date}")
 
     # change input datetime to required timezone format
     start_date = change_timezone(start_date, zone)
@@ -105,22 +99,22 @@ def start_end_time(datetime_string: str, duration_format: str, duration: int, zo
     # to a list so as to return
     dates.append(start_date)
     dates.append(end_date)
-    print(f"Dates after all processing: {dates}")
+    print(f"Dates after all processing: {dates}\n")
 
     return dates
 
 
 # Function for processing arc data
 # Recieve data from send arc consumption frunction
-# Based on electrical hierarchy sorts data and adds electrical enery
-# Process dates to be send to Arc:
+# Based on electrical hierarchy sorts data and adds electrical energy
+# Process dates to be send to Arc
 # Changes unit of the energy
 # Arguments:
 # datain: collection of dictionaries coming from panoramic power
 # electrical_hierarchy: list of elaments that we have to count when we add energy
+# time data: informations about the sites such as duration timezone etc
 def process_arc_data(measurements: dict, electrical_hierarchy: list, time_data: dict):
 
-    print(electrical_hierarchy)
     # initialisation of values
     total_energy = 0.0
     time_data["duration"] = int(time_data["duration"])
@@ -140,13 +134,11 @@ def process_arc_data(measurements: dict, electrical_hierarchy: list, time_data: 
                 energy = measurement["energy"]
                 total_energy = total_energy + energy
                 total_energy = round(total_energy, 2)
-        print(f"total + {measurement['energy']} = {total_energy}")
-        # print(f"{measurement['device_name']}, total: {total_energy}")
+                print(f"{measurement['device_name']}\tsensor value: {measurement['energy']}\tsum of sensors: {total_energy}")
 
     # Send measured time to processing time
     # changing time zone
     # changing format
-    print(f"measurement time directly from panpower {arc_dict['measurement_time']}")
     date_change = start_end_time(arc_dict["measurement_time"], time_data["duartion_format"], time_data["duration"], time_data["time_zone"])
 
     # Since the measured time has been modified to
@@ -169,6 +161,7 @@ def process_arc_data(measurements: dict, electrical_hierarchy: list, time_data: 
 # Arguments:
 # datain: collection of dictionaries coming from panoramic power
 # electrical_hierarchy: list of elaments that we have to count when we add energy
+# time data: informations about the sites such as duration timezone etc
 def send_arc_consumption(db: Session, datain: dict, electrical_hierarchy: str, time_data: dict):
 
     primary_key = settings.arc_primary_key
@@ -190,6 +183,110 @@ def send_arc_consumption(db: Session, datain: dict, electrical_hierarchy: str, t
 
 
 
+# Function for processing arc data
+# Recieve data from send arc consumption frunction
+# Based on electrical hierarchy sorts data and adds Co2
+# Process dates to be send to Arc
+# Arguments:
+# datain: collection of dictionaries coming from panoramic power
+# electrical_hierarchy: list of elaments that we have to count when we add energy
+# time data: informations about the sites such as duration timezone etc
+def process_co2_consumption(measurements: dict, electrical_hierarchy: list, time_data: dict):
+
+    # initialisation of values
+    co2 = 0.0
+    time_data["duration"] = int(time_data["duration"])
+
+    # dictionary to send values to Arc
+    arc_dict = measurements[0]
+
+
+    # loop through different dictionaries in the input
+    for measurement in measurements:
+
+        # loop through the electrical hierarchy for calculating sum of co2
+        # --> if device name is equal to the electrical hierarchy in the database
+        # Then add the add the co2
+        for val in electrical_hierarchy:
+            if (measurement["flow"] is not None) and (measurement["meter_name"] == val):
+                co2 = co2 + measurement["flow"]
+                co2 = round(co2, 2)
+                print(f"{measurement['meter_name']}\tsensor value: {measurement['flow']}\tsum of sensors: {co2}")
+
+
+
+    # Send measured time to processing time
+    # changing time zone
+    # changing format
+    date_change = start_end_time(arc_dict["measurement_time"], time_data["duartion_format"], time_data["duration"], time_data["time_zone"])
+
+    # Since the measured time has been modified to
+    # start date and end date we don't
+    # need measurement time field anymore
+    del arc_dict["measurement_time"]
+
+    # Data to be send to Arc is added to arc_dict
+    # ie. start_date, end_date, total energy
+    arc_dict["start_date"] = date_change[0]
+    arc_dict["end_date"] = date_change[1]
+    arc_dict["flow"] = co2/24
+
+    return arc_dict
+
+
+# Function for processing arc data
+# Recieve data from send arc consumption frunction
+# Based on electrical hierarchy sorts data and adds gas consumption
+# Process dates to be send to Arc
+# Arguments:
+# datain: collection of dictionaries coming from panoramic power
+# electrical_hierarchy: list of elaments that we have to count when we add energy
+# time data: informations about the sites such as duration timezone etc
+def process_gas_consumption(measurements: dict, electrical_hierarchy: list, time_data: dict):
+   
+    # initialisation of values
+    gas = 0.0
+    time_data["duration"] = int(time_data["duration"])
+
+    # dictionary to send values to Arc
+    arc_dict = measurements[0]
+
+
+    # loop through different dictionaries in the input
+    for measurement in measurements:
+
+        # loop through the electrical hierarchy for specific gas meter sensors
+        # setup as electrical hierarchy in database
+        # --> if device name is equal to the electrical hierarchy in the database
+        # Then add the gas sensor value to the sum
+        for val in electrical_hierarchy:
+            if (measurement["energy"] is not None) and (measurement["meter_name"] == val):
+                gas = gas + measurement["energy"]
+                gas = round(gas, 2)
+                print(f"{measurement['meter_name']}\tsensor value: {measurement['energy']}\tsum of sensors: {gas}")
+
+
+
+    # Send measured time to processing time
+    # changing time zone
+    # changing format
+    date_change = start_end_time(arc_dict["measurement_time"], time_data["duartion_format"], time_data["duration"], time_data["time_zone"])
+
+    # Since the measured time has been modified to
+    # start date and end date we don't
+    # need measurement time field anymore
+    del arc_dict["measurement_time"]
+
+    # Data to be send to Arc is added to arc_dict
+    # ie. start_date, end_date, total energy
+    arc_dict["start_date"] = date_change[0]
+    arc_dict["end_date"] = date_change[1]
+    arc_dict["meter_name"] = "gas meter"
+    arc_dict["energy"] = gas/1000
+
+    return arc_dict
+
+
 
 # Recieve data for Arc from front end
 # Send it for processing
@@ -197,38 +294,60 @@ def send_arc_consumption(db: Session, datain: dict, electrical_hierarchy: str, t
 # Arguments:
 # datain: collection of dictionaries coming from panoramic power
 # electrical_hierarchy: list of elaments that we have to count when we add energy
-def send_arc_co2_consumption(db: Session, datain: dict, meter_name: str, time_data: dict):
+# time data: informations about the sites such as duration timezone etc
+def send_arc_co2_consumption(db: Session, datain: dict, electrical_hierarchy: str, time_data: dict):
 
     primary_key = settings.arc_primary_key
 
-    co2 = 0
-    arc_time_data = []
+    # co2 = 0
+    # arc_time_data = []
 
     # data in has an inside dictionary with name measurements
     measurements = datain["measurements"]
     # print(measurements)
 
-    # process co2 data - ie adding all the flow
-    for measurement in measurements:
-        leed_id = measurement["leed_id"]
-        client = measurement["client"]
-        meter_id = measurement["meter_id"]
-        measurement_time = measurement["measurement_time"]
+    # Electrical hierarchy seperate the strings
+    electrical_hierarchy = electrical_hierarchy.split(", ")
 
+    # Sending data for processing
+    consumption = process_co2_consumption(measurements, electrical_hierarchy, time_data)
+    print(consumption)
 
-        if (measurement["flow"] is not None) and (measurement["meter_name"] == meter_name):
-
-            co2 = co2 + measurement["flow"]
-            print(measurement)
-            print(co2, measurement["leed_id"], measurement["client"], measurement["meter_id"], measurement["measurement_time"])
-    arc_time_data = start_end_time(measurement_time, time_data["duartion_format"], int(time_data["duration"]), time_data["time_zone"])
-    print(arc_time_data)
-    co2 = co2/24
-    print(co2)
 
     # Sending data to arc
     # --------------------------------Uncomment----------------------------
-    # create_co2_consumption(db, leed_id, client, meter_id, arc_time_data[0], arc_time_data[1], co2)
+    # create_co2_consumption(db, consumption["leed_id"], consumption["client"], consumption["meter_id"], consumption["start_date"], consumption["end_date"], consumption["energy"])
+
+
+# Recieve data for Arc from front end
+# Send it for processing
+# Send processed data to Arc API function
+# Arguments:
+# datain: collection of dictionaries coming from panoramic power
+# electrical_hierarchy: list of elaments that we have to count when we add energy
+# time data: informations about the sites such as duration timezone etc
+def send_arc_gas_consumption(db: Session, datain: dict, electrical_hierarchy: str, time_data: dict):
+
+    primary_key = settings.arc_primary_key
+
+
+    # data in has an inside dictionary with name measurements
+    measurements = datain["measurements"]
+    # print(measurements)
+
+    # Electrical hierarchy seperate the strings
+    electrical_hierarchy = electrical_hierarchy.split(", ")
+    print(electrical_hierarchy)
+
+    # Sending data for processing
+    consumption = process_gas_consumption(measurements, electrical_hierarchy, time_data)
+    print(consumption)
+
+
+    # Sending data to arc
+    # --------------------------------Uncomment----------------------------
+    # create_gas_consumption(db, consumption["leed_id"], consumption["client"], consumption["meter_id"], consumption["start_date"], consumption["end_date"], consumption["power"])
+
 
 
 
@@ -300,6 +419,37 @@ def create_meter_consumption(db: Session, leed_id: str, client_name: str, meter_
 # start_date, end_date: start and ending time and date of the data we are entering
 # reading: meter reading for the purticular meter at this given time
 def create_co2_consumption(db: Session, leed_id: str, client_name: str, meter_id: str, start_date: str, end_date: str, reading: float):
+
+    primary_key: str = settings.arc_primary_key
+
+    # To use this API we need access token
+    access_token = get_access_token(db=db, client_name=client_name)
+
+    # headers, params, body and url for the API
+    headers = {'Authorization': f'Bearer {access_token}', 'Content-Type': 'application/json', 'Ocp-Apim-Subscription-Key': primary_key}
+    body = {"start_date": start_date, "end_date": end_date, "reading": reading}
+    url = f"{settings.arc_url}/assets/LEED:{leed_id}/meters/ID:{meter_id}/consumption/"
+
+    # converting body of the API to Json
+    json_body = json.dumps(body)
+
+    # API request
+    try:
+        r = requests.post(url, headers=headers, data=json_body)
+        data = r.json()
+        print(data)
+        return data
+    except Exception as e:
+        print("meter consumption API error")
+
+
+# Create consumption for gas/btu meter
+# Arguments:
+# leed_id: leed_id of the purticular project
+# meter_id: id of the purticular meter to which we are entering data
+# start_date, end_date: start and ending time and date of the data we are entering
+# reading: meter reading for the purticular meter at this given time
+def create_gas_consumption(db: Session, leed_id: str, client_name: str, meter_id: str, start_date: str, end_date: str, reading: float):
 
     primary_key: str = settings.arc_primary_key
 

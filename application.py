@@ -19,7 +19,7 @@ import arc.arc
 from config import settings
 from arc.arc_get import get_asset_comprehensive_score, get_meter_list, asset_search, get_asset_list, get_asset_object_detail, get_fuel_category, get_meter_consumption_list, get_meter_consumption_detail, get_asset_aggregated_data, get_asset_score
 # get_asset_aggregated_data, get_asset_score
-from arc.arc_post import send_arc_consumption, send_arc_co2_consumption
+from arc.arc_post import send_arc_consumption, send_arc_co2_consumption, send_arc_gas_consumption
 from climacheckAPI.clima_post import post_data
 import os
 import logging
@@ -223,7 +223,10 @@ async def panpower_post(datain: schemas.PanPowerDictCover): #datapulse: schemas.
 
 # panpower10/12 post function
 # This is a function for testing purposes only
-# Change schema based on the json input type
+# for storing raw data in meb_raw.json
+# Set up an export job of 5 minutes and once that is done stop the export job
+# check the end of meb_raw.json for getting the data just been posted
+# Can be used to get electrical hierarchy
 @app.post("/panpowers/tests")
 async def panpower_raw_post(datain: dict): #datapulse: schemas.PanpowerPulseDictCover
 
@@ -231,15 +234,6 @@ async def panpower_raw_post(datain: dict): #datapulse: schemas.PanpowerPulseDict
 
     with open("meb_raw.json", "a") as out_file:
         out_file.write(json_object)
-
-    # for data in datain["measurements"]:
-    #     data_1 = data.dict()
-    #     pprint.pprint(data_1)
-    #     json_object = json.dumps(data_1, default=str, indent=4, sort_keys=True)
-
-    #     with open("meb_raw.json", "a") as out_file:
-    #         out_file.write(json_object)
-
 
 
     return 200
@@ -279,6 +273,7 @@ async def get_panpowerpulse(client: str, db: Session = Depends(get_db)):
         print("there is no such client")
         raise HTTPException(status_code=404, detail="Client not found")
     return  crud.get_panpowerpulse_client_data(db=db, client_name=client)
+
 
 
 # Panpower Meta data post link
@@ -349,8 +344,6 @@ async def post_consumption(meter_id: str, leed_id: str, client: str, datain: sch
     # Fetch meter table data from the data base based on the meter id
     meter_data = crud.get_arc_meter_data_meter_id(db, meter_id)
 
-    data = datain.dict()
-
 
     # If that leed id is not available in the database
     # Send a 404 error
@@ -396,7 +389,59 @@ async def post_co2_consumption(meter_id: str, leed_id: str, client: str, datain:
     meter_data = crud.get_arc_meter_data_meter_id(db, meter_id)
 
 
-    data = datain.dict()
+
+    # If that leed id is not available in the database
+    # Send a 404 error
+    if meta_data is None:
+        print("There is no such Project in that Leed ID")
+        raise HTTPException(status_code=404, detail="Leed ID not found")
+
+
+
+    # If that meter id is not available in the database
+    # Send a 404 error
+    if meter_data is None:
+        print("There is no such meter in that meter ID")
+        raise HTTPException(status_code=404, detail="Meter ID not found")
+
+
+    # necessary parameters to for Arc and abacus
+    # Mapping those values came in through URL
+    for data in datain.measurements:
+        data.meter_id = meter_id
+        data.leed_id = leed_id
+        data.client = client
+
+
+    # Electrical hierarchy for filtering data
+    electrical_hierarchy = meter_data.renteknik_meter
+
+
+    # Timezone and time duration information for processing data
+    time_data = {"duartion_format": meta_data.duration_format, "duration": meta_data.duration, "time_zone": meta_data.timezone}
+
+
+    # # Send data to Arc
+    # Passing params: data from panpower
+    # electrical hierarchy: the name of the device from -
+    #  - which you should grab the flow data electrical hierarchy
+    # time data: time zone and duration at which data should be sent
+    send_arc_co2_consumption(db, datain.dict(), electrical_hierarchy, time_data)
+    return 200
+
+
+# Arc data posting link
+# This link is used for adding BTU meter (gas consumption) values to ARC
+@app.post("/arc/gas_consumption/{client}/{leed_id}/{meter_id}")
+async def post_gas_consumption(meter_id: str, leed_id: str, client: str, datain: schemas.ArcCo2DictCover, db: Session = Depends(get_db)):
+
+    # Fetch data from the data base based on the leed id
+    meta_data = crud.get_arc_metadata_leedid(db, leed_id)
+
+
+    # Fetch meter table data from the data base based on the meter id
+    meter_data = crud.get_arc_meter_data_meter_id(db, meter_id)
+
 
 
     # If that leed id is not available in the database
@@ -414,30 +459,32 @@ async def post_co2_consumption(meter_id: str, leed_id: str, client: str, datain:
         raise HTTPException(status_code=404, detail="Meter ID not found")
 
 
-    # If the data fetching was successfull proceed to send data to Arc
+    # necessary parameters to for Arc and abacus
+    # Mapping those values came in through URL
     for data in datain.measurements:
         data.meter_id = meter_id
         data.leed_id = leed_id
         data.client = client
 
-    print(data)
+
+    # Electrical hierarchy for filtering data
+    electrical_hierarchy = meter_data.renteknik_meter
+
 
     # Timezone and time duration information for processing data
     time_data = {"duartion_format": meta_data.duration_format, "duration": meta_data.duration, "time_zone": meta_data.timezone}
 
 
-    # Send meter details: electrical meter name to fetch data from
-    # get arc meter data based on the input meter ID
-    meter_data = crud.get_arc_meter_data_meter_id(db, meter_id)
-    print(meter_data.renteknik_meter)
 
     # # Send data to Arc
     # Passing params: data from panpower
-    # meta data.renteknik_meter: the name of the device from -
+    # electrical hierarchy: the name of the device from -
     #  - which you should grab the flow data electrical hierarchy
     # time data: time zone and duration at which data should be sent
-    send_arc_co2_consumption(db, datain.dict(), meter_data.renteknik_meter, time_data)
+    send_arc_gas_consumption(db, datain.dict(), electrical_hierarchy, time_data)
     return 200
+
+
 
 # Arc create meter in ARC
 @app.post("/arc/create_meter")
@@ -476,8 +523,8 @@ async def post_arc_key(datain: schemas.ArcKeyTable, db: Session = Depends(get_db
 # Arc Meter data post link
 # adding values to the meter table such as: meter_id, leed_id, customer_id
 # meter_name, meter_type, meter_unit, renteknik_meter
-@app.post("/arc/meter")
-async def post_arc_meter(datain: schemas.ArcMeterTable, db: Session = Depends(get_db)):
+@app.post("/arc/metertable")
+async def post_arc_meter_table(datain: schemas.ArcMeterTable, db: Session = Depends(get_db)):
     # Meter data for each Leed Ids
     crud.create_arc_metertable(db, datain)
     return 200
@@ -495,7 +542,7 @@ async def update_arc_metadata(datain: schemas.ArcMetaData, db: Session = Depends
 # Arc Meta data update link
 # updates electrical hierarchy, timezone
 # duration format and durations based on leed ID
-@app.post("/arc/meter/update")
+@app.post("/arc/metertable/update")
 async def update_arc_meter_table(datain: schemas.ArcMeterTable, db: Session = Depends(get_db)):
     crud.update_arcmetertable_meterid(db=db, meter_id=datain.meter_id, leed_id=datain.leed_id, customer_id=datain.customer_id,
                                       meter_name=datain.meter_name, meter_type=datain.meter_type, meter_unit=datain.meter_unit,
