@@ -151,6 +151,7 @@ def process_arc_data(measurements: dict, electrical_hierarchy: list, time_data: 
     arc_dict["start_date"] = date_change[0]
     arc_dict["end_date"] = date_change[1]
     arc_dict["energy"] = total_energy/1000
+    arc_dict["device_name"] = "energy meter"
 
     return arc_dict
 
@@ -178,7 +179,7 @@ def send_arc_consumption(db: Session, datain: dict, electrical_hierarchy: str, t
 
     # Sending data to arc
     # --------------------------------un comment -----------------------------
-    # create_meter_consumption(db, consumption["leed_id"], consumption["client"], consumption["meter_id"], consumption["start_date"], consumption["end_date"], consumption["energy"])
+    create_meter_consumption(db, consumption["leed_id"], consumption["client"], consumption["meter_id"], consumption["start_date"], consumption["end_date"], consumption["energy"])
 
 
 
@@ -229,6 +230,7 @@ def process_co2_consumption(measurements: dict, electrical_hierarchy: list, time
     # ie. start_date, end_date, total energy
     arc_dict["start_date"] = date_change[0]
     arc_dict["end_date"] = date_change[1]
+    arc_dict["meter_name"] = "co2 meter"
     arc_dict["flow"] = co2/24
 
     return arc_dict
@@ -316,7 +318,7 @@ def send_arc_co2_consumption(db: Session, datain: dict, electrical_hierarchy: st
 
     # Sending data to arc
     # --------------------------------Uncomment----------------------------
-    # create_co2_consumption(db, consumption["leed_id"], consumption["client"], consumption["meter_id"], consumption["start_date"], consumption["end_date"], consumption["energy"])
+    create_co2_consumption(db, consumption["leed_id"], consumption["client"], consumption["meter_id"], consumption["start_date"], consumption["end_date"], consumption["energy"])
 
 
 # Recieve data for Arc from front end
@@ -346,7 +348,7 @@ def send_arc_gas_consumption(db: Session, datain: dict, electrical_hierarchy: st
 
     # Sending data to arc
     # --------------------------------Uncomment----------------------------
-    # create_gas_consumption(db, consumption["leed_id"], consumption["client"], consumption["meter_id"], consumption["start_date"], consumption["end_date"], consumption["power"])
+    create_gas_consumption(db, consumption["leed_id"], consumption["client"], consumption["meter_id"], consumption["start_date"], consumption["end_date"], consumption["power"])
 
 
 
