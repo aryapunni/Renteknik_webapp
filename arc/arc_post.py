@@ -196,6 +196,7 @@ def process_co2_consumption(measurements: dict, electrical_hierarchy: list, time
 
     # initialisation of values
     co2 = 0.0
+    number_of_datapoints = 0
     time_data["duration"] = int(time_data["duration"])
 
     # dictionary to send values to Arc
@@ -212,6 +213,7 @@ def process_co2_consumption(measurements: dict, electrical_hierarchy: list, time
             if (measurement["flow"] is not None) and (measurement["meter_name"] == val):
                 co2 = co2 + measurement["flow"]
                 co2 = round(co2, 2)
+                number_of_datapoints += 1
                 print(f"{measurement['meter_name']}\tsensor value: {measurement['flow']}\tsum of sensors: {co2}")
 
 
@@ -231,7 +233,7 @@ def process_co2_consumption(measurements: dict, electrical_hierarchy: list, time
     arc_dict["start_date"] = date_change[0]
     arc_dict["end_date"] = date_change[1]
     arc_dict["meter_name"] = "co2 meter"
-    arc_dict["flow"] = co2/24
+    arc_dict["flow"] = co2/number_of_datapoints
 
     return arc_dict
 
@@ -348,7 +350,7 @@ def send_arc_gas_consumption(db: Session, datain: dict, electrical_hierarchy: st
 
     # Sending data to arc
     # --------------------------------Uncomment----------------------------
-    create_gas_consumption(db, consumption["leed_id"], consumption["client"], consumption["meter_id"], consumption["start_date"], consumption["end_date"], consumption["power"])
+    create_gas_consumption(db, consumption["leed_id"], consumption["client"], consumption["meter_id"], consumption["start_date"], consumption["end_date"], consumption["energy"])
 
 
 
