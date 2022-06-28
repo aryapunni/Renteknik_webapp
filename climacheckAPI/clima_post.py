@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from sql_app import models, schemas, crud
-import crc16
+# import crc16
 from itertools import groupby
 from operator import itemgetter
 import json
