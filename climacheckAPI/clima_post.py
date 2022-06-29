@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from sql_app import models, schemas, crud
-# import crc16
+import crc16
 from itertools import groupby
 from operator import itemgetter
 import json
@@ -9,6 +9,7 @@ import itertools
 import datetime
 import requests
 from time import sleep
+from crc import CrcCalculator, Crc16
 # import pprint
 
 
@@ -43,11 +44,14 @@ def find_crc16(inputString: str):
     binaryString = ''.join(format(ord(i), 'b') for i in inputString)
     binaryString = bytes(binaryString, 'utf-8')
     print(type(binaryString))
-    crcString = crc16.crc16xmodem(binaryString)
-    hex_crc = '{0:02x}'.format(crcString)
-    print(type(crcString))
-    print(type(hex_crc), hex_crc)
-    return hex_crc
+    # crcString = crc16.crc16xmodem(binaryString)
+    # hex_crc = '{0:02x}'.format(crcString)
+    crc_calculator = CrcCalculator(Crc16.CCITT)
+    checksum = crc_calculator.calculate_checksum(binaryString)
+    checksum_hex = '{0:02x}'.format(checksum)
+
+    print(f"checksum new lib: {checksum}, {checksum_hex}")
+    return checksum_hex
 
 def datetime_to_string(date):
 
