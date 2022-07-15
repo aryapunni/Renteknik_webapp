@@ -1,0 +1,51 @@
+<link rel="stylesheet" type="text/css" href="template.css"/>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <title>{{title}}</title>
+    <meta name="viewport" content="initial-scale=1.0; maximum-scale=1.0; width=device-width;">
+</head>
+
+<body>
+    <div class="table-title" align="center">
+        <h4><img src="file:///home/arya/code/python_public/static/Logo no tag Small.jpg" style="width:100%"></h4>
+        <p style="font-weight: bold"></p>
+    </div>
+    <div class="table-title" align="center">
+        <h2>Monthly Consumption Report</h2>
+        <h5>Month: March</h5>
+
+        <h5>Address: 6600 New Venture Gear Dr, East Syracuse, NY 13057, East Syracuse, New York, United States </h5>
+
+        <!-- <h5>Onyx Monthly virtual meter </h5> -->
+        <p style="font-weight: bold"></p>
+    </div>
+    <div align="center" class="dataframe">
+        {{ df }}
+    </div>
+
+    <div class="image-grid" align="center" style="width: 100%">
+
+                <img src="file:///home/arya/AWS2/abacus/energystar/report/onyx/figpi.png" style="width:100%">
+
+        <!-- <div class="row"> -->
+            <!-- <p align="center">{{ message }}</p> -->
+            <!-- <div class="column"> -->
+                <!-- <img src="file:///home/arya/AWS2/abacus/energystar/report/onyx/figpi.png" style="width:100%"> -->
+            <!-- </div> -->
+            <!-- <div class="column"> -->
+            <!--     <img src="file:///home/arya/AWS2/abacus/energystar/report/reandrive/quantiphi/gas_meter.png"  style="width:100%"> -->
+            <!-- </div> -->
+            <!-- <div class="column"> -->
+            <!--     <img src="file:///home/arya/AWS2/abacus/energystar/report/reandrive/quantiphi/cold_water.png"  style="width:100%"> -->
+            <!-- </div> -->
+            <!-- <div class="column"> -->
+            <!--     <img src="file:///home/arya/AWS2/abacus/energystar/report/reandrive/quantiphi/hot_water.png"  style="width:100%"> -->
+            <!-- </div> -->
+        </div>
+
+
+    </div>
+
+</body>
+</html>

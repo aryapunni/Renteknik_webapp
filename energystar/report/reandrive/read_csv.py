@@ -9,7 +9,7 @@ if __name__ == "__main__":
     hot_water = 0
     length = 0
 
-    with open('april.csv', mode ='r') as file:
+    with open('may.csv', mode ='r') as file:
 
         reader = csv.DictReader(file)
         count = sum(1 for _ in reader)
@@ -25,16 +25,19 @@ if __name__ == "__main__":
             for val in lines:
                 if val == "Cold Water   (ft³)":
 
-                    water_volume = water_volume + float(lines[val])
+                    if lines[val].strip():
+                        water_volume = water_volume + float(lines[val])
+
                 elif(val == "Pool Water   (m³)") or (val == "Spa water meter   (m³)"):
 
-                    volume = float(lines[val]) * 35.3146667
+                    if lines[val].strip():
+                        volume = float(lines[val]) * 35.3146667
 
-                    water_volume = water_volume + volume
+                        water_volume = water_volume + volume
 
                 elif val == "Hot Water   (ft³)":
-
-                    hot_water = hot_water + float(lines[val])
+                    if lines[val].strip():
+                        hot_water = hot_water + float(lines[val])
 
 
 

@@ -14,12 +14,12 @@ def random_hex(length=10):
 
 
 
-data = [['Maximum Production Daily Consumption (kWh)', 1194.21],
-        ['Maximum Off-Hour Daily Consumption(kWh)', 538.25],
+data = [['Maximum Production Daily Consumption (kWh/h)', 1194.21],
+        ['Non-switchable load (kW)', 150],
         ['Off-Time Percentage (%)', 21.56],
-        ['Hourly Average On-Time Consumption (kWh)', 714.99],
-        ['Hourly Average Off-Time Consumption (kWh)', 154.20],
-        ['Off-Time Target (kWh)', 142.99],]
+        ['Hourly Average On-Time Consumption (kWh/h)', 714.99],
+        ['Hourly Average Off-Time Consumption (kWh/h)', 154.20],
+        ['Off-Time Target Consumption (kWh/h)', 142.99],]
 df = pd.DataFrame(data, columns = ['Category', 'Value'])
 
 

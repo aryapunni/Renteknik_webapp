@@ -13,10 +13,13 @@ from crc import CrcCalculator, Crc16
 # import pprint
 
 
+# Class Energy item
+# Stores energy values and corresponding device name
 class EnergyItem:
     def __init__(self, energy, device_name):
         self.energy = energy
         self.device_name = device_name
+
 
 
 
@@ -40,42 +43,64 @@ class energy_data:
 
 
 
+# finding crc16 checksum based on the input string
 def find_crc16(inputString: str):
+    # converting input string to binary string
     binaryString = ''.join(format(ord(i), 'b') for i in inputString)
     binaryString = bytes(binaryString, 'utf-8')
-    print(type(binaryString))
-    # crcString = crc16.crc16xmodem(binaryString)
-    # hex_crc = '{0:02x}'.format(crcString)
+
+    # finding crc16 checksum
     crc_calculator = CrcCalculator(Crc16.CCITT)
     checksum = crc_calculator.calculate_checksum(binaryString)
     checksum_hex = '{0:02x}'.format(checksum)
 
-    print(f"checksum new lib: {checksum}, {checksum_hex}")
+    # Finding the crc16 checksum with old python lib
+    # print(type(binaryString))
+    # crcString = crc16.crc16xmodem(binaryString)
+    # hex_crc = '{0:02x}'.format(crcString)
+
     return checksum_hex
 
+# Convert datetime object to string
 def datetime_to_string(date):
 
-    fmt = "%Y-%m-%dT%H:%M:%S"
+
+    fmt = "%Y-%m-%d %H:%M:%-S"
 
     date.strftime(fmt)
+
     return date
 
-def create_climacheck_url(climacheck_dict: dict, time_stamp: str):
-    # print(time_stamp, "\n", climacheck_dict)
 
-    url = "https://receiver.climacheck.com/"
+# Creating the url encoded data for climacheck API
+def create_climacheck_url(climacheck_dict: dict, time_stamp: str):
+
+    # Renteknik UID
     uid = "U00185"
+
+    # Length of the data that we are sending to the Climacheck
     number_of_datapoints = str(len(climacheck_dict))
-    prefix = f"{url}{uid},{number_of_datapoints},{time_stamp}"
+
+    # Prefix of the url - uid + length of the datapoints + timestamp
+    prefix = f"{uid},{number_of_datapoints},{time_stamp},"
+
+    # Creating the datapoints for sending it to the Climacheck server
     climacheck_list = list(climacheck_dict.values())
     climacheck_str = ",".join([str(round(i, 2)) for i in climacheck_list])
-    # print(climacheck_str)
+
     req_url = f"{prefix}{climacheck_str}"
+
+    # Finding the crc16 checksum for the url encoded string
     crc = find_crc16(req_url)
+
+    # final url string = uid + len-of-data + timestamp + data + crcchecksum
     req_url = f"{req_url},{crc}"
-    print(req_url, crc)
     return req_url
 
+
+# The data to climacheck should be sent to
+# climacheck in the right order based on time
+# This function sorts the sensor values based on the time it was sent
 def sort_climacheck_url(url_dict: dict):
     sorted_list = {k: v for k, v in sorted(url_dict.items(), key=lambda x: x[0])}
     for k, v in sorted_list.items():
@@ -83,16 +108,20 @@ def sort_climacheck_url(url_dict: dict):
     return sorted_list
 
 
-
+#
 def send_data_to_climacheck(climacheck_url_dict):
+
+    url = "https://receiver.climacheck.com/"
     for date_time in climacheck_url_dict:
-        url = climacheck_url_dict[date_time]
+        raw_data = climacheck_url_dict[date_time]
+        headers = {"Content-Type": "text/plain"}
         sleep(2)
         try:
-            r = requests.post(url=url)
-            print(r.text)
+            # print(url, raw_data, headers)
+            r = requests.post(url=url, data=raw_data, headers=headers)
+            # print(r.text)
             data = r.json()
-            print(f"requests data = {data}")
+            # print(f"requests data = {data}")
             # return data
         except Exception as e:
             print("[Errno {0}] {1}".format(e.errno, e.strerror))
@@ -116,13 +145,15 @@ def post_data(datain: schemas.PanPowerDictCover):
 
         key = data["measurement_time"]
 
+        # print(key)
+
         if key in grouper:
             energy_val = grouper[key]
         else:
             energy_val = energy_data()
             grouper[key] = energy_val
 
-        energy_val.add_energy(data['energy'], data['device_name'])
+        energy_val.add_energy(data['current'], data['device_name'])
 
 
     for item in grouper:
@@ -142,8 +173,3 @@ def post_data(datain: schemas.PanPowerDictCover):
     print(climacheck_url_dict)
     climacheck_url_dict = sort_climacheck_url(climacheck_url_dict)
     send_data_to_climacheck(climacheck_url_dict=climacheck_url_dict)
-
-
-                # Too many repeated iterations of sending data
-                # Have to remove those iterartions and make it send only once
-

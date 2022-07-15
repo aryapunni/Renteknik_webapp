@@ -42,7 +42,7 @@ def generate_area_graph(meb_report, cut_off_val):
         title_font=dict(size=30, family='Verdana', color='black'),
         tickfont=dict(family='Calibri', color='darkred', size=25))
     fig3.update_yaxes(
-        title_text = "Energy (kWh)", range = (0,1200),
+        title_text = "Energy (kWh/h)", range = (0,1200),
         title_font=dict(size=30, family='Verdana', color='black'),
         tickfont=dict(family='Calibri', color='darkred', size=25))
 
@@ -89,7 +89,7 @@ def generate_graph(meb_report, cut_off_val):
     fig4.update_layout(
         title = "MEB report",
         title_font_size=40, legend_font_size = 20,
-        width = 1600, height = 1000)
+        width = 1600, height = 1200)
 
     fig4.update_xaxes(
         title_text = 'March', fixedrange=True,
@@ -97,7 +97,7 @@ def generate_graph(meb_report, cut_off_val):
         tickfont=dict(family='Calibri', color='darkred', size=25))
 
     fig4.update_yaxes(
-        title_text = "Energy (kWh)", range = (0,1000), fixedrange=True,
+        title_text = "Energy (kWh/h)", range = (0,1200), fixedrange=True,
         title_font=dict(size=30, family='Verdana', color='black'),
         tickfont=dict(family='Calibri', color='darkred', size=25))
     # fig4.write_image(path + "figarea4.png")

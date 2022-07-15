@@ -154,7 +154,7 @@ if __name__ == "__main__":
 
                 # setting On time and Off time for a weekday
                 four_am = time(hour=4, minute=0, second=0)
-                four_pm = time(hour=16, minute=0, second=0)
+                four_pm = time(hour=18, minute=0, second=0)
 
                 # 4 am to 3.59 pm is ON time
                 if four_am <= time_now < four_pm:

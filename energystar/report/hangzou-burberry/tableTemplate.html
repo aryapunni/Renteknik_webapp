@@ -1,0 +1,65 @@
+<link rel="stylesheet" type="text/css" href="template.css"/>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <title>{{title}}</title>
+    <meta name="viewport" content="initial-scale=1.0; maximum-scale=1.0; width=device-width;">
+</head>
+
+<body>
+    <div class="table-title" align="center">
+        <h4><img src="file:///home/arya/code/python_public/static/Logo no tag Small.jpg" style="width:100%"></h4>
+        <p style="font-weight: bold"></p>
+    </div>
+    <div class="table-title" align="center">
+        <h2>Weekly Consumption Report</h2>
+        <h5>Month: June</h5>
+
+        <h5>Address: Fu Chun Lu 701, Hangzhou Shi, China, 310020</h5>
+        <p style="font-weight: bold"></p>
+    </div>
+    <div align="center" class="dataframe">
+        {{ df }}
+    </div>
+
+    <div class="image-grid" align="center" style="width: 100%">
+
+                <p align="center">Weekly Energy Plots</p>
+                <img src="file:///home/arya/AWS2/abacus/energystar/report/hangzou-burberry/graphs/energy.jpeg" style="width:80%">
+
+    </div>
+
+    <div align="center" class="dataframe2" style="padding-top: 100px;">
+
+        <p align="center" style="padding-bottom: 30px;font-weight: bold">Weekly Co2 and Gas meter Report</p>
+        {{ df2 }}
+    </div>
+    <div class="image-grid" align="center" style="width: 100%">
+
+                <!-- <p align="center" style="font-weight: bold">Prevous Week Energy Usage</p> -->
+                <!-- <img src="file:///home/arya/AWS2/abacus/energystar/report/hangzou-burberry/graphs/week0.png" style="width:80%"> -->
+
+                <!-- <p align="center" style="font-weight: bold">Current Week Energy Usage</p> -->
+                <!-- <img src="file:///home/arya/AWS2/abacus/energystar/report/hangzou-burberry/graphs/week1.png" style="width:80%"> -->
+
+        <div class="row">
+            <!-- <p align="center">{{ message }}</p> -->
+            <div class="column">
+                <img src="file:///home/arya/AWS2/abacus/energystar/report/hangzou-burberry/graphs/Previous Week.jpeg" style="width:100%">
+            </div>
+            <div class="column">
+                <img src="file:///home/arya/AWS2/abacus/energystar/report/hangzou-burberry/graphs/Current Week.jpeg"  style="width:100%">
+            </div>
+            <!-- <div class="column"> -->
+            <!--     <img src="file:///home/arya/AWS0/abacus/energystar/report/reandrive/quantiphi/cold_water.png"  style="width:100%"> -->
+            <!-- </div> -->
+            <!-- <div class="column"> -->
+            <!--     <img src="file:///home/arya/AWS0/abacus/energystar/report/reandrive/quantiphi/hot_water.png"  style="width:100%"> -->
+            <!-- </div> -->
+        </div>
+
+
+    </div>
+
+</body>
+</html>
