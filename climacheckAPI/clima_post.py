@@ -120,8 +120,8 @@ def send_data_to_climacheck(climacheck_url_dict):
             # print(url, raw_data, headers)
             r = requests.post(url=url, data=raw_data, headers=headers)
             print(r.text)
-            data = r.json()
-            print(f"requests data = {data}")
+            # data = r.json()
+            # print(f"requests data = {data}")
             # return data
         except Exception as e:
             print("[Errno {0}]".format(e))
