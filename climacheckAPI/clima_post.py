@@ -124,7 +124,7 @@ def send_data_to_climacheck(climacheck_url_dict):
             print(f"requests data = {data}")
             # return data
         except Exception as e:
-            print("[Errno {0}]".format(e)
+            print("[Errno {0}]".format(e))
 
 
 
