@@ -153,7 +153,7 @@ def post_data(datain: schemas.PanPowerDictCover):
             energy_val = energy_data()
             grouper[key] = energy_val
 
-        energy_val.add_energy(data['power'], data['device_name'])
+        energy_val.add_energy(data['power']/1000, data['device_name'])
 
 
     for item in grouper:
