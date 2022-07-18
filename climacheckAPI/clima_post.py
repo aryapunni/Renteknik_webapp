@@ -119,12 +119,12 @@ def send_data_to_climacheck(climacheck_url_dict):
         try:
             # print(url, raw_data, headers)
             r = requests.post(url=url, data=raw_data, headers=headers)
-            # print(r.text)
+            print(r.text)
             data = r.json()
-            # print(f"requests data = {data}")
+            print(f"requests data = {data}")
             # return data
         except Exception as e:
-            print("[Errno {0}] {1}")
+            print("[Errno {0}] {1}".format(e.errno, e.strerror))
 
 
 
@@ -153,7 +153,7 @@ def post_data(datain: schemas.PanPowerDictCover):
             energy_val = energy_data()
             grouper[key] = energy_val
 
-        energy_val.add_energy(data['current'], data['device_name'])
+        energy_val.add_energy(data['power'], data['device_name'])
 
 
     for item in grouper:
