@@ -130,7 +130,7 @@ def send_data_to_climacheck(climacheck_url_dict):
 
     
 def post_data(datain: schemas.PanPowerDictCover):
-    climacheck_dict = {"50 HP Chiller Pump 5" : 0, "30 HP Process Pump": 0, "Thermalcare Tower": 0,
+    climacheck_dict = {"50 HP Chiller Pump 5" : 0, "30 HP proc Chiller": 0, "Thermalcare Tower": 0,
                        "Tower #1": 0, "Tower #2": 0, "Tower #3": 0, "Tower #4": 0, "Tower #5": 0,
                        "40 HP Process 1":0, "40 HP Process 2":0, "40 HP Process 3":0,
                        "40 HP tower 1": 0, "40 HP tower 2":0}
