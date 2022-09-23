@@ -109,7 +109,7 @@ def sort_climacheck_url(url_dict: dict):
 
 
 #
-def send_data_to_climacheck(climacheck_url_dict):
+async def send_data_to_climacheck(climacheck_url_dict):
 
     url = "https://receiver.climacheck.com/"
     for date_time in climacheck_url_dict:
@@ -129,7 +129,7 @@ def send_data_to_climacheck(climacheck_url_dict):
 
 
     
-def post_data(datain: schemas.PanPowerDictCover):
+async def post_data(datain: schemas.PanPowerDictCover):
     climacheck_dict = {"50 HP Chiller Pump 5" : 0, "30 HP proc Chiller": 0, "Thermalcare Tower": 0,
                        "Tower #1": 0, "Tower #2": 0, "Tower #3": 0, "Tower #4": 0, "Tower #5": 0,
                        "40 HP Process 1":0, "40 HP Process 2":0, "40 HP Process 3":0,
