@@ -172,4 +172,4 @@ async def post_data(datain: schemas.PanPowerDictCover):
             climacheck_url_dict[item] = create_climacheck_url(climacheck_dict, datetime_to_string(item))
     print(climacheck_url_dict)
     climacheck_url_dict = sort_climacheck_url(climacheck_url_dict)
-    send_data_to_climacheck(climacheck_url_dict=climacheck_url_dict)
+    await send_data_to_climacheck(climacheck_url_dict=climacheck_url_dict)
