@@ -11,6 +11,8 @@ import requests
 from time import sleep
 from crc import CrcCalculator, Crc16
 # import pprint
+import asyncio
+
 
 
 # Class Energy item
@@ -115,7 +117,7 @@ async def send_data_to_climacheck(climacheck_url_dict):
     for date_time in climacheck_url_dict:
         raw_data = climacheck_url_dict[date_time]
         headers = {"Content-Type": "text/plain"}
-        sleep(2)
+        await asyncio.sleep(2)
         try:
             # print(url, raw_data, headers)
             r = requests.post(url=url, data=raw_data, headers=headers)
