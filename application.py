@@ -20,7 +20,7 @@ from config import settings
 from arc.arc_get import get_asset_comprehensive_score, get_meter_list, asset_search, get_asset_list, get_asset_object_detail, get_fuel_category, get_meter_consumption_list, get_meter_consumption_detail, get_asset_aggregated_data, get_asset_score
 # get_asset_aggregated_data, get_asset_score
 from arc.arc_post import send_arc_consumption, send_arc_co2_consumption, send_arc_gas_consumption
-from climacheckAPI.clima_post import post_data
+from climacheckAPI.clima_post import post_data, post_data_fortinos
 import os
 import logging
 import sys
@@ -712,20 +712,33 @@ async def climacheck_post(datain: schemas.PanPowerDictCover, client: str):
     # Uncomment this section when necessary
 
     # print("----------------------Actual data----------------------")
+    if client == "plastcot":
 
-    for data in datain.measurements:
-        data_2 = data.dict()
-        # pprint.pprint(data_2)
-        json_object = json.dumps(data_2, default=str, indent=4, sort_keys=True)
+        for data in datain.measurements:
+            data_2 = data.dict()
+            # pprint.pprint(data_2)
+            json_object = json.dumps(data_2, default=str, indent=4, sort_keys=True)
 
-    await post_data(datain)
+        await post_data(datain)
 
-    #     with open("pan_actual.json", "a") as out_file:
-    #         out_file.write(json_object)
+            #     with open("pan_actual.json", "a") as out_file:
+            #         out_file.write(json_object)
 
 
-    # print("----------------------Time zone data----------------------")
+            # print("----------------------Time zone data----------------------")
+    elif client == "fortinos":
 
+        for data in datain.measurements:
+            data_2 = data.dict()
+            # pprint.pprint(data_2)
+            json_object = json.dumps(data_2, default=str, indent=4, sort_keys=True)
+
+        await post_data_fortinos(datain)
+
+            #     with open("pan_actual.json", "a") as out_file:
+            #         out_file.write(json_object)
+
+           
 
     return 200
 
