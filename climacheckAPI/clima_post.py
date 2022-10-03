@@ -75,10 +75,10 @@ def datetime_to_string(date):
 
 
 # Creating the url encoded data for climacheck API
-def create_climacheck_url(climacheck_dict: dict, time_stamp: str):
+def create_climacheck_url(climacheck_dict: dict, time_stamp: str, uid: str):
 
     # Renteknik UID
-    uid = "U00185"
+    # uid = "U00185"
 
     # Length of the data that we are sending to the Climacheck
     number_of_datapoints = str(len(climacheck_dict))
@@ -132,6 +132,7 @@ async def send_data_to_climacheck(climacheck_url_dict):
 
     
 async def post_data(datain: schemas.PanPowerDictCover):
+    uid = "U00185"
     climacheck_dict = {"50 HP Chiller Pump 5" : 0, "30 HP proc Chiller": 0, "Thermalcare Tower": 0,
                        "Tower #1": 0, "Tower #2": 0, "Tower #3": 0, "Tower #4": 0, "Tower #5": 0,
                        "40 HP Process 1":0, "40 HP Process 2":0, "40 HP Process 3":0,
@@ -171,13 +172,14 @@ async def post_data(datain: schemas.PanPowerDictCover):
                 print(f"{item}=====>{device}====>{energy}")
                 climacheck_dict[device] = energy
         if device_name_present:
-            climacheck_url_dict[item] = create_climacheck_url(climacheck_dict, datetime_to_string(item))
+            climacheck_url_dict[item] = create_climacheck_url(climacheck_dict, datetime_to_string(item), uid)
     print(climacheck_url_dict)
     climacheck_url_dict = sort_climacheck_url(climacheck_url_dict)
     await send_data_to_climacheck(climacheck_url_dict=climacheck_url_dict)
 
 
 async def post_data_fortinos(datain: schemas.PanPowerDictCover):
+    uid = "U00083"
     climacheck_dict = {"Rack A Comp 1" : 0, "Rack A Comp 2" : 0, "Rack A Comp 3" : 0, "Rack A Comp 4" : 0, "Rack A Comp 5" : 0, "Rack A Comp 6" : 0, "Condenser A" : 0,
                        "Rack B Comp 1" : 0, "Rack B Comp 2" : 0, "Rack B Comp 3" : 0, "Rack B Comp 4" : 0, "Rack B Comp 5" : 0, "Condenser B" : 0,
                        "Rack C Comp 1" : 0, "Rack C Comp 2" : 0, "Rack C Comp 3" : 0, "Rack C Comp 4" : 0, "Rack C Comp 5" : 0, "Condenser C" : 0}
@@ -216,7 +218,7 @@ async def post_data_fortinos(datain: schemas.PanPowerDictCover):
                 print(f"{item}=====>{device}====>{energy}")
                 climacheck_dict[device] = energy
         if device_name_present:
-            climacheck_url_dict[item] = create_climacheck_url(climacheck_dict, datetime_to_string(item))
+            climacheck_url_dict[item] = create_climacheck_url(climacheck_dict, datetime_to_string(item), uid)
     print(climacheck_url_dict)
     climacheck_url_dict = sort_climacheck_url(climacheck_url_dict)
     # await send_data_to_climacheck(climacheck_url_dict=climacheck_url_dict)
